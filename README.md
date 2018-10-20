@@ -1,15 +1,3 @@
-
-
-```python
-%load_ext autoreload
-
-%autoreload 2
-```
-
-    The autoreload extension is already loaded. To reload it, use:
-      %reload_ext autoreload
-    
-
 # Hourly
 A simple hour tracker for git projects. ```hourly``` parses your commit messages for "clock in/out" keywords and uses their unix timestamps to precisely calculate work hours.
 
