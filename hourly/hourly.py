@@ -61,12 +61,12 @@ def get_labor(work, start_date = None, end_date = None, ignore = None, case_sens
     
     return labor
 
-def get_pay_usd(labor, wage = 80):
+def get_earnings(labor, wage = 80, currency = 'usd'):
     dt = labor.sum()
     hours = dt.total_seconds()/3600.
     print("{}, {} hours worked".format(dt, hours))
-    print("{} usd".format(hours*wage))
-    return hours*wage #usd
+    print("{0:.2f} {1}".format(round(hours*wage,2), currency))
+    return round(hours*wage,2) #usd
 
 def get_work_commits(repo_addr, ascending = True):
     repo = git.Repo(repo_addr)
