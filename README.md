@@ -6,6 +6,10 @@
 %autoreload 2
 ```
 
+    The autoreload extension is already loaded. To reload it, use:
+      %reload_ext autoreload
+    
+
 # Hourly
 A simple hour tracker for git projects. ```hourly``` parses your commit messages for "clock in/out" keywords and uses their unix timestamps to precisely calculate work hours.
 
@@ -120,6 +124,10 @@ work
       <th>2018-10-20 02:03:56-04:00</th>
       <td>clock in - finishing tutorial\n</td>
     </tr>
+    <tr>
+      <th>2018-10-20 02:11:54-04:00</th>
+      <td>clock out - converted notebook for README\n</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -136,41 +144,74 @@ work
 get_labor(work)
 ```
 
-    pay period: 2018-10-19 23:57:48-04:00 -> 2018-10-20 02:03:56-04:00
+    pay period: 2018-10-19 23:57:48-04:00 -> 2018-10-20 02:11:54-04:00
     
 
 
-    ---------------------------------------------------------------------------
 
-    AssertionError                            Traceback (most recent call last)
 
-    ~\Documents\Projects\hourly\hourly\hourly.py in get_labor(work, start_date, end_date, ignore, case_sensitive, verbose)
-         47     try:
-    ---> 48         assert len(clock_in) == len(clock_out)
-         49     except:
-    
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-    AssertionError: 
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-    
-    During handling of the above exception, another exception occurred:
-    
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TimeIn</th>
+      <th>log in</th>
+      <th>TimeOut</th>
+      <th>log out</th>
+      <th>TimeDelta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018-10-19 23:57:48-04:00</td>
+      <td>clock in\n</td>
+      <td>2018-10-20 00:39:11-04:00</td>
+      <td>clock out - work done for the day\n</td>
+      <td>00:41:23</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018-10-20 01:06:08-04:00</td>
+      <td>clock in - start adding requirements and examp...</td>
+      <td>2018-10-20 01:47:01-04:00</td>
+      <td>clock out\n</td>
+      <td>00:40:53</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018-10-20 01:47:45-04:00</td>
+      <td>clock in - pro bono\n</td>
+      <td>2018-10-20 01:51:36-04:00</td>
+      <td>clock out - pro bono\n</td>
+      <td>00:03:51</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018-10-20 02:03:56-04:00</td>
+      <td>clock in - finishing tutorial\n</td>
+      <td>2018-10-20 02:11:54-04:00</td>
+      <td>clock out - converted notebook for README\n</td>
+      <td>00:07:58</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-    ValueError                                Traceback (most recent call last)
-
-    <ipython-input-4-798babb3f913> in <module>
-    ----> 1 get_labor(work)
-    
-
-    ~\Documents\Projects\hourly\hourly\hourly.py in get_labor(work, start_date, end_date, ignore, case_sensitive, verbose)
-         48         assert len(clock_in) == len(clock_out)
-         49     except:
-    ---> 50         raise ValueError("In/Out logs do not match")
-         51 
-         52     labor = pd.concat([clock_in, clock_out], axis = 1)
-    
-
-    ValueError: In/Out logs do not match
 
 
 ### Filtering work session keywords
@@ -182,27 +223,67 @@ Use the "ignore" key word to skip any work you don't want to include in your inv
 get_labor(work, ignore = 'pro bono')
 ```
 
-    pay period: 2018-10-19 23:57:48-04:00 -> 2018-10-20 02:03:56-04:00
+    pay period: 2018-10-19 23:57:48-04:00 -> 2018-10-20 02:11:54-04:00
+    ignoring pro bono
     
 
 
-    ---------------------------------------------------------------------------
 
-    ValueError                                Traceback (most recent call last)
 
-    <ipython-input-26-7e529657d9fe> in <module>()
-    ----> 1 get_labor(work, ignore = 'pro bono')
-    
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-    C:\Users\Asher\Documents\Projects\hourly\hourly\hourly.py in get_labor(work, start_date, end_date, ignore, case_sensitive, verbose)
-         48         assert len(clock_in) == len(clock_out)
-         49     except:
-    ---> 50         raise ValueError("In/Out logs do not match")
-         51 
-         52     labor = pd.concat([clock_in, clock_out], axis = 1)
-    
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-    ValueError: In/Out logs do not match
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TimeIn</th>
+      <th>log in</th>
+      <th>TimeOut</th>
+      <th>log out</th>
+      <th>TimeDelta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018-10-19 23:57:48-04:00</td>
+      <td>clock in\n</td>
+      <td>2018-10-20 00:39:11-04:00</td>
+      <td>clock out - work done for the day\n</td>
+      <td>00:41:23</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018-10-20 01:06:08-04:00</td>
+      <td>clock in - start adding requirements and examp...</td>
+      <td>2018-10-20 01:47:01-04:00</td>
+      <td>clock out\n</td>
+      <td>00:40:53</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018-10-20 02:03:56-04:00</td>
+      <td>clock in - finishing tutorial\n</td>
+      <td>2018-10-20 02:11:54-04:00</td>
+      <td>clock out - converted notebook for README\n</td>
+      <td>00:07:58</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 
 
 
