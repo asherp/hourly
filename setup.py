@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hourly",
-    version="0.0.1dev",
+    version="0.0.1",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
-    description="A simple work-hour tracker for git",
+    description="A simple hour tracker for git",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/asherp/hourly",
