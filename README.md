@@ -1,4 +1,3 @@
-
 # Hourly
 A simple hour tracker for git projects. ```hourly``` parses your commit messages for "clock in/out" keywords and uses their unix timestamps to precisely calculate work hours.
 
