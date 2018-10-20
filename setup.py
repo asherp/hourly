@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.1dev",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
-    description="A small example package",
+    description="A simple work-hour tracker for git",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/asherp/hourly",
