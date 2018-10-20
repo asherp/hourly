@@ -32,7 +32,7 @@ def get_labor(work, start_date = None, end_date = None, ignore = None, case_sens
     clocked = clocked.loc[start_date:end_date]
     
     if verbose:
-        print 'pay period: {} -> {}'.format(*clocked.index[[0,-1]])
+        print('pay period: {} -> {}'.format(*clocked.index[[0,-1]]))
    
     clock_in = commit_filter(clocked, ['clock-in', 'clock in'], case_sensitive = case_sensitive).reset_index()
     clock_in.rename(dict(time = 'TimeIn', message = 'log in'), 
@@ -54,7 +54,7 @@ def get_labor(work, start_date = None, end_date = None, ignore = None, case_sens
     
     if ignore is not None:
         if verbose:
-            print 'ignoring', ignore
+            print('ignoring {}'.format(ignore))
         labor = commit_filter(labor, ignore, column = "log in", case_sensitive = case_sensitive, exclude = True)
         labor = commit_filter(labor, ignore, column = "log out", case_sensitive = case_sensitive, exclude = True)
         
@@ -64,8 +64,8 @@ def get_labor(work, start_date = None, end_date = None, ignore = None, case_sens
 def get_pay_usd(labor, wage = 80):
     dt = labor.sum()
     hours = dt.total_seconds()/3600.
-    print "{}, {} hours worked".format(dt, hours)
-    print "{} usd".format(hours*wage)
+    print("{}, {} hours worked".format(dt, hours))
+    print("{} usd".format(hours*wage))
     return hours*wage #usd
 
 def get_work_commits(repo_addr, ascending = True):
