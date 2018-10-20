@@ -3,6 +3,7 @@ import git
 import pandas as pd
 
 def get_work_log(rep_addr):
+    """A less reliable parser based on logs"""
     repo = git.Repo(rep_addr)
     log = repo.head.log()
     times = pd.Series([l.time[0] for l in log])
@@ -23,12 +24,20 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
         else:
             return commits[commits[column].str.contains('|'.join(filters), case = case_sensitive)]
 
-def get_labor(work, start_date = None, end_date = None, ignore = None, case_sensitive = False, verbose = True):
-    clocked = commit_filter(work, 'clock', case_sensitive = case_sensitive)
+def parse_datetime(datetimestr, tzinfo = None):
+    t = pd.to_datetime(datetimestr)
+    return pd.datetime(t.year, t.month, t.day, t.hour, t.minute, t.second, tzinfo = tzinfo)
+
+def get_labor(work, start_date = None, end_date = None, errant_clocks = [], ignore = None, case_sensitive = False, verbose = True):
+    clocked = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
     if start_date is None:
         start_date = clocked.index[0]
+    else:
+        start_date = pd.to_datetime(start_date)
     if end_date is None:
         end_date = clocked.index[-1]
+    else:
+        end_date = pd.to_datetime(end_date)
     clocked = clocked.loc[start_date:end_date]
     
     if verbose:
@@ -73,8 +82,9 @@ def get_work_commits(repo_addr, ascending = True):
 
     commits = list(repo.iter_commits())
 
-    logs = [(c.authored_datetime, c.message) for c in repo.iter_commits()]
+    logs = [(c.authored_datetime, c.message, str(c)) for c in repo.iter_commits()]
 
-    work = pd.DataFrame.from_records(logs, columns = ['time', 'message']).set_index('time')
+    work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash']).set_index('time')
+
     return work.sort_index(ascending = ascending)
 
