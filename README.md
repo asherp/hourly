@@ -72,17 +72,17 @@ work
     </tr>
     <tr>
       <th>2018-10-19 23:57:48-04:00</th>
-      <td>clock in\n</td>
+      <td>clock in</td>
       <td>5c8f05b57b739ec525291c248ea9200651b49997</td>
     </tr>
     <tr>
       <th>2018-10-20 00:21:40-04:00</th>
-      <td>preparing setup.py\n</td>
+      <td>preparing setup.py</td>
       <td>254ecdacb52fc70bc358f8d55be58df3b70c7609</td>
     </tr>
     <tr>
       <th>2018-10-20 00:39:11-04:00</th>
-      <td>clock out - work done for the day\n</td>
+      <td>clock out - work done for the day</td>
       <td>0e33fa3d74f663f954b05dd9f30e0128ca7af162</td>
     </tr>
     <tr>
@@ -92,68 +92,93 @@ work
     </tr>
     <tr>
       <th>2018-10-20 01:47:01-04:00</th>
-      <td>clock out\n</td>
+      <td>clock out</td>
       <td>644ad6ebf4c9015fd512ed47b858602d784d6204</td>
     </tr>
     <tr>
       <th>2018-10-20 01:47:45-04:00</th>
-      <td>clock in - pro bono\n</td>
+      <td>clock in - pro bono</td>
       <td>e6b5f78daa68e3731f82effccb66fd4bd14996bf</td>
     </tr>
     <tr>
       <th>2018-10-20 01:51:36-04:00</th>
-      <td>clock out - pro bono\n</td>
+      <td>clock out - pro bono</td>
       <td>1aff88af5e9688645966ccd15da8e1530205cfea</td>
     </tr>
     <tr>
       <th>2018-10-20 02:03:56-04:00</th>
-      <td>clock in - finishing tutorial\n</td>
+      <td>clock in - finishing tutorial</td>
       <td>53bd7316e579d8582c46af09277b40fbba3a390e</td>
     </tr>
     <tr>
       <th>2018-10-20 02:11:54-04:00</th>
-      <td>clock out - converted notebook for README\n</td>
+      <td>clock out - converted notebook for README</td>
       <td>d55b5718a3178ab6161f7e3a148c6561a305cd79</td>
     </tr>
     <tr>
       <th>2018-10-20 02:14:21-04:00</th>
-      <td>had to clock out so notebook examples don't br...</td>
+      <td>had to clock out so notebook examples don't break</td>
       <td>d9ec537b36475b565df6b28d0cab6edc3a89f2da</td>
     </tr>
     <tr>
       <th>2018-10-20 02:18:27-04:00</th>
-      <td>fixed for rendering\n</td>
+      <td>fixed for rendering</td>
       <td>e2f8a2ca212fa9e7568618934da18a0ec7164fa3</td>
     </tr>
     <tr>
       <th>2018-10-20 02:22:56-04:00</th>
-      <td>fixing requiremens that raised a security alert\n</td>
+      <td>fixing requiremens that raised a security alert</td>
       <td>e0e71a05c6c5af1fc5515040ec75f33b71bd3b15</td>
     </tr>
     <tr>
       <th>2018-10-20 02:51:13-04:00</th>
-      <td>fixed requirements, tutorial updates\n</td>
+      <td>fixed requirements, tutorial updates</td>
       <td>d8d87767005022c9a8e83015d40f6fb736f2b73b</td>
     </tr>
     <tr>
       <th>2018-10-20 02:57:22-04:00</th>
-      <td>merging\n</td>
+      <td>merging</td>
       <td>f5585c89612a5fac2d948ee61536fffe276f8949</td>
     </tr>
     <tr>
+      <th>2018-10-20 03:24:58-04:00</th>
+      <td>Remove autoreload</td>
+      <td>b2c1d8677ea57aeb959350d663475ba3077f2c96</td>
+    </tr>
+    <tr>
       <th>2018-10-20 11:53:00-04:00</th>
-      <td>clock in - handling errant messages\n</td>
+      <td>clock in - handling errant messages</td>
       <td>fa615994ba6b771594d711dea6087cc7ba0348b5</td>
     </tr>
     <tr>
       <th>2018-10-20 13:16:13-04:00</th>
-      <td>clock out - converting to pd.Timestamp\n</td>
+      <td>clock out - converting to pd.Timestamp</td>
       <td>ed7aab29e43e7120428816481216198a255de8f4</td>
     </tr>
     <tr>
       <th>2018-10-20 13:47:56-04:00</th>
-      <td>clock in - adding work log\n</td>
+      <td>clock in - adding work log</td>
       <td>5b398037bf24cd503a7fc88c3b078913fa184f7e</td>
+    </tr>
+    <tr>
+      <th>2018-10-20 14:33:35-04:00</th>
+      <td>clock out - see WorkLog.md</td>
+      <td>93c2aa04aeba7cfe1573205abec053c7da9e9864</td>
+    </tr>
+    <tr>
+      <th>2018-10-20 14:35:58-04:00</th>
+      <td>merged</td>
+      <td>6a7f4ac45de70d94fb943d0676265cafd5bf1e41</td>
+    </tr>
+    <tr>
+      <th>2018-10-20 17:34:38-04:00</th>
+      <td>pushing version</td>
+      <td>2b633644d6ba24b9c1bbff6881a99df6ab935a8d</td>
+    </tr>
+    <tr>
+      <th>2018-10-28 13:44:48-04:00</th>
+      <td>clock in</td>
+      <td>c4e95f59dc0c8ce296a40300760ab68800f7e139</td>
     </tr>
   </tbody>
 </table>
@@ -165,12 +190,22 @@ work
 
 ### Getting time card
 
+
+```python
+import pandas as pd
+pd.set_option('display.width', 400)
+```
+
+
 ```python
 get_labor(work, end_date='2018-10-20 02:11:54-04:00')
 ```
 
     pay period: 2018-10-19 23:57:48-04:00 -> 2018-10-20 02:11:54-04:00
     
+
+
+
 
 <div>
 <table border="1" class="dataframe">
@@ -179,10 +214,8 @@ get_labor(work, end_date='2018-10-20 02:11:54-04:00')
       <th></th>
       <th>TimeIn</th>
       <th>log in</th>
-      <th>hash</th>
       <th>TimeOut</th>
       <th>log out</th>
-      <th>hash</th>
       <th>TimeDelta</th>
     </tr>
   </thead>
@@ -190,41 +223,33 @@ get_labor(work, end_date='2018-10-20 02:11:54-04:00')
     <tr>
       <th>0</th>
       <td>2018-10-19 23:57:48-04:00</td>
-      <td>clock in\n</td>
-      <td>5c8f05b57b739ec525291c248ea9200651b49997</td>
+      <td>clock in</td>
       <td>2018-10-20 00:39:11-04:00</td>
-      <td>clock out - work done for the day\n</td>
-      <td>0e33fa3d74f663f954b05dd9f30e0128ca7af162</td>
+      <td>clock out - work done for the day</td>
       <td>00:41:23</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2018-10-20 01:06:08-04:00</td>
       <td>clock in - start adding requirements and examp...</td>
-      <td>dc065b17337b14c2f8e0458de61e6880a338d6ae</td>
       <td>2018-10-20 01:47:01-04:00</td>
-      <td>clock out\n</td>
-      <td>644ad6ebf4c9015fd512ed47b858602d784d6204</td>
+      <td>clock out</td>
       <td>00:40:53</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2018-10-20 01:47:45-04:00</td>
-      <td>clock in - pro bono\n</td>
-      <td>e6b5f78daa68e3731f82effccb66fd4bd14996bf</td>
+      <td>clock in - pro bono</td>
       <td>2018-10-20 01:51:36-04:00</td>
-      <td>clock out - pro bono\n</td>
-      <td>1aff88af5e9688645966ccd15da8e1530205cfea</td>
+      <td>clock out - pro bono</td>
       <td>00:03:51</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2018-10-20 02:03:56-04:00</td>
-      <td>clock in - finishing tutorial\n</td>
-      <td>53bd7316e579d8582c46af09277b40fbba3a390e</td>
+      <td>clock in - finishing tutorial</td>
       <td>2018-10-20 02:11:54-04:00</td>
-      <td>clock out - converted notebook for README\n</td>
-      <td>d55b5718a3178ab6161f7e3a148c6561a305cd79</td>
+      <td>clock out - converted notebook for README</td>
       <td>00:07:58</td>
     </tr>
   </tbody>
@@ -262,7 +287,7 @@ problematic_commit
   <tbody>
     <tr>
       <th>2018-10-20 02:14:21-04:00</th>
-      <td>had to clock out so notebook examples don't br...</td>
+      <td>had to clock out so notebook examples don't break</td>
       <td>d9ec537b36475b565df6b28d0cab6edc3a89f2da</td>
     </tr>
   </tbody>
@@ -297,6 +322,8 @@ get_labor(work, end_date = '2018-10-20 13:16:13-04:00',
     
 
 
+
+
 <div>
 <table border="1" class="dataframe">
   <thead>
@@ -313,9 +340,9 @@ get_labor(work, end_date = '2018-10-20 13:16:13-04:00',
     <tr>
       <th>0</th>
       <td>2018-10-19 23:57:48-04:00</td>
-      <td>clock in\n</td>
+      <td>clock in</td>
       <td>2018-10-20 00:39:11-04:00</td>
-      <td>clock out - work done for the day\n</td>
+      <td>clock out - work done for the day</td>
       <td>00:41:23</td>
     </tr>
     <tr>
@@ -323,31 +350,31 @@ get_labor(work, end_date = '2018-10-20 13:16:13-04:00',
       <td>2018-10-20 01:06:08-04:00</td>
       <td>clock in - start adding requirements and examp...</td>
       <td>2018-10-20 01:47:01-04:00</td>
-      <td>clock out\n</td>
+      <td>clock out</td>
       <td>00:40:53</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2018-10-20 01:47:45-04:00</td>
-      <td>clock in - pro bono\n</td>
+      <td>clock in - pro bono</td>
       <td>2018-10-20 01:51:36-04:00</td>
-      <td>clock out - pro bono\n</td>
+      <td>clock out - pro bono</td>
       <td>00:03:51</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2018-10-20 02:03:56-04:00</td>
-      <td>clock in - finishing tutorial\n</td>
+      <td>clock in - finishing tutorial</td>
       <td>2018-10-20 02:11:54-04:00</td>
-      <td>clock out - converted notebook for README\n</td>
+      <td>clock out - converted notebook for README</td>
       <td>00:07:58</td>
     </tr>
     <tr>
       <th>4</th>
       <td>2018-10-20 11:53:00-04:00</td>
-      <td>clock in - handling errant messages\n</td>
+      <td>clock in - handling errant messages</td>
       <td>2018-10-20 13:16:13-04:00</td>
-      <td>clock out - converting to pd.Timestamp\n</td>
+      <td>clock out - converting to pd.Timestamp</td>
       <td>01:23:13</td>
     </tr>
   </tbody>
@@ -392,9 +419,9 @@ labor
     <tr>
       <th>0</th>
       <td>2018-10-19 23:57:48-04:00</td>
-      <td>clock in\n</td>
+      <td>clock in</td>
       <td>2018-10-20 00:39:11-04:00</td>
-      <td>clock out - work done for the day\n</td>
+      <td>clock out - work done for the day</td>
       <td>00:41:23</td>
     </tr>
     <tr>
@@ -402,23 +429,23 @@ labor
       <td>2018-10-20 01:06:08-04:00</td>
       <td>clock in - start adding requirements and examp...</td>
       <td>2018-10-20 01:47:01-04:00</td>
-      <td>clock out\n</td>
+      <td>clock out</td>
       <td>00:40:53</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2018-10-20 02:03:56-04:00</td>
-      <td>clock in - finishing tutorial\n</td>
+      <td>clock in - finishing tutorial</td>
       <td>2018-10-20 02:11:54-04:00</td>
-      <td>clock out - converted notebook for README\n</td>
+      <td>clock out - converted notebook for README</td>
       <td>00:07:58</td>
     </tr>
     <tr>
       <th>4</th>
       <td>2018-10-20 11:53:00-04:00</td>
-      <td>clock in - handling errant messages\n</td>
+      <td>clock in - handling errant messages</td>
       <td>2018-10-20 13:16:13-04:00</td>
-      <td>clock out - converting to pd.Timestamp\n</td>
+      <td>clock out - converting to pd.Timestamp</td>
       <td>01:23:13</td>
     </tr>
   </tbody>
@@ -439,6 +466,4 @@ get_earnings(labor, wage = 30, currency = 'USD')
     0 days 02:53:27, 2.890833333333333 hours worked
     86.72 USD
     
-    86.72
-
 

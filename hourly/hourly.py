@@ -9,7 +9,7 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
 
     commits = list(repo.iter_commits())
 
-    logs = [(c.authored_datetime, c.message, str(c)) for c in repo.iter_commits()]
+    logs = [(c.authored_datetime, c.message.strip('\n'), str(c)) for c in repo.iter_commits()]
 
     work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash'])
 

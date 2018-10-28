@@ -10,4 +10,4 @@ In addtion to providing more detail to a work session, this file can always be u
 
 # Oct 28, 2018
 
-* Remove line breaks from report
+* Removed line breaks from report
