@@ -7,3 +7,7 @@ In addtion to providing more detail to a work session, this file can always be u
 * Switched to pd.Timestamp to allow for easier slicing
 * Added timezones
 * Notebook Tutorial runs without errors
+
+# Oct 28, 2018
+
+* Remove line breaks from report
