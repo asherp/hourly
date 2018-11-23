@@ -89,7 +89,7 @@ def get_labor(work,
 def get_earnings(labor, wage = 80, currency = 'usd'):
     dt = labor.TimeDelta.sum()
     hours = dt.total_seconds()/3600.
-    print("{}, {} hours worked".format(dt, hours))
+    print("{0}, {1:.2f} hours worked".format(dt, round(hours,2)))
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
