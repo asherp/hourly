@@ -11,3 +11,7 @@ In addtion to providing more detail to a work session, this file can always be u
 # Oct 28, 2018
 
 * Removed line breaks from report
+
+# Feb 25, 2018
+
+* Adding clock adjustments
