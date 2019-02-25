@@ -1,3 +1,11 @@
+
+
+```python
+%load_ext autoreload
+
+%autoreload 2
+```
+
 # Hourly
 A simple hour tracker for git projects. ```hourly``` parses your commit messages for "clock in/out" keywords and uses their unix timestamps to precisely calculate work hours.
 
@@ -47,10 +55,29 @@ work = get_work_commits('.')
 work
 ```
 
+    c:\programdata\miniconda2\lib\site-packages\pandas\core\sorting.py:257: FutureWarning: Converting timezone-aware DatetimeArray to timezone-naive ndarray with 'datetime64[ns]' dtype. In the future, this will return an ndarray with 'object' dtype where each element is a 'pandas.Timestamp' with the correct 'tz'.
+    	To accept the future behavior, pass 'dtype=object'.
+    	To keep the old behavior, pass 'dtype="datetime64[ns]"'.
+      items = np.asanyarray(items)
+    
+
 
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -180,6 +207,31 @@ work
       <td>clock in</td>
       <td>c4e95f59dc0c8ce296a40300760ab68800f7e139</td>
     </tr>
+    <tr>
+      <th>2018-10-28 13:56:35-04:00</th>
+      <td>clock out</td>
+      <td>f5200e718c062e828d436506286fd05e56b606c5</td>
+    </tr>
+    <tr>
+      <th>2018-11-23 13:51:05-05:00</th>
+      <td>changed formatting of wages earned</td>
+      <td>9630e123f8748bb8260da27498e3600a3271e4c2</td>
+    </tr>
+    <tr>
+      <th>2018-11-23 14:14:38-05:00</th>
+      <td>changed license to Apache 2.0'</td>
+      <td>b7791826f2df0212ce49b51b621dd7e7cc0d6f14</td>
+    </tr>
+    <tr>
+      <th>2019-02-25 10:19:10-05:00</th>
+      <td>clock in T-1hr</td>
+      <td>d7add63b4d2e3e1ca1423296aaed25d9c28944da</td>
+    </tr>
+    <tr>
+      <th>2019-02-25 12:49:51-05:00</th>
+      <td>clock out T-5m</td>
+      <td>acfb8596317786e38177345aa2531098043a5c49</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -208,6 +260,19 @@ get_labor(work, end_date='2018-10-20 02:11:54-04:00')
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -271,6 +336,19 @@ problematic_commit
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -325,6 +403,19 @@ get_labor(work, end_date = '2018-10-20 13:16:13-04:00',
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -404,6 +495,19 @@ labor
 
 
 <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -463,7 +567,143 @@ Total earnings can be found using this function. Currency is just a string for p
 get_earnings(labor, wage = 30, currency = 'USD')
 ```
 
-    0 days 02:53:27, 2.890833333333333 hours worked
+    0 days 02:53:27, 2.89 hours worked
     86.72 USD
     
+
+
+
+
+    86.72
+
+
+
+# Time adjustment
+
+If you forget to clock in or clock out, you can correct your time sheet by adjusting your clock time. By default, Hourly adjusts time stamps automatically when a commit message contains the keyword "T-". Set ```correct_times``` to false to override this behavior.
+
+
+```python
+work = get_work_commits('.', correct_times=False) # reports the actual time of the commit
+work = work[work.message.str.contains('T-')] #filter by T-
+work
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>message</th>
+      <th>hash</th>
+    </tr>
+    <tr>
+      <th>time</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2019-02-25 11:19:10-05:00</th>
+      <td>clock in T-1hr</td>
+      <td>d7add63b4d2e3e1ca1423296aaed25d9c28944da</td>
+    </tr>
+    <tr>
+      <th>2019-02-25 12:54:51-05:00</th>
+      <td>clock out T-5m</td>
+      <td>acfb8596317786e38177345aa2531098043a5c49</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+work = get_work_commits('.') # reports actual work time, according to commit message
+work = work[work.message.str.contains('T-')] #filter by T-
+work
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>message</th>
+      <th>hash</th>
+    </tr>
+    <tr>
+      <th>time</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2019-02-25 10:19:10-05:00</th>
+      <td>clock in T-1hr</td>
+      <td>d7add63b4d2e3e1ca1423296aaed25d9c28944da</td>
+    </tr>
+    <tr>
+      <th>2019-02-25 12:49:51-05:00</th>
+      <td>clock out T-5m</td>
+      <td>acfb8596317786e38177345aa2531098043a5c49</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+Note: Only time subtractions are supported for now.
+
+### Time delta formats
+
+Hourly uses pandas' Timedelta format to modify times. This allows for a lot of flexibility.
+
+
+```python
+pd.Timedelta('1hr45m')
+```
+
+
+
+
+    Timedelta('0 days 01:45:00')
+
 
