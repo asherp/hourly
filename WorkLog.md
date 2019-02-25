@@ -14,4 +14,5 @@ In addtion to providing more detail to a work session, this file can always be u
 
 # Feb 25, 2018
 
-* Adding clock adjustments
+* Added clock adjustments
+* Made match_logs option to raise an error when in/out clocks don't match

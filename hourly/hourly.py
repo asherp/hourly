@@ -3,7 +3,7 @@ import git
 import pandas as pd
 
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
+def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_times = True):
     """Retrives work commits from repo"""
     repo = git.Repo(repo_addr)
 
@@ -15,9 +15,22 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
 
     work.time = pd.DatetimeIndex([pd.Timestamp(i).tz_convert(tz) for i in work.time])
     work.set_index('time', inplace = True)
-    return work.sort_index(ascending = ascending)
+    work = work.sort_index(ascending = ascending)
+    if correct_times:
+        work = adjust_time(work)
+    return work
 
 
+def adjust_time(work, dt_str = 'T-'):
+    work = work.reset_index()
+    adjustments = work[work.message.str.contains(dt_str)].message.str.split(dt_str, expand = True)
+    adjustments.columns = ['message','timedelta']
+    adjustments.timedelta = adjustments.timedelta.apply(pd.Timedelta)
+    if dt_str == 'T-':
+        work.time.update(work.loc[adjustments.index].time - adjustments.timedelta)
+    else:
+        raise NotImplementedError("{} not yet handled".format(dt_str))
+    return work.set_index('time')
 
 
 def commit_filter(commits, filters, column = 'message', case_sensitive = False, exclude = False):
@@ -42,7 +55,8 @@ def get_labor(work,
             case_sensitive = False, 
             verbose = True, 
             tz = None,
-            return_hashes = False):
+            return_hashes = False,
+            match_logs = True):
     clocked = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
     if start_date is None:
         start_date = clocked.index[0]
@@ -67,20 +81,26 @@ def get_labor(work,
                      axis = 'columns',
                      inplace = True)
     
-    try:
-        assert len(clock_in) == len(clock_out)
-    except:
-        raise ValueError("In/Out logs do not match")
+    if match_logs:
+        try:
+            assert len(clock_in) == len(clock_out)
+        except:
+            raise ValueError("In/Out logs do not match")
     
     labor = pd.concat([clock_in, clock_out], axis = 1)
+    labor.dropna(inplace=True)
     labor = labor.assign(TimeDelta = labor.TimeOut - labor.TimeIn)
     
     if ignore is not None:
         if verbose:
             print('ignoring {}'.format(ignore))
-        labor = commit_filter(labor, ignore, column = "log in", case_sensitive = case_sensitive, exclude = True)
-        labor = commit_filter(labor, ignore, column = "log out", case_sensitive = case_sensitive, exclude = True)
-        
+        try:
+            labor = commit_filter(labor, ignore, column = "log in", case_sensitive = case_sensitive, exclude = True)
+            labor = commit_filter(labor, ignore, column = "log out", case_sensitive = case_sensitive, exclude = True)
+        except:
+            print(labor[['TimeIn', 'TimeOut']])
+            raise
+
     if return_hashes:
         return labor
     else:
