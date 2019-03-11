@@ -1,0 +1,17 @@
+site_name: Hourly
+
+nav:
+  - Home: index.md
+  - Tutorial: README.ipynb
+
+theme: readthedocs
+
+use_directory_urls: false
+
+plugins:
+  - mknotebooks
+  - search
+
+markdown_extensions:
+  - codehilite
+  - admonition

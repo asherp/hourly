@@ -13,9 +13,9 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_tim
 
     work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash'])
 
-    work.time = pd.DatetimeIndex([pd.Timestamp(i).tz_convert(tz) for i in work.time])
-    work.set_index('time', inplace = True)
-    work = work.sort_index(ascending = ascending)
+    work.time = pd.DatetimeIndex([pd.Timestamp(i).tz_convert(tz) for i in work.time], dtype = object)
+    work.set_index('time', inplace = True, dtype = object)
+    work = work.sort_index(ascending = ascending, dtype = object)
     if correct_times:
         work = adjust_time(work)
     return work
