@@ -19,4 +19,5 @@ In addtion to providing more detail to a work session, this file can always be u
 
 # Mar 10, 2019
 
-* Adding documentation site
+* Added documentation site
+* Started integration with readthedocs
