@@ -12,7 +12,11 @@ In addtion to providing more detail to a work session, this file can always be u
 
 * Removed line breaks from report
 
-# Feb 25, 2018
+# Feb 25, 2019
 
 * Added clock adjustments
 * Made match_logs option to raise an error when in/out clocks don't match
+
+# Mar 10, 2019
+
+* Adding documentation site
