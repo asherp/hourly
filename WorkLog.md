@@ -4,7 +4,7 @@ In addtion to providing more detail to a work session, this file can always be u
 
 # Mar 12, 2019
 
-* Continuing readthedocs build
+* scrapping readthedocs in favor of github.io
 
 # Mar 11, 2019
 
