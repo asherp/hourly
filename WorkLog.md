@@ -5,6 +5,7 @@ In addtion to providing more detail to a work session, this file can always be u
 # Mar 12, 2019
 
 * scrapping readthedocs in favor of github.io
+* starting command-line interface
 
 # Mar 11, 2019
 
