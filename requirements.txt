@@ -44,7 +44,7 @@ pyrsistent==0.14.11
 python-dateutil==2.8.0
 pytz==2018.9
 pywinpty==0.5.5
-PyYAML==3.13
+PyYAML==4.2b1
 pyzmq==18.0.1
 qtconsole==4.4.3
 Send2Trash==1.5.0
