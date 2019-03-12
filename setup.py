@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hourly",
-    version="0.0.3",
+    version="0.0.4",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
     description="A simple hour tracker for git",
@@ -18,4 +18,11 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'Click',
+    ],
+    entry_points='''
+        [console_scripts]
+        hourly=hourly.hourly:cli
+    ''',
 )

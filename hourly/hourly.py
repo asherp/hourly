@@ -2,23 +2,12 @@ import git
 
 import pandas as pd
 
-
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_times = True):
-    """Retrives work commits from repo"""
-    repo = git.Repo(repo_addr)
-
-    commits = list(repo.iter_commits())
-
-    logs = [(c.authored_datetime, c.message.strip('\n'), str(c)) for c in repo.iter_commits()]
-
-    work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash'])
-
-    work.time = pd.DatetimeIndex([pd.Timestamp(i).tz_convert(tz) for i in work.time], dtype = object)
-    work.set_index('time', inplace = True, dtype = object)
-    work = work.sort_index(ascending = ascending, dtype = object)
-    if correct_times:
-        work = adjust_time(work)
-    return work
+import click
+import warnings
+warnings.simplefilter("ignore")
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
 
 
 def adjust_time(work, dt_str = 'T-'):
@@ -31,6 +20,26 @@ def adjust_time(work, dt_str = 'T-'):
     else:
         raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
+
+def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_times = True):
+    """Retrives work commits from repo"""
+    repo = git.Repo(repo_addr)
+
+    commits = list(repo.iter_commits())
+
+    logs = [(c.authored_datetime, c.message.strip('\n'), str(c)) for c in repo.iter_commits()]
+
+    work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash'])
+
+    work.time = pd.DatetimeIndex([pd.Timestamp(i).tz_convert(tz) for i in work.time])
+    work.set_index('time', inplace = True)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        work = work.sort_index(ascending = ascending)
+    if correct_times:
+        work = adjust_time(work)
+    return work
+
 
 
 def commit_filter(commits, filters, column = 'message', case_sensitive = False, exclude = False):
@@ -72,12 +81,12 @@ def get_labor(work,
         print('pay period: {} -> {}'.format(*clocked.index[[0,-1]]))
    
     clock_in = commit_filter(clocked, ['clock-in', 'clock in'], case_sensitive = case_sensitive).reset_index()
-    clock_in.rename(dict(time = 'TimeIn', message = 'log in'), 
+    clock_in.rename(dict(time = 'TimeIn', message = 'LogIn'), 
                     axis = 'columns', 
                     inplace = True)
     
     clock_out = commit_filter(clocked, ['clock-out', 'clock out'], case_sensitive = case_sensitive).reset_index()
-    clock_out.rename(dict(time = 'TimeOut', message = 'log out'),
+    clock_out.rename(dict(time = 'TimeOut', message = 'LogOut'),
                      axis = 'columns',
                      inplace = True)
     
@@ -85,7 +94,7 @@ def get_labor(work,
         try:
             assert len(clock_in) == len(clock_out)
         except:
-            raise ValueError("In/Out logs do not match")
+            raise ValueError("In/Out logs do not match: clock ins:{}, clock outs:{}".format(len(clock_in), len(clock_out)))
     
     labor = pd.concat([clock_in, clock_out], axis = 1)
     labor.dropna(inplace=True)
@@ -95,8 +104,8 @@ def get_labor(work,
         if verbose:
             print('ignoring {}'.format(ignore))
         try:
-            labor = commit_filter(labor, ignore, column = "log in", case_sensitive = case_sensitive, exclude = True)
-            labor = commit_filter(labor, ignore, column = "log out", case_sensitive = case_sensitive, exclude = True)
+            labor = commit_filter(labor, ignore, column = "LogIn", case_sensitive = case_sensitive, exclude = True)
+            labor = commit_filter(labor, ignore, column = "LogOut", case_sensitive = case_sensitive, exclude = True)
         except:
             print(labor[['TimeIn', 'TimeOut']])
             raise
@@ -113,3 +122,31 @@ def get_earnings(labor, wage = 80, currency = 'usd'):
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
+def get_report(gitdir, start_date, end_date, errant_clocks, ignore):
+    work = get_work_commits(gitdir)
+    labor = get_labor(work, start_date = start_date, end_date = end_date, errant_clocks = errant_clocks, ignore = ignore)
+    earnings = get_earnings(labor)
+    return labor, earnings
+
+def get_labor_range(labor):
+    start = labor.iloc[0].TimeIn
+    end = labor.iloc[-1].TimeOut
+    return start, end
+   
+
+# @click.option('--count', default=1, help='number of greetings')
+@click.command()
+@click.argument('gitdir', default = '.', type=click.Path(exists=True))
+@click.option('-s', '--start-date', default = None, type = str, help = 'Date (time) to begin invoice')
+@click.option('-e', '--end-date', default = None, type = str, help = 'Date (time) to end invoice')
+@click.option('-o', '--outfile', default = 'labor')
+@click.option('-err', '--errant-clocks', default = None, type = str, multiple = True, help = 'hash of the commit to skip')
+@click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"')
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore):
+    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore.encode('ascii','ignore'))
+
+    start, end = get_labor_range(labor)
+    output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
+
+    print('writing to file {}'.format(output_file))
+    labor.to_csv(output_file)
