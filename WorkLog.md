@@ -2,6 +2,10 @@ Work Log
 
 In addtion to providing more detail to a work session, this file can always be used as something to commit.
 
+# Mar 14, 2019
+
+* bug fixing
+
 # Mar 12, 2019
 
 * scrapping readthedocs in favor of github.io
