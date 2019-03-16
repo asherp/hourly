@@ -1,6 +1,9 @@
 Work Log
 
 In addtion to providing more detail to a work session, this file can always be used as something to commit.
+# Mar 15, 2019
+
+* Fixed issue with ignore default
 
 # Mar 14, 2019
 
