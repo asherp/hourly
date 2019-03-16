@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hourly",
-    version="0.0.4",
+    version="0.0.5",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
     description="A simple hour tracker for git",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/asherp/hourly",
+    url="https://asherp.github.io/hourly/",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 2.7",
@@ -20,6 +20,8 @@ setuptools.setup(
     ],
     install_requires=[
         'Click',
+        'pandas',
+        'gitpython'
     ],
     entry_points='''
         [console_scripts]

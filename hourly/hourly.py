@@ -4,10 +4,11 @@ import pandas as pd
 
 import click
 import warnings
+
 warnings.simplefilter("ignore")
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
+pd.set_option('display.max_rows', 300)
+pd.set_option('display.max_columns', 200)
+pd.set_option('display.width', 800)
 
 
 def adjust_time(work, dt_str = 'T-'):
@@ -95,6 +96,10 @@ def get_labor(work,
             assert len(clock_in) == len(clock_out)
         except:
             raise ValueError("In/Out logs do not match: clock ins:{}, clock outs:{}".format(len(clock_in), len(clock_out)))
+    else:
+        if len(clock_in) == len(clock_out) + 1:
+            clock_in.drop(clock_in.tail(1).index,inplace=True) # drop last rows
+
     
     labor = pd.concat([clock_in, clock_out], axis = 1)
     labor.dropna(inplace=True)
@@ -122,9 +127,14 @@ def get_earnings(labor, wage = 80, currency = 'usd'):
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
-def get_report(gitdir, start_date, end_date, errant_clocks, ignore):
+def get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs):
     work = get_work_commits(gitdir)
-    labor = get_labor(work, start_date = start_date, end_date = end_date, errant_clocks = errant_clocks, ignore = ignore)
+    labor = get_labor(work,
+        start_date = start_date, 
+        end_date = end_date, 
+        errant_clocks = errant_clocks, 
+        ignore = ignore, 
+        match_logs = match_logs)
     earnings = get_earnings(labor)
     return labor, earnings
 
@@ -134,19 +144,29 @@ def get_labor_range(labor):
     return start, end
    
 
-# @click.option('--count', default=1, help='number of greetings')
 @click.command()
 @click.argument('gitdir', default = '.', type=click.Path(exists=True))
 @click.option('-s', '--start-date', default = None, type = str, help = 'Date (time) to begin invoice')
 @click.option('-e', '--end-date', default = None, type = str, help = 'Date (time) to end invoice')
-@click.option('-o', '--outfile', default = 'labor')
+@click.option('-o', '--outfile', default = None)
 @click.option('-err', '--errant-clocks', default = None, type = str, multiple = True, help = 'hash of the commit to skip')
 @click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"')
-def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore):
-    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore.encode('ascii','ignore'))
+@click.option('-w', '--print-work', is_flag=True, help = 'print the work log and exit')
+@click.option('-m', '--match-logs', is_flag=True, default = False, help = 'raise an error if in/out logs do not match')
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs):
+    if print_work:
+        work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
+        print(work)
+        exit()
 
+    if ignore is not None:
+        ignore =  ignore.encode('ascii','ignore')
+    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs)
     start, end = get_labor_range(labor)
-    output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
 
-    print('writing to file {}'.format(output_file))
-    labor.to_csv(output_file)
+    if outfile is not None:
+        output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
+        print('writing to file {}'.format(output_file))
+        labor.to_csv(output_file)
+    else:
+        print(labor)
