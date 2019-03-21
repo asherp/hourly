@@ -14,12 +14,13 @@ pd.set_option('display.width', 800)
 def adjust_time(work, dt_str = 'T-'):
     work = work.reset_index()
     adjustments = work[work.message.str.contains(dt_str)].message.str.split(dt_str, expand = True)
-    adjustments.columns = ['message','timedelta']
-    adjustments.timedelta = adjustments.timedelta.apply(pd.Timedelta)
-    if dt_str == 'T-':
-        work.time.update(work.loc[adjustments.index].time - adjustments.timedelta)
-    else:
-        raise NotImplementedError("{} not yet handled".format(dt_str))
+    if len(adjustments) > 0:
+        adjustments.columns = ['message','timedelta']
+        adjustments.timedelta = adjustments.timedelta.apply(pd.Timedelta)
+        if dt_str == 'T-':
+            work.time.update(work.loc[adjustments.index].time - adjustments.timedelta)
+        else:
+            raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
 def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_times = True):
@@ -127,7 +128,7 @@ def get_earnings(labor, wage = 80, currency = 'usd'):
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
-def get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs):
+def get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency):
     work = get_work_commits(gitdir)
     labor = get_labor(work,
         start_date = start_date, 
@@ -135,7 +136,7 @@ def get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs):
         errant_clocks = errant_clocks, 
         ignore = ignore, 
         match_logs = match_logs)
-    earnings = get_earnings(labor)
+    earnings = get_earnings(labor, wage, currency)
     return labor, earnings
 
 def get_labor_range(labor):
@@ -151,9 +152,11 @@ def get_labor_range(labor):
 @click.option('-o', '--outfile', default = None)
 @click.option('-err', '--errant-clocks', default = None, type = str, multiple = True, help = 'hash of the commit to skip')
 @click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"')
-@click.option('-w', '--print-work', is_flag=True, help = 'print the work log and exit')
+@click.option('-work', '--print-work', is_flag=True, help = 'print the work log and exit')
 @click.option('-m', '--match-logs', is_flag=True, default = False, help = 'raise an error if in/out logs do not match')
-def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs):
+@click.option('-w', '--wage', default = 80, type = float, help = 'wage to charge (in chosen currency)')
+@click.option('-c', '--curency', default = 'usd', type = str, help = 'Currency to print earnings')
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency):
     if print_work:
         work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
         print(work)
@@ -161,7 +164,7 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work
 
     if ignore is not None:
         ignore =  ignore.encode('ascii','ignore')
-    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs)
+    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
     start, end = get_labor_range(labor)
 
     if outfile is not None:
