@@ -155,11 +155,11 @@ def get_labor_range(labor):
 @click.option('-work', '--print-work', is_flag=True, help = 'print the work log and exit')
 @click.option('-m', '--match-logs', is_flag=True, default = False, help = 'raise an error if in/out logs do not match')
 @click.option('-w', '--wage', default = 80, type = float, help = 'wage to charge (in chosen currency)')
-@click.option('-c', '--curency', default = 'usd', type = str, help = 'Currency to print earnings')
+@click.option('-c', '--currency', default = 'usd', type = str, help = 'Currency to print earnings')
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency):
     if print_work:
         work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
-        print(work)
+        print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])
         exit()
 
     if ignore is not None:
