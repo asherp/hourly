@@ -146,6 +146,7 @@ def get_labor_range(labor):
    
 
 @click.command()
+@click.version_option()
 @click.argument('gitdir', default = '.', type=click.Path(exists=True))
 @click.option('-s', '--start-date', default = None, type = str, help = 'Date (time) to begin invoice')
 @click.option('-e', '--end-date', default = None, type = str, help = 'Date (time) to end invoice')
@@ -156,7 +157,9 @@ def get_labor_range(labor):
 @click.option('-m', '--match-logs', is_flag=True, default = False, help = 'raise an error if in/out logs do not match')
 @click.option('-w', '--wage', default = 80, type = float, help = 'wage to charge (in chosen currency)')
 @click.option('-c', '--currency', default = 'usd', type = str, help = 'Currency to print earnings')
-def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency):
+@click.option("-in", "--clock-in", is_flag = True, help = "clock in to current repo")
+@click.option("-out", "--clock-out", is_flag = True, help = "clock out of current repo")
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency, clock_in, clock_out):
     if print_work:
         work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
         print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])

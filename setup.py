@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hourly",
-    version="0.0.7",
+    version="0.0.8",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
     description="A simple hour tracker for git",
@@ -15,6 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
