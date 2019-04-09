@@ -1,7 +1,3 @@
-Work Log
-
-In addtion to providing more detail to a work session, this file can always be used as something to commit.
-
 # Apr 8, 2019
 
 * in/out flags
