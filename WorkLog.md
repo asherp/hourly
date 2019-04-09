@@ -1,6 +1,6 @@
 # Apr 8, 2019
 
-* in/out flags
+* working on in/out flags
 
 # Apr 7, 2019
 

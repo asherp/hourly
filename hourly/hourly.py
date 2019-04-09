@@ -144,6 +144,9 @@ def get_labor_range(labor):
     end = labor.iloc[-1].TimeOut
     return start, end
    
+@click.option('--name', prompt=True)
+def hello(name):
+    click.echo('Hello %s!' % name)
 
 @click.command()
 @click.version_option()
@@ -152,14 +155,20 @@ def get_labor_range(labor):
 @click.option('-e', '--end-date', default = None, type = str, help = 'Date (time) to end invoice')
 @click.option('-o', '--outfile', default = None)
 @click.option('-err', '--errant-clocks', default = None, type = str, multiple = True, help = 'hash of the commit to skip')
-@click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"')
-@click.option('-work', '--print-work', is_flag=True, help = 'print the work log and exit')
-@click.option('-m', '--match-logs', is_flag=True, default = False, help = 'raise an error if in/out logs do not match')
+@click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"') #should provide multiple=True
+@click.option('-work', '--print-work', is_flag = True, help = 'print the work log and exit')
+@click.option('--match-logs', is_flag = True, default = False, help = 'raise an error if in/out logs do not match')
 @click.option('-w', '--wage', default = 80, type = float, help = 'wage to charge (in chosen currency)')
 @click.option('-c', '--currency', default = 'usd', type = str, help = 'Currency to print earnings')
-@click.option("-in", "--clock-in", is_flag = True, help = "clock in to current repo")
-@click.option("-out", "--clock-out", is_flag = True, help = "clock out of current repo")
-def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency, clock_in, clock_out):
+@click.option("-in",  "--clock-in", is_flag = True, type = str, default = False, help = "clock in to current repo")
+@click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
+@click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency, clock_in, clock_out, message):
+    if clock_in:
+        print("clocking in with message: {} ".format(message))
+    if clock_out:
+        print("clocking out with message: {} ".format(message))
+
     if print_work:
         work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
         print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])
