@@ -4,6 +4,10 @@ In addtion to providing more detail to a work session, this file can always be u
 
 # Apr 8, 2019
 
+* in/out flags
+
+# Apr 7, 2019
+
 * Adding "hourly in/out" flags
 * Pushing python 3 version
 * Looking into payment options
