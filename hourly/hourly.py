@@ -6,9 +6,10 @@ import click
 import warnings
 
 warnings.simplefilter("ignore")
-pd.set_option('display.max_rows', 300)
-pd.set_option('display.max_columns', 200)
-pd.set_option('display.width', 800)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', 5)
+pd.set_option('display.max_colwidth', 37)
+pd.set_option('display.width', 600)
 
 
 def adjust_time(work, dt_str = 'T-'):
@@ -56,7 +57,17 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
         else:
             return commits[commits[column].str.contains('|'.join(filters), case = case_sensitive)]
 
-
+def filter_dates(clocked, start_date, end_date):
+    if start_date is None:
+        start_date = clocked.index[0]
+    else:
+        start_date = pd.to_datetime(start_date)
+    if end_date is None:
+        end_date = clocked.index[-1]
+    else:
+        end_date = pd.to_datetime(end_date)
+    clocked = clocked.loc[start_date:end_date]
+    return clocked
 
 def get_labor(work, 
             start_date = None, 
@@ -69,16 +80,8 @@ def get_labor(work,
             return_hashes = False,
             match_logs = True):
     clocked = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
-    if start_date is None:
-        start_date = clocked.index[0]
-    else:
-        start_date = pd.to_datetime(start_date)
-    if end_date is None:
-        end_date = clocked.index[-1]
-    else:
-        end_date = pd.to_datetime(end_date)
-    clocked = clocked.loc[start_date:end_date]
-    
+    clocked = filter_dates(clocked, start_date, end_date)
+
     if verbose:
         print('pay period: {} -> {}'.format(*clocked.index[[0,-1]]))
    
@@ -128,8 +131,8 @@ def get_earnings(labor, wage = 80, currency = 'usd'):
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
-def get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency):
-    work = get_work_commits(gitdir)
+def get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency):
+    # work = get_work_commits(gitdir)
     labor = get_labor(work,
         start_date = start_date, 
         end_date = end_date, 
@@ -144,9 +147,9 @@ def get_labor_range(labor):
     end = labor.iloc[-1].TimeOut
     return start, end
    
-@click.option('--name', prompt=True)
-def hello(name):
-    click.echo('Hello %s!' % name)
+
+def is_clocked_in(clocks):
+    return clocks.message.str.contains('|'.join(['clock-in', 'clock in'])).iloc[-1]
 
 @click.command()
 @click.version_option()
@@ -164,19 +167,28 @@ def hello(name):
 @click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
 @click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency, clock_in, clock_out, message):
-    if clock_in:
-        print("clocking in with message: {} ".format(message))
-    if clock_out:
-        print("clocking out with message: {} ".format(message))
-
+    work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
     if print_work:
-        work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
         print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])
         exit()
 
+    if clock_in:
+        if is_clocked_in(work):
+            print("You are still clocked in!")
+        else:
+            clock_message = "clock-in: {}".format(message)
+            print("clocking in with message: {} ".format(clock_message))
+    elif clock_out: # prevent clock in and out at the same time
+        clock_message = "clock-out: {}".format(message)
+        print("clocking out with message: {} ".format(clock_message))
+
+    elif clock_out: # prevent clock in and out at the same time
+        clock_message = "clock-out: {}".format(message)
+        print("clocking out with message: {} ".format(clock_message))
+
     if ignore is not None:
         ignore =  ignore.encode('ascii','ignore')
-    labor, earnings = get_report(gitdir, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
+    labor, earnings = get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
     start, end = get_labor_range(labor)
 
     if outfile is not None:
