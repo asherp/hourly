@@ -1,3 +1,6 @@
+
+# 2019-04-11 02:23:53.008806: clock-in
+
 # 2019-04-11 02:20:15.741056: clock-out: in/out testing
 
 # 2019-04-11 02:19:19.876705: clock-in: in/out testing
