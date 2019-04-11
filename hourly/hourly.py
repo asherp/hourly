@@ -41,7 +41,7 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_tim
         work = work.sort_index(ascending = ascending)
     if correct_times:
         work = adjust_time(work)
-    return work
+    return work, repo
 
 
 
@@ -149,7 +149,29 @@ def get_labor_range(labor):
    
 
 def is_clocked_in(clocks):
-    return clocks.message.str.contains('|'.join(['clock-in', 'clock in'])).iloc[-1]
+    return clocks.message.str.contains('|'.join(['clock-in', 'clock in']), case = False).iloc[-1]
+
+def is_clocked_out(clocks):
+    return clocks.message.str.contains('|'.join(['clock-out', 'clock out']), case = False).iloc[-1]
+
+
+def update_log(logfile, message):
+    try:
+        with open(logfile,'r') as contents:
+            save = contents.read()
+
+        with open(logfile,'w') as contents:
+            contents.write(message)
+            contents.write(save)
+    except:
+        with open(logfile,'w') as contents:
+            contents.write(message)
+
+def commit_log(repo, logfile, commit_message):
+    repo.index.add([logfile])
+    commit = repo.index.commit(commit_message)
+    return commit
+
 
 @click.command()
 @click.version_option()
@@ -166,8 +188,11 @@ def is_clocked_in(clocks):
 @click.option("-in",  "--clock-in", is_flag = True, type = str, default = False, help = "clock in to current repo")
 @click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
 @click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
-def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work, match_logs, wage, currency, clock_in, clock_out, message):
-    work = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
+@click.option("-log", "--logfile", default = "WorkLog.md", type = click.Path(), help = "File in which to log work messages")
+def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
+    print_work, match_logs, wage, currency, clock_in, clock_out, message,
+    logfile):
+    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
     if print_work:
         print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])
         exit()
@@ -176,24 +201,36 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, print_work
         if is_clocked_in(work):
             print("You are still clocked in!")
         else:
-            clock_message = "clock-in: {}".format(message)
-            print("clocking in with message: {} ".format(clock_message))
-    elif clock_out: # prevent clock in and out at the same time
-        clock_message = "clock-out: {}".format(message)
-        print("clocking out with message: {} ".format(clock_message))
+            if len(message) == 0:
+                commit_message = "clock-in"
+            else:
+                commit_message = "clock-in: {}".format(message)
+            log_message = "\n# {}: {}\n\n".format(pd.datetime.now(), commit_message)
+            print("clocking in with message: {} ".format(commit_message))
+            update_log(logfile, log_message)
+            commit = commit_log(repo, logfile, commit_message)
 
     elif clock_out: # prevent clock in and out at the same time
-        clock_message = "clock-out: {}".format(message)
-        print("clocking out with message: {} ".format(clock_message))
-
-    if ignore is not None:
-        ignore =  ignore.encode('ascii','ignore')
-    labor, earnings = get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
-    start, end = get_labor_range(labor)
-
-    if outfile is not None:
-        output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
-        print('writing to file {}'.format(output_file))
-        labor.to_csv(output_file)
+        if is_clocked_out(work):
+            print("You are already clocked out!")
+        else:
+            if len(message) == 0:
+                commit_message = "clock-out"
+            else:
+                commit_message = "clock-out: {}".format(message)
+            log_message = "# {}: {}\n".format(pd.datetime.now(), commit_message)
+            print("clocking out with message: {} ".format(commit_message))
+            update_log(logfile, log_message)
+            commit = commit_log(repo, logfile, commit_message)
     else:
-        print(labor)
+        if ignore is not None:
+            ignore =  ignore.encode('ascii','ignore')
+        labor, earnings = get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
+        start, end = get_labor_range(labor)
+
+        if outfile is not None:
+            output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
+            print('writing to file {}'.format(output_file))
+            labor.to_csv(output_file)
+        else:
+            print(labor)

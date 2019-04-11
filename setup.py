@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hourly",
-    version="0.0.8",
+    version="0.0.9",
     author="Asher Pembroke",
     author_email="apembroke@gmail.com",
     description="A simple hour tracker for git",
