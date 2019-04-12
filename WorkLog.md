@@ -1,3 +1,6 @@
+
+# 2019-04-12 17:53:58.904877: clock-in: payment options
+
 # 2019-04-12 15:45:54.653421: clock-out
 * determine why report sometimes shows negative time deltas
 
