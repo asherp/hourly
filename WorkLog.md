@@ -1,3 +1,5 @@
+# 2019-04-12 15:45:54.653421: clock-out
+* determine why report sometimes shows negative time deltas
 
 # 2019-04-12 15:41:12.003763: clock-in
 
