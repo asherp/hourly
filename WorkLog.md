@@ -1,3 +1,11 @@
+# 2019-04-13 02:43:19.905950: clock-out
+* Looking into payment automation
+
+* fixed an errant clock-in/out with hard reset:
+
+	git reset --hard 590804df784c45051c548eb84e930c1157d6acc1
+
+Where I used the last clock-out commit hash from 2019-04-12 18:04:27.744011
 
 # 2019-04-13 02:24:44.339725: clock-in: T-45m
 
