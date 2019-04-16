@@ -1,3 +1,7 @@
+# 2019-04-16 01:21:50.338638: clock-out
+
+
+* Looking into lightning payments https://github.com/ElementsProject/lightning-charge
 
 # 2019-04-16 00:01:09.069912: clock-in
 
