@@ -1,3 +1,13 @@
+# 2019-04-17 00:21:48.211640: clock-out
+
+* got c-lightning server running in container on windows 10
+* had to skip the -u `id -u` parameter, which means it runs as root
+* have to use docker-machine ip to get the appropriate ip for the windows container
+* got a few of the rest api commands to work, then ran into this:
+
+	Starting bitcoind... waiting for cookie... waiting for RPC... Error: Error: Disk space is low!
+
+* may need to delete ./data and start again?
 
 # 2019-04-16 23:06:17.688503: clock-in: researching payments
 
