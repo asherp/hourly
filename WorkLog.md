@@ -1,3 +1,6 @@
+
+# 2019-06-13 18:19:19.036767: clock-in
+
 # 2019-04-17 00:21:48.211640: clock-out
 
 * got c-lightning server running in container on windows 10
