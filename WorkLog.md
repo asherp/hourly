@@ -1,3 +1,6 @@
+# 2019-06-19 14:56:37.451578: clock-out: T-5m
+* Weasyprint looks like the easiest path to generating pdfs
+* Look at their [invoice](https://github.com/Kozea/WeasyPrint/tree/gh-pages/samples/invoice) example
 
 # 2019-06-19 14:32:23.261121: clock-in
 
