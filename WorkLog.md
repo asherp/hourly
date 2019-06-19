@@ -1,3 +1,6 @@
+
+# 2019-06-19 14:32:23.261121: clock-in
+
 # 2019-06-13 18:36:23.538048: clock-out
 * Looking at generating invoices in pdf
 
