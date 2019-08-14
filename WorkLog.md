@@ -1,3 +1,5 @@
+# 2019-08-13 22:40:45.276268: clock-out
+* bug: negative dt when listing work for one day
 
 # 2019-08-13 22:39:42.742055: clock-in
 
