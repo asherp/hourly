@@ -1,3 +1,6 @@
+
+# 2019-08-13 22:39:42.742055: clock-in
+
 # 2019-08-07 23:51:23.947759: clock-out: T-15m
 * upgrading to pyton 3.7
 * cleaned up output for when no labor is available
