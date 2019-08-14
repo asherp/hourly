@@ -1,3 +1,5 @@
+# 2019-08-14 00:30:48.962283: clock-out
+* failed to fix utc error when giving only start time
 
 # 2019-08-14 00:12:41.780463: clock-in: T-7m
 
