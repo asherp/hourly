@@ -1,3 +1,6 @@
+
+# 2019-08-14 00:12:41.780463: clock-in: T-7m
+
 # 2019-08-14 00:05:12.536012: clock-out
 * Testing new output for double clock in warning
 
