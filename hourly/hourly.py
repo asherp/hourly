@@ -4,6 +4,8 @@ import pandas as pd
 
 import click
 import warnings
+import dash
+import dash_table
 
 warnings.simplefilter("ignore")
 pd.set_option('display.max_rows', None)
@@ -66,7 +68,11 @@ def filter_dates(clocked, start_date, end_date):
         end_date = clocked.index[-1]
     else:
         end_date = pd.to_datetime(end_date)
-    clocked = clocked.loc[start_date:end_date]
+    try:
+        clocked = clocked.loc[start_date:end_date]
+    except:
+        print(clocked)
+        raise
     return clocked
 
 def get_labor(work, 
@@ -83,7 +89,8 @@ def get_labor(work,
     clocked = filter_dates(clocked, start_date, end_date)
 
     if verbose:
-        print('pay period: {} -> {}'.format(*clocked.index[[0,-1]]))
+        if len(clocked) >= 1:
+            print('pay period: {} -> {}'.format(*clocked.index[[0,-1]]))
    
     clock_in = commit_filter(clocked, ['clock-in', 'clock in'], case_sensitive = case_sensitive).reset_index()
     clock_in.rename(dict(time = 'TimeIn', message = 'LogIn'), 
@@ -124,23 +131,17 @@ def get_labor(work,
     else:
         return labor.drop('hash', axis = 1)
 
-def get_earnings(labor, wage = 80, currency = 'usd'):
+def get_hours_worked(labor):
     dt = labor.TimeDelta.sum()
     hours = dt.total_seconds()/3600.
     print("{0}, {1:.2f} hours worked".format(dt, round(hours,2)))
+    return hours
+
+
+def get_earnings(hours, wage, currency = ''):    
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
     return round(hours*wage,2) #usd
 
-def get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency):
-    # work = get_work_commits(gitdir)
-    labor = get_labor(work,
-        start_date = start_date, 
-        end_date = end_date, 
-        errant_clocks = errant_clocks, 
-        ignore = ignore, 
-        match_logs = match_logs)
-    earnings = get_earnings(labor, wage, currency)
-    return labor, earnings
 
 def get_labor_range(labor):
     start = labor.iloc[0].TimeIn
@@ -148,12 +149,20 @@ def get_labor_range(labor):
     return start, end
    
 
+
 def is_clocked_in(clocks):
-    return clocks.message.str.contains('|'.join(['clock-in', 'clock in']), case = False).iloc[-1]
+    last_in = clocks.message.str.contains('|'.join(['clock-in', 'clock in']), case = False).to_frame().iloc[-1]
+    if last_in.message == False:
+        return None
+    else:
+        return last_in.name
 
 def is_clocked_out(clocks):
-    return clocks.message.str.contains('|'.join(['clock-out', 'clock out']), case = False).iloc[-1]
-
+    last_out = clocks.message.str.contains('|'.join(['clock-out', 'clock out']), case = False).to_frame().iloc[-1]
+    if last_out.message == False:
+        return None
+    else:
+        return last_out.name
 
 def update_log(logfile, message):
     try:
@@ -183,23 +192,36 @@ def commit_log(repo, logfile, commit_message):
 @click.option('-i', '--ignore', default = None, type = str, help = 'Ignore sessions by keyword such as "pro bono"') #should provide multiple=True
 @click.option('-work', '--print-work', is_flag = True, help = 'print the work log and exit')
 @click.option('--match-logs', is_flag = True, default = False, help = 'raise an error if in/out logs do not match')
-@click.option('-w', '--wage', default = 80, type = float, help = 'wage to charge (in chosen currency)')
-@click.option('-c', '--currency', default = 'usd', type = str, help = 'Currency to print earnings')
+@click.option('-w', '--wage', default = None, type = float, help = 'wage to charge (in chosen currency)')
+@click.option('-c', '--currency', default = 'USD', type = str, help = 'Currency to print earnings')
 @click.option("-in",  "--clock-in", is_flag = True, type = str, default = False, help = "clock in to current repo")
 @click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
 @click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
 @click.option("-log", "--logfile", default = "WorkLog.md", type = click.Path(), help = "File in which to log work messages")
+@click.option('--gui/--no-gui', default=False)
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
     print_work, match_logs, wage, currency, clock_in, clock_out, message,
-    logfile):
+    logfile, gui):
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
+    if start_date is None:
+        start_date = work.index[0]
+    else:
+        start_date = pd.to_datetime(start_date)
+
+    if end_date is None:
+        end_date = work.index[-1]
+    else:
+        end_date = pd.to_datetime(end_date)
+
     if print_work:
-        print(work.loc[pd.to_datetime(start_date):pd.to_datetime(end_date)])
+        print(work.loc[start_date:end_date])
         exit()
 
     if clock_in:
-        if is_clocked_in(work):
+        last_in = is_clocked_in(work)
+        if last_in is not None:
             print("You are still clocked in!")
+            print("last clock in: {}, T-{}".format(last_in, pd.datetime.now(last_in.tzinfo) - last_in))
         else:
             if len(message) == 0:
                 commit_message = "clock-in"
@@ -211,8 +233,10 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
             commit = commit_log(repo, logfile, commit_message)
 
     elif clock_out: # prevent clock in and out at the same time
-        if is_clocked_out(work):
+        last_out = is_clocked_out(work)
+        if last_out is not None:
             print("You are already clocked out!")
+            print("last clock out: {}, T-{}".format(last_out, pd.datetime.now(last_out.tzinfo) - last_out))
         else:
             if len(message) == 0:
                 commit_message = "clock-out"
@@ -225,12 +249,41 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
     else:
         if ignore is not None:
             ignore =  ignore.encode('ascii','ignore')
-        labor, earnings = get_report(work, start_date, end_date, errant_clocks, ignore, match_logs, wage, currency)
-        start, end = get_labor_range(labor)
 
-        if outfile is not None:
-            output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
-            print('writing to file {}'.format(output_file))
-            labor.to_csv(output_file)
-        else:
+        labor = get_labor(work,
+            start_date = start_date, 
+            end_date = end_date, 
+            errant_clocks = errant_clocks, 
+            ignore = ignore, 
+            match_logs = match_logs)
+
+        if len(labor) > 0:
             print(labor)
+
+            hours_worked = get_hours_worked(labor)
+
+            if wage is not None:
+                earnings = get_earnings(hours_worked, wage, currency)
+
+            if outfile is not None:
+                start, end = get_labor_range(labor)
+                output_file = "{}-{}_to_{}.csv".format(outfile, start.strftime('%Y%m%d-%H%M%S'), end.strftime('%Y%m%d-%H%M%S'))
+                print('writing to file {}'.format(output_file))
+                labor.to_csv(output_file)
+        else:
+            print('No data for {} to {}'.format(start_date, end_date))
+
+    if gui:
+
+        app = dash.Dash(__name__)
+
+        labor['hours'] = labor.TimeDelta.map(lambda dt: round(dt.total_seconds()/3600.,2))
+        labor['TimeDelta'] = labor.TimeDelta.map(str)
+
+        app.layout = dash_table.DataTable(
+            id='table',
+            columns=[{"name": i, "id": i} for i in labor.columns],
+            data=labor.to_dict('records'),
+        )
+
+        app.run_server(debug = False)
