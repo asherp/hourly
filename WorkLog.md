@@ -1,13 +1,18 @@
+
+# 2019-08-14 00:03:57.681741: clock-in: T-1h22m
+
 # 2019-08-13 22:40:45.276268: clock-out
 * bug: negative dt when listing work for one day
+* UTC bug occurs when no end date is specified
+* removed default from wage option
+* Got table into gui
 
 # 2019-08-13 22:39:42.742055: clock-in
 
 # 2019-08-07 23:51:23.947759: clock-out: T-15m
-* upgrading to pyton 3.7
+* upgrading to python 3.7
 * cleaned up output for when no labor is available
 * prototyping gui
-
 * bug when date range covers different UTC offsets, which can occur during travel:
 
 2018-10-28 13:44:48-04:00                              clock in  c4e95f59dc0c8ce296a40300760ab6880...
