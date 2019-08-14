@@ -1,3 +1,5 @@
+# 2019-08-14 00:05:12.536012: clock-out
+* Testing new output for double clock in warning
 
 # 2019-08-14 00:04:16.778490: clock-in
 
