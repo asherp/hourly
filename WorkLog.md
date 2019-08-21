@@ -1,3 +1,5 @@
+# 2019-08-21 01:17:15.009128: clock-out: added plot options
+* add plot output
 
 # 2019-08-20 23:21:41.235199: clock-in
 

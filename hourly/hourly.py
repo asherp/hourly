@@ -6,6 +6,8 @@ import click
 import warnings
 import dash
 import dash_table
+import plotly.graph_objs as go
+import plotly.offline as po
 
 warnings.simplefilter("ignore")
 pd.set_option('display.max_rows', None)
@@ -181,6 +183,13 @@ def commit_log(repo, logfile, commit_message):
     commit = repo.index.commit(commit_message)
     return commit
 
+def plot_labor(labor, freq):
+    tdelta = labor.set_index('TimeIn').TimeDelta.groupby(pd.Grouper(freq = freq)).sum()
+
+    tdelta_trace = go.Bar(x = pd.Series(tdelta.index), 
+                          y = [td.total_seconds()/3600 for td in tdelta],
+                         text = [str(td) for td in tdelta])
+    return tdelta_trace
 
 @click.command()
 @click.version_option()
@@ -198,10 +207,11 @@ def commit_log(repo, logfile, commit_message):
 @click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
 @click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
 @click.option("-log", "--logfile", default = "WorkLog.md", type = click.Path(), help = "File in which to log work messages")
-@click.option('--gui/--no-gui', default=False)
+@click.option('--plot/--no-plot', default=False)
+@click.option("--freq", default = '7 d', type = str, help = "plot frequency")
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
     print_work, match_logs, wage, currency, clock_in, clock_out, message,
-    logfile, gui):
+    logfile, plot, freq):
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
     if start_date is None:
         start_date = work.index[0]
@@ -273,17 +283,19 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
         else:
             print('No data for {} to {}'.format(start_date, end_date))
 
-    if gui:
+    if plot:
 
-        app = dash.Dash(__name__)
+        po.plot(go.Figure(plot_labor(labor, freq)))
 
-        labor['hours'] = labor.TimeDelta.map(lambda dt: round(dt.total_seconds()/3600.,2))
-        labor['TimeDelta'] = labor.TimeDelta.map(str)
+        # app = dash.Dash(__name__)
 
-        app.layout = dash_table.DataTable(
-            id='table',
-            columns=[{"name": i, "id": i} for i in labor.columns],
-            data=labor.to_dict('records'),
-        )
+        # labor['hours'] = labor.TimeDelta.map(lambda dt: round(dt.total_seconds()/3600.,2))
+        # labor['TimeDelta'] = labor.TimeDelta.map(str)
 
-        app.run_server(debug = False)
+        # app.layout = dash_table.DataTable(
+        #     id='table',
+        #     columns=[{"name": i, "id": i} for i in labor.columns],
+        #     data=labor.to_dict('records'),
+        # )
+
+        # app.run_server(debug = False)
