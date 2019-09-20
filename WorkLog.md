@@ -1,3 +1,6 @@
+
+# 2019-09-19 20:33:26.659734: clock-in
+
 # 2019-09-19 20:25:52.236443: clock-out
 * testing on pysat repo
 
