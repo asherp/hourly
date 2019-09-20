@@ -28,7 +28,7 @@ def adjust_time(work, dt_str = 'T-'):
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_times = True):
+def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
     """Retrives work commits from repo"""
     repo = git.Repo(repo_addr)
 
@@ -43,8 +43,6 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', correct_tim
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         work = work.sort_index(ascending = ascending)
-    if correct_times:
-        work = adjust_time(work)
     return work, repo
 
 
@@ -54,7 +52,7 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
         if type(filters) == str:
             return commits[~commits[column].str.contains(filters, case = case_sensitive)]
         else:
-            return commits[~commits[column].str.contains('|'.join(filters), case = case_sensitive)]
+            return commits[~commits[column].str.contains('|'.join(str(f) for f in filters), case = case_sensitive)]
     else:
         if type(filters) == str:
             return commits[commits[column].str.contains(filters, case = case_sensitive)]
@@ -89,6 +87,7 @@ def get_labor(work,
             match_logs = True):
     clocked = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
     clocked = filter_dates(clocked, start_date, end_date)
+    clocked = adjust_time(clocked)
 
     if verbose:
         if len(clocked) >= 1:
@@ -212,7 +211,11 @@ def plot_labor(labor, freq):
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
     print_work, match_logs, wage, currency, clock_in, clock_out, message,
     logfile, plot, freq):
-    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', correct_times = True)
+
+    if ignore is not None:
+        ignore =  ignore.encode('ascii','ignore')
+
+    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
     if start_date is None:
         start_date = work.index[0]
     else:
@@ -257,8 +260,6 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
             update_log(logfile, log_message)
             commit = commit_log(repo, logfile, commit_message)
     else:
-        if ignore is not None:
-            ignore =  ignore.encode('ascii','ignore')
 
         labor = get_labor(work,
             start_date = start_date, 
