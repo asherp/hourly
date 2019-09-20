@@ -1,3 +1,5 @@
+# 2019-09-19 20:43:24.455285: clock-out
+* pysat contains commits with ROCSAT-1, which breaks time adjustment
 
 # 2019-09-19 20:33:26.659734: clock-in
 
