@@ -1,3 +1,6 @@
+
+# 2019-10-23 21:10:25.808038: clock-in
+
 # 2019-09-19 21:47:37.949509: clock-out
 
 * Moved time adjustment so it only applies at labor calculation, in clock commits
