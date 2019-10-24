@@ -182,12 +182,13 @@ def commit_log(repo, logfile, commit_message):
     commit = repo.index.commit(commit_message)
     return commit
 
-def plot_labor(labor, freq):
+def plot_labor(labor, freq, name = None):
     tdelta = labor.set_index('TimeIn').TimeDelta.groupby(pd.Grouper(freq = freq)).sum()
 
     tdelta_trace = go.Bar(x = pd.Series(tdelta.index), 
                           y = [td.total_seconds()/3600 for td in tdelta],
-                         text = [str(td) for td in tdelta])
+                          text = [str(td) for td in tdelta],
+                          name = name)
     return tdelta_trace
 
 @click.command()
