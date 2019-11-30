@@ -1,3 +1,6 @@
+
+### 2019-11-30 15:25:51.433329: clock-in
+
 ### 2019-11-30 15:07:32.727339: clock-out
 * Testing header depth option
 
@@ -62,12 +65,14 @@
 * prototyping gui
 * bug when date range covers different UTC offsets, which can occur during travel:
 
+```console
 2018-10-28 13:44:48-04:00                              clock in  c4e95f59dc0c8ce296a40300760ab6880...
 2018-10-28 13:56:35-04:00                             clock out  f5200e718c062e828d436506286fd05e5...
 2019-02-25 10:19:10-05:00                        clock in T-1hr  d7add63b4d2e3e1ca1423296aaed25d9c...
 2019-02-25 12:49:51-05:00                        clock out T-5m  acfb8596317786e38177345aa25310980...
 2019-03-10 22:57:58-04:00                              clock in  217ad6169fbd10efbb1e497a6cc6e4553...
 2019-03-11 00:05:42-04:00  clock out - integrating with read...  297a561d5d7c57ecb641fa841d86dc5a6...
+```
 
 ### 2019-08-07 22:01:03.125488: clock-in
 
