@@ -209,9 +209,10 @@ def plot_labor(labor, freq, name = None):
 @click.option("-log", "--logfile", default = "WorkLog.md", type = click.Path(), help = "File in which to log work messages")
 @click.option('--plot/--no-plot', default=False)
 @click.option("--freq", default = '7 d', type = str, help = "plot frequency")
+@click.option("-d", "--depth", default = 1, type = int, help = "WorkLog header depth")
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
     print_work, match_logs, wage, currency, clock_in, clock_out, message,
-    logfile, plot, freq):
+    logfile, plot, freq, depth):
 
     if ignore is not None:
         ignore =  ignore.encode('ascii','ignore')
@@ -231,6 +232,8 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
         print(work.loc[start_date:end_date])
         exit()
 
+    header = '#'*depth
+
     if clock_in:
         last_in = is_clocked_in(work)
         if last_in is not None:
@@ -241,7 +244,7 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
                 commit_message = "clock-in"
             else:
                 commit_message = "clock-in: {}".format(message)
-            log_message = "\n# {}: {}\n\n".format(pd.datetime.now(), commit_message)
+            log_message = "\n{} {}: {}\n\n".format(header, pd.datetime.now(), commit_message)
             print("clocking in with message: {} ".format(commit_message))
             update_log(logfile, log_message)
             commit = commit_log(repo, logfile, commit_message)
@@ -256,7 +259,7 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
                 commit_message = "clock-out"
             else:
                 commit_message = "clock-out: {}".format(message)
-            log_message = "# {}: {}\n".format(pd.datetime.now(), commit_message)
+            log_message = "{} {}: {}\n".format(header, pd.datetime.now(), commit_message)
             print("clocking out with message: {} ".format(commit_message))
             update_log(logfile, log_message)
             commit = commit_log(repo, logfile, commit_message)

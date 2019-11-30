@@ -3,6 +3,7 @@ site_name: Hourly
 nav:
   - Home: index.md
   - Tutorial: README.ipynb
+  - WorkLog.md: WorkLog.md
 
 theme: readthedocs
 
@@ -15,3 +16,4 @@ plugins:
 markdown_extensions:
   - codehilite
   - admonition
+  - markdown_include.include

@@ -1,7 +1,11 @@
+### 2019-11-30 15:07:32.727339: clock-out
+* Testing header depth option
 
 ### 2019-11-30 15:05:34.680440: clock-in
 
-# 2019-11-30 14:58:11.651795: clock-out
+### 2019-11-30 14:58:11.651795: clock-out
+* updating docs
+* added worklog header depth option 
 
 ### 2019-11-30 13:53:43.831968: clock-in
 
