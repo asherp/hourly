@@ -1,3 +1,6 @@
+
+### 2019-12-01 12:50:42.892528: clock-in
+
 ### 2019-11-30 16:19:45.897554: clock-out
 * embedding work graph as iframe
 * changing `--plot` option to specify path/to/work-graph.html
