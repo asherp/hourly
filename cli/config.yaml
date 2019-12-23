@@ -1,0 +1,44 @@
+config_path: .
+
+repo:
+  gitdir: .
+  start_date: null 
+  end_date: null 
+  errant_clocks: null # list of commit hashes to skip
+  ignore: null # ignore work containing string, ie 'pro bono'
+  match_logs: False # should all clock ins be paired with clock outs
+
+report:
+  type: timesheet # 'work' will print work and exit
+  outfile: null # csv file to save report to
+  wage: null # numerical wage to multiply by hours
+  currency: null # string currency to display earnings
+
+
+commit:
+  clock: null # 'in' will update WorkLog.md and commit with message "clock-in"
+  tminus: null # '15m' will append 'T-15m' to commit message (ignored if clock is null)
+  message: null # 'my message' will append 'my message' to commit message
+
+work_log: 
+  filename: WorkLog.md
+  header_depth: 1 # determines markdown header size
+
+plot: # set to n
+  frequency: '1 d' # start small - experienced users can override
+  plotly: # plotly keywords
+    show_link: False
+    link_text: 'Export to plot.ly' 
+    validate: True
+    output_type: file
+    include_plotlyjs: 'cdn'
+    filename: hourly-work.html
+    auto_open: True
+    image: Null
+    image_filename: plot_image
+    # image_width: 800
+    # image_height: 600
+    config: Null
+    include_mathjax: 'cdn'
+    auto_play: True
+    animation_opts: Null
