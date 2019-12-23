@@ -36,9 +36,14 @@ markdown_extensions:
   - markdown_include.include
 ```
 
-For example, we can use this method to insert this site's work session details below:
+For example, we can use this method to insert this site's work session details below.
 
 ## Hourly's WorkLog
 
-{! WorkLog.md !}
+The work sessions for the hourly project are documented below. 
+ 
+!!! note
+    We have used -d 3 option for clocking in/out so that H3 headers are generated
+
+{! WorkLog.md !} 
 

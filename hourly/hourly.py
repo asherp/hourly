@@ -185,10 +185,13 @@ def commit_log(repo, logfile, commit_message):
 def plot_labor(labor, freq, name = None):
     tdelta = labor.set_index('TimeIn').TimeDelta.groupby(pd.Grouper(freq = freq)).sum()
 
-    tdelta_trace = go.Bar(x = pd.Series(tdelta.index), 
-                          y = [td.total_seconds()/3600 for td in tdelta],
-                          text = [str(td) for td in tdelta],
-                          name = name)
+    tdelta_trace = go.Scatter(
+        x = pd.Series(tdelta.index),
+        y = [td.total_seconds()/3600 for td in tdelta],
+        mode='lines',
+        stackgroup = 'one',
+        text = [str(td) for td in tdelta],
+        name = name)
     return tdelta_trace
 
 @click.command()
@@ -207,12 +210,13 @@ def plot_labor(labor, freq, name = None):
 @click.option("-out", "--clock-out", is_flag = True, type = str, default = False, help = "clock out of current repo")
 @click.option("-m", "--message", default = '', type = str, help = "clock in/out message")
 @click.option("-log", "--logfile", default = "WorkLog.md", type = click.Path(), help = "File in which to log work messages")
-@click.option('--plot/--no-plot', default=False)
+@click.option("--plot", default = None)
 @click.option("--freq", default = '7 d', type = str, help = "plot frequency")
 @click.option("-d", "--depth", default = 1, type = int, help = "WorkLog header depth")
+@click.option("--include_plotlyjs", default = True, help = "embeds plotly in graph for offline use (default) or cdn for online")
 def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore, 
     print_work, match_logs, wage, currency, clock_in, clock_out, message,
-    logfile, plot, freq, depth):
+    logfile, plot, freq, depth, include_plotlyjs):
 
     if ignore is not None:
         ignore =  ignore.encode('ascii','ignore')
@@ -288,9 +292,18 @@ def cli(gitdir, start_date, end_date, outfile, errant_clocks, ignore,
         else:
             print('No data for {} to {}'.format(start_date, end_date))
 
-    if plot:
-
-        po.plot(go.Figure(plot_labor(labor, freq)))
+    if plot is not None:
+        plot_filename = plot
+        hours_worked = get_hours_worked(labor)
+        plot_title = "hours commited: {0:.2f}".format(hours_worked)
+        fig = go.Figure(plot_labor(labor, freq))
+        fig.update_layout(
+            title = plot_title, 
+            margin = dict(pad = 0),
+            yaxis = dict(title_text = 'hours per {}'.format(freq)))
+        po.plot(fig, 
+            filename = plot_filename, 
+            include_plotlyjs = include_plotlyjs)
 
         # app = dash.Dash(__name__)
 
