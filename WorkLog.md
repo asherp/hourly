@@ -1,3 +1,6 @@
+
+### 2019-12-23 12:06:57.928740: clock-in: T-30m
+
 ### 2019-12-01 13:21:31.816735: clock-out
 * trying out different plot options
 * looking into configuration setup
