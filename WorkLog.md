@@ -1,7 +1,11 @@
+# 2019-12-26 13:05:03.226272: clock-out
+* working on refactoring cli with new config
+* adding ability to commit messages without clocking
+* user should not have to directly edit work log
 
-# 2019-12-26 11:41:13.289307: clock-in
+### 2019-12-26 11:41:13.289307: clock-in
 
-# 2019-12-23 13:42:32.292273: clock-out
+### 2019-12-23 13:42:32.292273: clock-out
 * switching to hydra this changes the cli from `hourly -in` to `hourly commit.clock=in`
 * finished up the first iteration of the cli spec!
 
