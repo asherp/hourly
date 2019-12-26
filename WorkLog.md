@@ -1,3 +1,6 @@
+
+# 2019-12-26 11:41:13.289307: clock-in
+
 # 2019-12-23 13:42:32.292273: clock-out
 * switching to hydra this changes the cli from `hourly -in` to `hourly commit.clock=in`
 * finished up the first iteration of the cli spec!
