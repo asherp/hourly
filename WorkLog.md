@@ -1,4 +1,7 @@
-# 2019-12-26 13:05:03.226272: clock-out
+
+### 2019-12-29 16:34:02.562291: clock-in
+
+### 2019-12-26 13:05:03.226272: clock-out
 * working on refactoring cli with new config
 * adding ability to commit messages without clocking
 * user should not have to directly edit work log
