@@ -1,3 +1,6 @@
+
+### 2019-12-30 15:22:44.136505: clock-in
+
 ### 2019-12-30 15:22:18.590328: clock-out
 
 * documentation and hydra code push
