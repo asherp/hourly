@@ -1,3 +1,6 @@
+
+# 2019-12-29 19:42:03.967359: clock-in
+
 # 2019-12-29 18:02:55.046177: clock-out
 * developing cli with hydra
 
