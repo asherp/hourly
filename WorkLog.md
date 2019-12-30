@@ -1,7 +1,24 @@
+# 2019-12-29 22:28:23.663515: clock-out
 
-# 2019-12-29 19:42:03.967359: clock-in
+switching from click to hydra involves some caveats. 
+I really dislike the practice of deprecation, which often breaks things that didn't need fixing. 
+My goal is to minimize that pain for users of the old app. To that end:
 
-# 2019-12-29 18:02:55.046177: clock-out
+* keep existing cli while in development to ensure behavior can be replicated
+* create a unique (temporary?) name for new app (e.g. myapp-hydra or myapp-cli)
+* replace common flags with separate cli tools. For instance, `myapp -myflag` becomes `myapp-myflag`,
+where `myapp-myflag` wraps the interface `myapp-cli myflag=true`
+
+This last one means there is actually one *less* character to write.
+
+* added dictConfig_to_dict function to recursively construct nested dict
+* pandas.set_option takes names like `display.max_colwidth`
+* got hourly-in, hourly-out functional
+* not sure how to make command-line inputs override `config_override` setting
+
+### 2019-12-29 19:42:03.967359: clock-in
+
+### 2019-12-29 18:02:55.046177: clock-out
 * developing cli with hydra
 
 ### 2019-12-29 16:34:02.562291: clock-in
