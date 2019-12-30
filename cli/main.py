@@ -189,7 +189,7 @@ def run(cfg):
         # include plotly plot kwargs
         div = po.plot(fig,
             **dictConfig_to_dict(cfg.vis.plotly.plot))
-        if div is not None:
+        if cfg.vis.plotly.plot.output_type.lower() == 'div':
             with open(cfg.vis.plotly.plot.filename, 'w') as div_output:
                 div_output.write(div)
                 div_output.write('\n')
@@ -204,11 +204,11 @@ def entry():
 
 @hydra.main(config_path="hourly-config.yaml")
 def cli_in(cfg):
+    cfg = config_override(cfg)
     cfg.commit.clock = 'in'
     cfg.vis = None
     cfg.report.work = False
     cfg.report.timesheet = False
-    cfg = config_override(cfg)
     run(cfg)
 
 
@@ -218,11 +218,11 @@ def hourly_in():
 
 @hydra.main(config_path="hourly-config.yaml")
 def cli_out(cfg):
+    cfg = config_override(cfg)
     cfg.commit.clock = 'out'
     cfg.vis = None
     cfg.report.work = False
     cfg.report.timesheet = False
-    cfg = config_override(cfg)
     run(cfg)
 
 def hourly_out():

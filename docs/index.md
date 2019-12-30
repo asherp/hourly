@@ -1,11 +1,27 @@
 {! README.md !}
 
-
 # Visualization
 
-We can generate a graph of work committed to the hourly project:
-
-```console
-	hourly -s 2018-10-21  --ignore "pro bono" -e "Dec 1, 2019" --plot docs/hourly-graph.html --include_plotlyjs cdn
+The git repo for hourly has a custom configuration that allows us to embed
+the work hours as a graph in the mkdocs site:
+ 
+```yaml
+{! hourly-config.yaml !}
 ```
-<iframe src="hourly-graph.html" height="400" width="700"></iframe>
+
+If we run hourly from its own git repo, the graph div gets stored in
+`outputs/<date>/<time>/hourly-work.html`. 
+
+We embed using the `markdown-include` extension in `mkdocs.yml`:
+
+```yaml
+{! mkdocs.yml !}
+```
+
+And then add the following in our site page:
+
+\{! outputs/2019-12-30/13-57-17/hourly-work.html !\}
+
+Which embeds the graph below:
+
+{! outputs/2019-12-30/13-57-17/hourly-work.html !}
