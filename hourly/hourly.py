@@ -110,12 +110,13 @@ def get_labor(work,
             raise ValueError("In/Out logs do not match: clock ins:{}, clock outs:{}".format(len(clock_in), len(clock_out)))
     else:
         if len(clock_in) == len(clock_out) + 1:
-            clock_in.drop(clock_in.tail(1).index,inplace=True) # drop last rows
+            clock_in.drop(clock_in.tail(1).index, inplace=True) # drop last rows
 
     
     labor = pd.concat([clock_in, clock_out], axis = 1)
     labor.dropna(inplace=True)
     labor = labor.assign(TimeDelta = labor.TimeOut - labor.TimeIn)
+    labor = labor.assign(Hours = labor['TimeDelta'].apply(lambda x: x.total_seconds()/3600.))
     
     if ignore is not None:
         if verbose:
@@ -133,15 +134,12 @@ def get_labor(work,
         return labor.drop('hash', axis = 1)
 
 def get_hours_worked(labor):
-    dt = labor.TimeDelta.sum()
-    hours = dt.total_seconds()/3600.
-    print("{0}, {1:.2f} hours worked".format(dt, round(hours,2)))
-    return hours
+    return labor.Hours.sum()
 
 
 def get_earnings(hours, wage, currency = ''):    
     print("{0:.2f} {1}".format(round(hours*wage,2), currency))
-    return round(hours*wage,2) #usd
+    return round(hours*wage,2) 
 
 
 def get_labor_range(labor):

@@ -2,13 +2,13 @@
 import pandas as pd
 from hourly import get_work_commits, is_clocked_in, is_clocked_out, update_log, commit_log, get_labor
 from hourly import get_hours_worked, get_earnings, get_labor_range
+from hourly import plot_labor
 import plotly.graph_objs as go
 import plotly.offline as po
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, dictconfig
 import hydra
 from os import path
-
-
+import sys
 
     
 def commit_(repo, commit_message, logfile = None):
@@ -23,18 +23,19 @@ def process_commit(cfg, work, repo):
     If only a message is supplied, commits without clocking in/out
     """
 
-    logfile = cfg.work_log.filename
+
     header_depth = '#'*cfg.work_log.header_depth
 
     commit_message = cfg.commit.message or ''
+    log_message = ''
 
     if len(commit_message) > 0:
-        log_message = '\n{} {}'.format(cfg.work_log.bullet, commit_message)
+        log_message = '{} {}\n'.format(cfg.work_log.bullet, commit_message)
 
     if cfg.commit.clock is not None:
         tminus = cfg.commit.tminus or ''
         if len(tminus) != 0:
-            commit_message = "{} {}".format(tminus, commit_message)
+            commit_message = "T-{} {}".format(tminus.strip('T-'), commit_message)
 
         if cfg.commit.clock.lower() == 'in':
             last_in = is_clocked_in(work)
@@ -42,11 +43,12 @@ def process_commit(cfg, work, repo):
                 print("You are still clocked in!")
                 print("last clock in: {}, T-{}".format(last_in, 
                     pd.datetime.now(last_in.tzinfo) - last_in))
+                sys.exit()
             else:
-                if len(message) == 0:
+                if len(commit_message) == 0:
                     commit_message = "clock-in"
                 else:
-                    commit_message = "clock-in: {}".format(message)
+                    commit_message = "clock-in: {}".format(commit_message)
                 log_message = "\n{} {}: {}\n\n".format(
                     header_depth, 
                     pd.datetime.now(), 
@@ -59,12 +61,13 @@ def process_commit(cfg, work, repo):
                 print("You already clocked out!")
                 print("last clock out: {}, T-{}".format(last_out,
                     pd.datetime.now(last_out.tzinfo) - last_out))
+                sys.exit()
             else:
-                if len(message) == 0:
+                if len(commit_message) == 0:
                     commit_message = "clock-out"
                 else:
-                    commit_message = "clock-out: {}".format(message)
-                log_message = "{} {}: {}\n".format(
+                    commit_message = "clock-out: {}".format(commit_message)
+                log_message = "{} {}: {}\n\n".format(
                     header_depth,
                     pd.datetime.now(),
                     commit_message)
@@ -73,10 +76,29 @@ def process_commit(cfg, work, repo):
             raise IOError("unrecocgnized clock value: {}".format(cfg.commit.clock))
 
 
-    if len(message) > 0:
+    logfile = hydra.utils.to_absolute_path(cfg.work_log.filename)
+
+    if len(log_message) > 0:
         update_log(logfile, log_message)
         return commit_(repo, commit_message, logfile)
 
+def flatten_dict(d, sep = '.'):
+    '''flattens a dictionary into list of 
+    
+    courtesy of MYGz https://stackoverflow.com/a/41801708
+    returns [{k.sub_key:v},...]
+    '''
+    
+    return pd.io.json.json_normalize(d, sep=sep).to_dict(orient='records')[0]
+
+def dictConfig_to_dict(om):
+    if type(om) == dictconfig.DictConfig:
+        new_dict = {}
+        for k,v in om.items():
+            new_dict[k] = dictConfig_to_dict(v)
+        return new_dict
+    else:
+        return om
 
 def config_override(cfg):
     """Overrides with user-supplied configuration
@@ -92,9 +114,8 @@ def config_override(cfg):
         cfg = OmegaConf.merge(cfg, override_conf)
     return cfg
 
-@hydra.main(config_path="hourly-config.yaml")
-def main(cfg):
-    cfg = config_override(cfg)
+
+def run(cfg):
     if cfg.repo.ignore is not None:
         ignore =  cfg.repo.ignore.encode('ascii','ignore')
 
@@ -110,6 +131,11 @@ def main(cfg):
         end_date = work.index[-1]
     else:
         end_date = pd.to_datetime(cfg.repo.end_date)
+
+    if cfg.report.pandas is not None:
+        pd_opts = flatten_dict(dictConfig_to_dict(cfg.report.pandas)) 
+        for k,v in pd_opts.items():
+            pd.set_option(k,v)
 
     if cfg.report.work:
         print(work.loc[start_date:end_date])
@@ -131,6 +157,9 @@ def main(cfg):
             print(labor)
 
             hours_worked = get_hours_worked(labor)
+            dt = labor.TimeDelta.sum()
+            print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
+
 
             if cfg.report.wage is not None:
                 earnings = get_earnings(hours_worked, cfg.report.wage, cfg.report.currency)
@@ -149,21 +178,55 @@ def main(cfg):
     if cfg.vis is not None:
         hours_worked = get_hours_worked(labor)
         plot_title = "hours commited: {0:.2f}".format(hours_worked)
-        fig = go.Figure(plot_labor(labor, freq))
+        fig = go.Figure(plot_labor(labor, cfg.vis.frequency))
         fig.update_layout(
             title = plot_title, 
-            yaxis = dict(title_text = 'hours per {}'.format(freq)))
+            yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
 
         # override figure with plotly figure kwargs
-        fig.update_layout(**cfg.vis.plotly.figure) 
+        fig.update_layout(**dictConfig_to_dict(cfg.vis.plotly.figure)) 
 
         # include plotly plot kwargs
-        po.plot(fig,
-            **cfg.vis.plotly.plot)
+        div = po.plot(fig,
+            **dictConfig_to_dict(cfg.vis.plotly.plot))
+        if div is not None:
+            with open(cfg.vis.plotly.plot.filename, 'w') as div_output:
+                div_output.write(div)
+                div_output.write('\n')
 
+@hydra.main(config_path="hourly-config.yaml")
+def main(cfg):
+    cfg = config_override(cfg)
+    run(cfg)
 
 def entry():
     main()
+
+@hydra.main(config_path="hourly-config.yaml")
+def cli_in(cfg):
+    cfg.commit.clock = 'in'
+    cfg.vis = None
+    cfg.report.work = False
+    cfg.report.timesheet = False
+    cfg = config_override(cfg)
+    run(cfg)
+
+
+def hourly_in():
+    cli_in()
+
+
+@hydra.main(config_path="hourly-config.yaml")
+def cli_out(cfg):
+    cfg.commit.clock = 'out'
+    cfg.vis = None
+    cfg.report.work = False
+    cfg.report.timesheet = False
+    cfg = config_override(cfg)
+    run(cfg)
+
+def hourly_out():
+    cli_out()
 
 
 if __name__ == "__main__":

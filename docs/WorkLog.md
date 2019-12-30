@@ -1,6 +1,6 @@
 # WorkLog.md
 
-The `hourly` command line utility will update the top-level `WorkLog.md` file when you clock in/out of a project, inserting a clock in/out header with the current time stamp at the top of the file. This file may be edited to add details about the current work sessions. The `WorkLog.md` file serves a dual purpose:
+The `hourly` command line utility will update the top-level `WorkLog.md` file when you clock in/out of a project, inserting a clock in/out header with the current time stamp at the top of the file. This file may be edited to add details about the current work session. The `WorkLog.md` file serves a dual purpose:
 
 1. It provides a human-readable account of work session details
 2. It ensures there is always a file to commit against
@@ -9,9 +9,10 @@ This way work sessions can be documented even if there are no committed code cha
 
 ### Collaborative Development
 
-While simple and convenient for solo projects, there may be merge conflicts if multiple people are updating the same WorkLog. There are two ways to work around this:
+While simple and convenient for solo projects, there may be merge conflicts if multiple people are updating the same WorkLog. 
+There are at least two ways to work around this:
 
-1. Use the `-log` option to specify an alternate log file (e.g. `MyWorkLog.md`) in which to store your session details.
+1. Use the `work_log.filename` option to specify an alternate log file (e.g. `MyWorkLog.md`) in which to store your session details.
 2. Delete your `WorkLog.md` before merging. 
 
 !!! note
@@ -43,7 +44,7 @@ For example, we can use this method to insert this site's work session details b
 The work sessions for the hourly project are documented below. 
  
 !!! note
-    We have used -d 3 option for clocking in/out so that H3 headers are generated
+    We have used `work_log.header_depth=3` option for clocking in/out so that H3 headers are generated
 
 {! WorkLog.md !} 
 

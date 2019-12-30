@@ -2,10 +2,10 @@ site_name: Hourly
 
 nav:
   - Home: index.md
-  - Tutorial: README.ipynb
   - WorkLog.md: WorkLog.md
+  - API: README.ipynb
 
-theme: readthedocs
+theme: material
 
 use_directory_urls: false
 
@@ -19,3 +19,4 @@ markdown_extensions:
   - codehilite
   - admonition
   - markdown_include.include
+

@@ -14,6 +14,12 @@ report:
   outfile: null # csv file to save report to
   wage: null # numerical wage to multiply by hours
   currency: '' # string currency to display earnings
+  pandas:
+    display:
+      max_rows: null
+      max_columns: 10
+      max_colwidth: 64
+      width: 600
 
 
 commit:
@@ -48,3 +54,38 @@ vis: # set to null to prevent plotting
       include_mathjax: 'cdn'
       auto_play: True
       animation_opts: Null
+
+hydra:
+  help:
+    # App name, override to match the name your app is known by
+    app_name: hourly
+    # Help header, customize to describe your app to your users
+    header: |
+      A simple hour tracker for git projects
+
+      This application helps users clock in and out of git repos,
+      as well as generate timesheets for invoicing.
+      
+      Configure hourly to ignore commits by keyword or hashes
+    footer: |
+      Powered by Hydra (https://hydra.cc)
+      Use --hydra-help to view Hydra specific help
+    # Basic Hydra flags:
+    #   $FLAGS_HELP
+    #
+    # Config groups, choose one of:
+    #   $APP_CONFIG_GROUPS: All config groups that does not start with hydra/.
+    #   $HYDRA_CONFIG_GROUPS: All the Hydra config groups (starts with hydra/)
+    #
+    # Configuration generated with overrides:
+    #   $CONFIG : Generated config
+    #
+    template: |
+      ${hydra.help.header}
+      == Configuration groups ==
+      Compose your configuration from those groups (group=option)
+      $APP_CONFIG_GROUPS
+      == Config ==
+      Override anything in the config (foo.bar=value)
+      $CONFIG
+      ${hydra.help.footer}

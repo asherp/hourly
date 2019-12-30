@@ -1,7 +1,10 @@
+* documentation and hydra code push
+* cleaned up output for `clock-in` and `clock-out` messages
+* updated documentation site to reflect move to hydra
 
-# 2019-12-30 12:17:38.426420: clock-in
+### 2019-12-30 12:17:38.426420: clock-in
 
-# 2019-12-29 22:28:23.663515: clock-out
+### 2019-12-29 22:28:23.663515: clock-out
 
 switching from click to hydra involves some caveats. 
 I really dislike the practice of deprecation, which often breaks things that didn't need fixing. 
