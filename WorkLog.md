@@ -1,3 +1,6 @@
+
+# 2019-12-30 12:17:38.426420: clock-in
+
 # 2019-12-29 22:28:23.663515: clock-out
 
 switching from click to hydra involves some caveats. 
