@@ -4,6 +4,7 @@ nav:
   - Home: index.md
   - WorkLog.md: WorkLog.md
   - API: README.ipynb
+  - Author's notes: about.md
 
 theme: material
 
