@@ -1,3 +1,10 @@
+### 2020-01-01 13:52:29.717923: clock-out
+
+* adding ability to clock in multiple users
+* check which email address is being used to clock in/out.
+
+* `git config user.email` can be used to check which email is configured for the current repo
+* can get name or email from author
 
 ### 2020-01-01 12:25:59.286809: clock-in
 
