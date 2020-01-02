@@ -1,3 +1,6 @@
+
+### 2020-01-02 14:42:06.286717: clock-in
+
 ### 2020-01-01 13:52:29.717923: clock-out
 
 * adding ability to clock in multiple users
