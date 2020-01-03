@@ -101,10 +101,14 @@ Compose your configuration from those groups (group=option)
 Override anything in the config (foo.bar=value)
 commit:
   clock: null
+  identity:
+  - name
+  - email
   message: ''
   tminus: null
 config_override: hourly-config.yaml
 repo:
+  case_sensitive: false
   end_date: null
   errant_clocks: []
   gitdir: .
@@ -113,7 +117,7 @@ repo:
   start_date: null
 report:
   currency: ''
-  outfile: null
+  filename: null
   pandas:
     display:
       max_columns: 10
