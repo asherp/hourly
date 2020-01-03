@@ -1,3 +1,4 @@
+* updating graph
 ### 2020-01-03 14:28:45.356496: clock-out
 
 * addressing helpful hydra hints from Omry
