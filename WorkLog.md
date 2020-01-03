@@ -1,3 +1,6 @@
+
+### 2020-01-03 13:52:35.768769: clock-in
+
 ### 2020-01-02 18:53:49.974457: clock-out
 
 * added ability to group timesheets by name or email or both
