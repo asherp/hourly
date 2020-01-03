@@ -158,6 +158,16 @@ Use --hydra-help to view Hydra specific help
 <br>
 </details>
 
+<details>
+<summary>
+Hourly's default configuration including comments can be seen here.
+</summary>
+
+```yaml
+{! cli/hourly-config.yaml !}
+```
+</details>
+
 Each of these can be overridden at runtime. For example,
 
 `hourly commit.clock=in vis=null report.timesheet=False`
@@ -169,8 +179,8 @@ This will update the WorkLog.md file and commit a clock-in message without visua
 
 But if we want to override hourly's default without typing it in each time,
 we can specify an hourly-config.yaml file in our git repo. Hourly will look
-for this file (via the `config_override` option) and override its default configuration,
-including any configurations set at command line.
+for this file (via the `config_override` option) and override its default configuration (and any command-line arguments!).
+
 
 A common use case would be permanently overriding the filename of the work_log you are committing against, to avoid
 merge conflicts if multiple developers are working on the same project.

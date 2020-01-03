@@ -60,6 +60,8 @@ vis: # set to null to prevent plotting
       animation_opts: Null
 
 hydra:
+  run:
+    dir: ./hourly-outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
   help:
     # App name, override to match the name your app is known by
     app_name: hourly

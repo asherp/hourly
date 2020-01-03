@@ -1,3 +1,7 @@
+### 2020-01-03 14:28:45.356496: clock-out
+
+* addressing helpful hydra hints from Omry
+* documentation improvements
 
 ### 2020-01-03 13:52:35.768769: clock-in
 
