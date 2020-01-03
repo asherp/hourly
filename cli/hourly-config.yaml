@@ -5,13 +5,14 @@ repo:
   start_date: null 
   end_date: null 
   errant_clocks: [] # list of commit hashes to skip
+  case_sensitive: False # should commit message filters be case-sensitive
   ignore: null # ignore work containing string, ie 'pro bono'
-  match_logs: False # should all clock ins be paired with clock outs
+  match_logs: False # should all clock-ins be paired with clock-outs
 
 report:
   timesheet: true # print timesheet
   work: false # print work log
-  outfile: null # csv file to save report to
+  filename: null # csv file to save report to
   wage: null # numerical wage to multiply by hours
   currency: '' # string currency to display earnings
   pandas:
@@ -26,6 +27,9 @@ commit:
   clock: null # 'in' will update WorkLog.md and commit with message "clock-in"
   tminus: null # '15m' will prepend 'T-15m' to commit message (ignored if clock is null)
   message: '' # 'my message' will append 'my message' to commit message
+  identity: # how to identify committers
+    - name
+    - email
 
 work_log: 
   filename: WorkLog.md

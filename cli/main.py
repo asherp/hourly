@@ -2,7 +2,7 @@
 import pandas as pd
 from hourly import get_work_commits, is_clocked_in, is_clocked_out, update_log, commit_log, get_labor
 from hourly import get_hours_worked, get_earnings, get_labor_range
-from hourly import plot_labor
+from hourly import plot_labor, get_current_user, get_clocks
 import plotly.graph_objs as go
 import plotly.offline as po
 from omegaconf import OmegaConf, dictconfig
@@ -17,12 +17,21 @@ def commit_(repo, commit_message, logfile = None):
     commit = repo.index.commit(commit_message)
     return commit
 
+def identify_user(user, cfg):
+    id_ = []
+    for id_type in cfg.commit.identity:
+        id_.append(getattr(user, id_type))
+    if len(id_) > 1:
+        return tuple(id_)
+    else:
+        return id_[0]
+
+
 def process_commit(cfg, work, repo):
     """commits clock-in/out message
 
     If only a message is supplied, commits without clocking in/out
     """
-
 
     header_depth = '#'*cfg.work_log.header_depth
 
@@ -40,10 +49,10 @@ def process_commit(cfg, work, repo):
         if cfg.commit.clock.lower() == 'in':
             last_in = is_clocked_in(work)
             if last_in is not None:
-                print("You are still clocked in!")
-                print("last clock in: {}, T-{}".format(last_in, 
+                raise IOError(
+                    "You are still clocked in!\n" + \
+                    "\tlast clock in: {}, T-{} ago".format(last_in, 
                     pd.datetime.now(last_in.tzinfo) - last_in))
-                sys.exit()
             else:
                 if len(commit_message) == 0:
                     commit_message = "clock-in"
@@ -58,10 +67,10 @@ def process_commit(cfg, work, repo):
         elif cfg.commit.clock.lower() == 'out': # prevent clock in and out at the same time
             last_out = is_clocked_out(work)
             if last_out is not None:
-                print("You already clocked out!")
-                print("last clock out: {}, T-{}".format(last_out,
+                raise IOError(
+                    "You already clocked out!\n" + \
+                    "\tlast clock out: {}, T-{} ago".format(last_out,
                     pd.datetime.now(last_out.tzinfo) - last_out))
-                sys.exit()
             else:
                 if len(commit_message) == 0:
                     commit_message = "clock-out"
@@ -103,10 +112,10 @@ def dictConfig_to_dict(om):
 def config_override(cfg):
     """Overrides with user-supplied configuration
 
-    hydra_app will override its configuration using
-    config.yaml if it is in the current working directory
+    hourly will override its configuration using
+    hourly-config.yaml if it is in the current working directory
     or users can set an override config:
-        override_path=path/to/myconfig.yaml
+        config_override=path/to/myconfig.yaml
     """
     override_path = hydra.utils.to_absolute_path(cfg.config_override)
     if path.exists(override_path):
@@ -114,6 +123,10 @@ def config_override(cfg):
         cfg = OmegaConf.merge(cfg, override_conf)
     return cfg
 
+def get_user_work(work, current_user, identifier):
+    for id_, user_work in work.groupby(identifier):
+        if id_ == current_user:
+            return user_work
 
 def run(cfg):
     if cfg.repo.ignore is not None:
@@ -122,6 +135,8 @@ def run(cfg):
     gitdir = hydra.utils.to_absolute_path(cfg.repo.gitdir)
 
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+
+
     if cfg.repo.start_date is None:
         start_date = work.index[0]
     else:
@@ -137,48 +152,86 @@ def run(cfg):
         for k,v in pd_opts.items():
             pd.set_option(k,v)
 
+    identifier = list(cfg.commit.identity)
     if cfg.report.work:
-        print(work.loc[start_date:end_date])
+        for id_, work_ in work.groupby(identifier):
+            print("\nWork for {}".format(id_))
+            print(work_.loc[start_date:end_date])
 
+
+    clocks = get_clocks(work, 
+            start_date = start_date,
+            end_date = end_date,
+            errant_clocks = cfg.repo.errant_clocks,
+            case_sensitive = cfg.repo.case_sensitive)
 
     if cfg.commit is not None:
-        commit = process_commit(cfg, work, repo)
+        if (cfg.commit.clock is not None) | len(cfg.commit.message) > 0:
+            current_user = identify_user(get_current_user(repo), cfg)
+            user_work = get_user_work(clocks, current_user, identifier)
+            try:
+                process_commit(cfg, user_work, repo)
+            except IOError as error_msg:
+                print("Could not process commit for {}:\n{}".format(current_user, error_msg))
+                sys.exit()
+            except:
+                print(get_current_user(repo))
+                print(current_user)
+                print(user_work)
+                print(clocks)
+                print(identifier)
+                raise
 
     
     if cfg.report.timesheet:
-        labor = get_labor(work,
-            start_date = start_date, 
-            end_date = end_date, 
-            errant_clocks = cfg.repo.errant_clocks, 
-            ignore = cfg.repo.ignore, 
-            match_logs = cfg.repo.match_logs)
+        total_hours = 0
+        plot_traces = []
+        for id_, work_ in clocks.groupby(identifier):
+            print("\nProcessing timesheet for {}".format(id_))
+            labor = get_labor(
+                work_,
+                ignore = cfg.repo.ignore, 
+                match_logs = cfg.repo.match_logs,
+                case_sensitive = cfg.repo.case_sensitive)
 
-        if len(labor) > 0:
-            print(labor)
+            if len(labor) > 0:
+                print(labor)
 
-            hours_worked = get_hours_worked(labor)
-            dt = labor.TimeDelta.sum()
-            print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
+                hours_worked = get_hours_worked(labor)
+                dt = labor.TimeDelta.sum()
+                print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
 
+                total_hours += hours_worked
 
-            if cfg.report.wage is not None:
-                earnings = get_earnings(hours_worked, cfg.report.wage, cfg.report.currency)
+                if cfg.report.wage is not None:
+                    earnings = get_earnings(hours_worked, cfg.report.wage, cfg.report.currency)
 
-            if cfg.report.outfile is not None:
-                start, end = get_labor_range(labor)
-                output_file = "{}-{}_to_{}.csv".format(
-                    cfg.report.outfile,
-                    start.strftime('%Y%m%d-%H%M%S'),
-                    end.strftime('%Y%m%d-%H%M%S'))
-                print('writing to file {}'.format(output_file))
-                labor.to_csv(output_file)
-        else:
-            print('No data for {} to {}'.format(start_date, end_date))
+                if cfg.report.filename is not None:
+                    start, end = get_labor_range(labor)
+                    output_file = "{}-{}_to_{}.csv".format(
+                        cfg.report.filename,
+                        start.strftime('%Y%m%d-%H%M%S'),
+                        end.strftime('%Y%m%d-%H%M%S'))
+                    print('writing to file {}'.format(output_file))
+                    labor.to_csv(output_file)
+
+                if cfg.vis is not None:
+                    if type(id_) == tuple:
+                        name = "<br>".join(id_)
+                    else:
+                        name = id_
+
+                    user_trace = plot_labor(
+                        labor,
+                        cfg.vis.frequency,
+                        name = name)
+                    plot_traces.append(user_trace)
+            else:
+                print('No data for {} to {}'.format(start_date, end_date))
 
     if cfg.vis is not None:
-        hours_worked = get_hours_worked(labor)
-        plot_title = "hours commited: {0:.2f}".format(hours_worked)
-        fig = go.Figure(plot_labor(labor, cfg.vis.frequency))
+        plot_title = "total hours commited: {0:.2f}".format(total_hours)
+        fig = go.Figure(plot_traces)
         fig.update_layout(
             title = plot_title, 
             yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
@@ -186,11 +239,14 @@ def run(cfg):
         # override figure with plotly figure kwargs
         fig.update_layout(**dictConfig_to_dict(cfg.vis.plotly.figure)) 
 
+        plot_filename = hydra.utils.to_absolute_path(
+            cfg.vis.plotly.plot.filename)
+        plot_options = dictConfig_to_dict(cfg.vis.plotly.plot)
+        plot_options['filename'] = plot_filename
         # include plotly plot kwargs
-        div = po.plot(fig,
-            **dictConfig_to_dict(cfg.vis.plotly.plot))
+        div = po.plot(fig, **plot_options)
         if cfg.vis.plotly.plot.output_type.lower() == 'div':
-            with open(cfg.vis.plotly.plot.filename, 'w') as div_output:
+            with open(plot_filename, 'w') as div_output:
                 div_output.write(div)
                 div_output.write('\n')
 

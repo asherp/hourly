@@ -10,7 +10,7 @@ the work hours as a graph in the mkdocs site:
 ```
 
 If we run hourly from its own git repo, the graph div gets stored in
-`outputs/<date>/<time>/hourly-work.html`. 
+`docs/hourly-work.html`. 
 
 We embed using the `markdown-include` extension in `mkdocs.yml`:
 
@@ -20,8 +20,8 @@ We embed using the `markdown-include` extension in `mkdocs.yml`:
 
 And then add the following in our site page:
 
-\{! outputs/2019-12-30/13-57-17/hourly-work.html !\}
+\{! docs/hourly-work.html !\}
 
 Which embeds the graph below:
 
-{! outputs/2019-12-30/13-57-17/hourly-work.html !}
+{! docs/hourly-work.html !}

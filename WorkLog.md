@@ -1,3 +1,11 @@
+### 2020-01-02 18:53:49.974457: clock-out
+
+* added ability to group timesheets by name or email or both
+* fixed bug where user can accidentally clock in twice if a non-clock message is committed
+* changed `report.outfile` to `report.filename`
+* added multiple users to plot
+* removed click app
+* documentation updates
 
 ### 2020-01-02 14:42:06.286717: clock-in
 

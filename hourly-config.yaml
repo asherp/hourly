@@ -4,10 +4,14 @@ repo:
   ignore: 'pro bono'
 work_log:
   header_depth: 3
+commit:
+  identity:
+  - name
 vis:
   frequency: '7 d'
   plotly: # plotly keywords
     plot:
       output_type: div
       auto_open: False
+      filename: docs/hourly-work.html
 
