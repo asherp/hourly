@@ -1,5 +1,10 @@
+### 2020-01-04 15:35:04.070440: clock-out
+
 * moving invoice into cli
 * setting up environment variable interpolation
+* using OmegaConf.to_container(cfg) 
+* cannot load a private key from environment variable on windows
+* should probably use a private key file
 
 ### 2020-01-04 13:55:18.699752: clock-in
 
