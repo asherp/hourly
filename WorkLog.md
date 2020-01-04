@@ -1,3 +1,5 @@
+* moving invoice into cli
+* setting up environment variable interpolation
 
 ### 2020-01-04 13:55:18.699752: clock-in
 
