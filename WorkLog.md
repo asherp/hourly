@@ -1,3 +1,6 @@
+### 2020-01-04 13:01:43.289508: clock-out
+
+* testing first invoice
 
 ### 2020-01-04 12:16:11.802771: clock-in
 
