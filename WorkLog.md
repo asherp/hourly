@@ -1,3 +1,6 @@
+
+### 2020-01-03 19:45:54.790098: clock-in
+
 ### 2020-01-03 19:31:57.414479: clock-out
 
 * looking at btcpayserver
