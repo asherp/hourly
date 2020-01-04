@@ -1,7 +1,13 @@
+### 2020-01-03 19:31:57.414479: clock-out
+
+* looking at btcpayserver
+* trying exitpay https://btc.exitpay.org/
+* found exitpay confirmation email in spam folder
 
 ### 2020-01-03 17:44:04.019146: clock-in
 
 * updating graph
+
 ### 2020-01-03 14:28:45.356496: clock-out
 
 * addressing helpful hydra hints from Omry
