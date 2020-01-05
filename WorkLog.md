@@ -1,8 +1,14 @@
+### 2020-01-05 17:34:41.710447: clock-out
+
+* refactoring configuration using config groups
+* does it make sense to be able to issue an invoice on behalf of someone else? 
+* it's the responsibilty of the employer to make sure the invoice their getting is from the right person
 
 ### 2020-01-05 16:29:01.786457: clock-in
 
 ### 2020-01-05 16:03:22.389791: clock-out
 
+* refactoring
 
 ### 2020-01-05 15:32:33.929020: clock-in
 
