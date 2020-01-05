@@ -1,3 +1,6 @@
+
+### 2020-01-04 18:56:53.105369: clock-in
+
 ### 2020-01-04 15:35:04.070440: clock-out
 
 * moving invoice into cli
