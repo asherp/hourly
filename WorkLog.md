@@ -1,6 +1,9 @@
+
+### 2020-01-05 15:32:33.929020: clock-in
+
 ### 2020-01-05 02:59:59.550127: clock-out
 
-* adding user_id to filename
+* adding user_id to report.filename
 * got hourly to issue first btcpayserver invoice!
 
 ### 2020-01-04 22:59:21.370595: clock-in
