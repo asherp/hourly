@@ -1,3 +1,6 @@
+
+### 2020-01-04 22:59:21.370595: clock-in
+
 ### 2020-01-04 20:06:20.516946: clock-out
 
 * working with pem files
