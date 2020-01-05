@@ -1,3 +1,7 @@
+### 2020-01-04 20:06:20.516946: clock-out
+
+* working with pem files
+* changed default max column to match hash length
 
 ### 2020-01-04 18:56:53.105369: clock-in
 
