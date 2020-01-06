@@ -346,6 +346,7 @@ def get_btcpay_client(cfg):
         print("See BTCPay Server for more info:\n\thttps://btcpayserver.org/")
         print("See btcpay python api for configuration:")
         print("\thttps://bitpay.com/api/#rest-api-resources-invoices-create-an-invoice")
+        sys.exit()
 
 
     btcpay_server = cfg.payment
