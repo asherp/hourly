@@ -48,16 +48,25 @@ ignoring pro bono
 writing to file Pembroke-20181028-134448_to_20190225-124951.csv
 ```
 
-Visit the [Tutorial](README.ipynb) for a detailed walk-through of the main functions.
+Visit the [Tutorial](README.ipynb) for a detailed walk-through of how hourly generates timesheets.
 
-# Getting Started
+To generate an invoice using btcpay:
 
-## Install
+```console
+hourly invoice=btcpay payment=btcpay repo.start_date="Jan 1, 2020" repo.end_date="Jan 6, 2020"
+```
+
+Visit the [Payments](Payments.md) section for more info.
+
+
+## Getting Started
+
+### Install
 
     pip install hourly
 
 
-## Requirements
+### Requirements
 
 * pandas
 * gitpython
@@ -79,7 +88,7 @@ To run the tests, navigate to the base of this repo, then
 py.test tests.py --cov=hourly
 ```
 
-## Customization
+## Configuration
 
 `Hourly` uses [`Hydra`](https://hydra.cc/docs/intro) for customized configuration. The full options are given by hourly's
 help command:

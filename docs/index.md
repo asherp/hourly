@@ -1,6 +1,6 @@
 {! README.md !}
 
-# Visualization
+## Visualization
 
 The git repo for hourly has a custom configuration that allows us to embed
 the work hours as a graph in the mkdocs site.
