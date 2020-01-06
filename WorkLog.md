@@ -1,3 +1,6 @@
+### 2020-01-06 14:52:28.511302: clock-out
+
+* merging with master
 * BUGFIX force exit if btcpay-python not installed
 
 ### 2020-01-06 14:48:34.209232: clock-in: T-10m 
