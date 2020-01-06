@@ -6,7 +6,7 @@
 `BTCPay Server` is an open-source payment processing application for cryptocurrency.
 Integration  with hourly means we can issue invoices and receive payments at 
 command-line with minimal cost. You can use a third-party provider
-or host it yourself - the only only difference will be the domain
+or host it yourself - the only difference will be the domain
 name used to create the local client.
 
 ## Setup
@@ -176,4 +176,4 @@ Success! Your invoice may be paid here: https://btc.exitpay.org/invoice?id=MoSbF
 
 Navigate to the payment url provided:
 
-![Hourly Invoice](invoice_screen_shot.PNG "Logo Title Text 1")
+![Hourly Invoice](https://github.com/asherp/hourly/raw/master/docs/invoice_screen_shot.PNG "Hourly Invoice")

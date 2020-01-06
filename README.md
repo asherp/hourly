@@ -61,6 +61,8 @@ Visit the [Payments](Payments.md) section for more info.
 
 ## Getting Started
 
+Hourly is hosted on git - https://github.com/asherp/hourly
+
 ### Install
 
     pip install hourly

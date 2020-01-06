@@ -1,3 +1,4 @@
+* minor site fixes
 * adding btcpay invoice screenshot
 * fixed typo in docs, updated version
 * touching up documentation
