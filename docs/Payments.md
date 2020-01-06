@@ -1,0 +1,3 @@
+# Payments
+
+{! docs/btcpayserver.md !}

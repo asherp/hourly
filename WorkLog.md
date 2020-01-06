@@ -1,3 +1,7 @@
+### 2020-01-05 23:22:17.765638: clock-out
+
+* prompting user for confirmation
+* renamed hourly-config.yaml to hourly.yaml
 
 ### 2020-01-05 21:17:55.844445: clock-in
 

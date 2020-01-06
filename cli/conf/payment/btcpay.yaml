@@ -1,0 +1,5 @@
+payment:
+  host: ${env:BTCPAYSERVER_HOST}
+  tokens:
+    merchant: ${env:BTCPAYSERVER_MERCHANT}
+  pem: btcpayserver.pem # file holding btcpayserver private key
