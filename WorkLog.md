@@ -1,3 +1,6 @@
+
+### 2020-01-05 20:43:23.467637: clock-in
+
 ### 2020-01-05 17:34:41.710447: clock-out
 
 * refactoring configuration using config groups
