@@ -38,7 +38,7 @@ ignoring pro bono
 To store the logs in a csv file, include an ouput prefix:
 
 ```console
-hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono" report.outfile=Pembroke
+hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono" report.filename=Pembroke
 pay period: 2018-10-28 13:44:48-04:00 -> 2019-02-25 12:49:51-05:00
 ignoring pro bono
                      TimeIn           LogIn                   TimeOut          LogOut TimeDelta     Hours

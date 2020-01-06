@@ -1,3 +1,4 @@
+* fixed typo in docs, updated version
 * touching up documentation
 * updating work graph for hourly repo
 ### 2020-01-06 14:52:28.511302: clock-out
