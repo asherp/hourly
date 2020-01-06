@@ -105,7 +105,7 @@ def config_override(cfg):
     """Overrides with user-supplied configuration
 
     hourly will override its configuration using
-    hourly-config.yaml if it is in the current working directory
+    hourly.yaml if it is in the current working directory
     or users can set an override config:
         config_override=path/to/myconfig.yaml
     """

@@ -61,8 +61,9 @@ Visit the [Tutorial](README.ipynb) for a detailed walk-through of the main funct
 
 * pandas
 * gitpython
-* plotly
+* [plotly](https://plot.ly/python/)
 * [hydra](https://hydra.cc/docs/intro)
+* [btcpay-python](https://btcpayserver.org/) (optional)
 
 
 ### Tests
@@ -106,7 +107,10 @@ commit:
   - email
   message: ''
   tminus: null
-config_override: hourly-config.yaml
+compensation: []
+config_override: hourly.yaml
+invoice: null
+payment: null
 repo:
   case_sensitive: false
   end_date: null
@@ -121,7 +125,7 @@ report:
   pandas:
     display:
       max_columns: 10
-      max_colwidth: 64
+      max_colwidth: 45
       max_rows: null
       width: 600
   timesheet: true
@@ -164,7 +168,7 @@ Hourly's default configuration including comments can be seen here.
 </summary>
 
 ```yaml
-{! cli/hourly-config.yaml !}
+{! cli/conf/hourly.yaml !}
 ```
 </details>
 
@@ -178,11 +182,13 @@ This will update the WorkLog.md file and commit a clock-in message without visua
     `hourly-in` is just syntactic sugar for `hourly commit.clock=in vis=null report.timesheet=False`.
 
 But if we want to override hourly's default without typing it in each time,
-we can specify an hourly-config.yaml file in our git repo. Hourly will look
-for this file (via the `config_override` option) and override its default configuration (and any command-line arguments!).
+we can specify an hourly.yaml file in our git repo. Hourly will look
+for this file (via the `config_override` option) and override its default configuration (and any command-line arguments!). An example of a custom override file is found in the top-level of the hourly repo:
 
+```yaml
+{! hourly.yaml !}
+```
 
 A common use case would be permanently overriding the filename of the work_log you are committing against, to avoid
 merge conflicts if multiple developers are working on the same project.
-
 

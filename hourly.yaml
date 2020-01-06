@@ -11,7 +11,14 @@ vis:
   frequency: '7 d'
   plotly: # plotly keywords
     plot:
-      output_type: div
-      auto_open: False
+      output_type: div 
+      auto_open: false
       filename: docs/hourly-work.html
 
+compensation:
+  - name: asherp
+    wage: 100.
+    currency: USD
+  - name: Asher Pembroke
+    wage: 100.
+    currency: USD

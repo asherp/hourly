@@ -16,4 +16,4 @@ Hourly differs from many other tools in the following ways:
 Conversely, if you don't want to be bothered, push a clock-out message.
 
 These features should make Hourly ideal for freelancers and remote workers. 
-If you need help integrating hourly into your business/workflow, feel free to [reach out](mailto:apembroke@gmail.com)!
+If you need help integrating hourly into your business/workflow, feel free to [reach out](mailto:apembroke+hourly@gmail.com)!

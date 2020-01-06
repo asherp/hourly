@@ -1,4 +1,4 @@
-config_override: hourly-config.yaml
+config_override: hourly.yaml
 
 repo:
   gitdir: .

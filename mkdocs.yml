@@ -5,6 +5,7 @@ nav:
   - WorkLog.md: WorkLog.md
   - API: README.ipynb
   - Author's notes: about.md
+  - Payments: btcpayserver.md
 
 theme: material
 
