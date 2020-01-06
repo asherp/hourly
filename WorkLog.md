@@ -1,3 +1,6 @@
+
+### 2020-01-05 23:48:31.655464: clock-in: T-25m 
+
 ### 2020-01-05 23:22:17.765638: clock-out
 
 * prompting user for confirmation
