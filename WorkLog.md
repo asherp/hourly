@@ -1,3 +1,4 @@
+* adding btcpay invoice screenshot
 * fixed typo in docs, updated version
 * touching up documentation
 * updating work graph for hourly repo
