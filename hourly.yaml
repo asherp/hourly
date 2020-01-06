@@ -8,7 +8,7 @@ commit:
   identity:
   - name
 vis:
-  frequency: '7 d'
+  frequency: '1 d'
   plotly: # plotly keywords
     plot:
       output_type: div 
