@@ -1,3 +1,6 @@
+
+### 2020-01-05 21:17:55.844445: clock-in
+
 ### 2020-01-05 20:58:43.148966: clock-out
 
 * documenting grouped config
