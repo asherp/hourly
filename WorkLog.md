@@ -1,6 +1,8 @@
+* updated compensation docs
 ### 2020-01-07 02:01:10.275284: clock-out
 
 * attending announcement on bitcoinmeister show
+* added documentation on compensation
 
 ### 2020-01-07 01:08:38.620674: clock-in
 
