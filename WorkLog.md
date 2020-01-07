@@ -1,3 +1,6 @@
+
+### 2020-01-07 00:25:01.659294: clock-in: T-35m 
+
 ### 2020-01-06 23:49:06.433811: clock-out
 
 * writing hourly blurb for bitcoin&markets newsletter
