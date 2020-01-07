@@ -1,7 +1,10 @@
+# Payments
 
-# BTCPayServer
+Hourly can issue invoices based on your timesheets. Currently, only [BTCPay](https://btcpayserver.org/) is supported.
 
-## Motivation
+## BTCPayServer
+
+### Background
 
 `BTCPay Server` is an open-source payment processing application for cryptocurrency.
 Integration  with hourly means we can issue invoices and receive payments at 
@@ -9,7 +12,7 @@ command-line with minimal cost. You can use a third-party provider
 or host it yourself - the only difference will be the domain
 name used to create the local client.
 
-## Setup
+### Setup
 
 First you will need to register and create a store on a `BTCPay server`. 
 There are a few free ones [listed on the BTCPay Server website](https://docs.btcpayserver.org/deployment/thirdpartyhosting), but please use caution. 
@@ -25,9 +28,9 @@ Then you will need to install the btcpay-python client
 
 	pip install btcpay-python
 
-## Pairing
+### Pairing with BTCPay server
 
-Follow [these pairing instructions](https://github.com/btcpayserver/btcpay-python#creating-a-client-the-manual-way-not-necessary-if-you-used-the-easy-method-above) from the kind folks at `BTCPay Server`.
+Follow [these pairing instructions](https://github.com/btcpayserver/btcpay-python#creating-a-client-the-manual-way-not-necessary-if-you-used-the-easy-method-above) from the kind `BTCPay` developers.
 
 !!! note
     These instructions correspond to "The manual way" - we want to be able to create a btcpay client on-demand without storing it in a database. 
@@ -35,7 +38,7 @@ Follow [these pairing instructions](https://github.com/btcpayserver/btcpay-pytho
 I'm essentially repeating their instructions below:
 
 
-### Step 1 - Get a pairing code
+#### Step 1 - Get a pairing code
 
 * On your BTCPay server, browse to Stores > Store settings > Access tokens > Create new token
 * Fill in the form:
@@ -43,7 +46,7 @@ I'm essentially repeating their instructions below:
 	* Public key: leave blank
 * Click save and then copy the 7 digit `pairing_code` from the success page
 
-### Step 2 - Generate a private key
+#### Step 2 - Generate a private key
 
 This can be done with the following code:
 
@@ -62,9 +65,9 @@ but you can use a different name.
 !!! warning
     Do not add the pem file to your git repo! List it in your .gitignore so you don't do so by accident.
 
-### Step 3 - Create a client
+#### Step 3 - Create a client
 
-Create a client using host url of your `btcpayserver`  (e.g. https://btc.exitpay.org) and private key:
+Cr#eate a client using host url of your `btcpayserver`  (e.g. https://btc.exitpay.org) and private key:
 
 ```python
 client = BTCPayClient(host=host_url, pem=privkey)
@@ -72,7 +75,7 @@ client = BTCPayClient(host=host_url, pem=privkey)
 
 Store your server's host url in the environment variable `BTCPAYSERVER_HOST`.
 
-### Step 4 - Generate a pairing token 
+#### Step 4 - Generate a pairing token 
 
 using the pairing code from Step 1
 
@@ -82,9 +85,9 @@ token = client.pair_client(pairing_code)
 merchant_token = token['merchant']
 ```
 
-Save the merchant_token as an environment variable `BTCPAYSERVER_MERCHANT`
+S#ave the merchant_token as an environment variable `BTCPAYSERVER_MERCHANT`
 
-### Step 5 - Recreate the client 
+#### Step 5 - Recreate the client 
 
 Whenever you like:
 
@@ -96,7 +99,7 @@ client = BTCPayClient(
 )
 ```
 
-## Generating a sample invoice
+### Generating a sample invoice
 
 Assuming you have completed the steps to connect a wallet to your btcpayserver,
 you should be able to run the following code to generate an invoice.
@@ -111,7 +114,7 @@ This should give you a payment url you can email to your employer.
 Depending on how you set up your BTCPay Server, the invoice will only be valid
 for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the employer must act quickly to pay the invoice.   
  
-## Hourly configuration
+### Hourly configuration
 
 Hourly creates a `BTCPayClient` through the following configuration:
 

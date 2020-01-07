@@ -61,7 +61,7 @@ Visit the [Payments](Payments.md) section for more info.
 
 ## Getting Started
 
-Hourly is hosted on git - https://github.com/asherp/hourly
+Hourly is hosted on github under the Apache 2.0 license: [https://github.com/asherp/hourly](https://github.com/asherp/hourly)
 
 ### Install
 
