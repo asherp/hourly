@@ -46,6 +46,7 @@ vis: # set to null to prevent plotting
   frequency: '1 d' # start small - experienced users can override
   plotly: # plotly keywords
     figure:
+      hovermode: 'x'
       margin:
         pad: 0
     plot:

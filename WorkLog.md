@@ -1,5 +1,7 @@
+* set plot hovermode to compare, updated docs
 ### 2020-01-07 00:26:37.876624: clock-out
 
+* updated docs - added press release
 
 ### 2020-01-07 00:25:01.659294: clock-in: T-35m 
 
