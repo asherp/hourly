@@ -31,7 +31,7 @@ commit:
     - name
     - email
 
-compensation: []
+compensation: [] # sets wages and currency per developer
 
 payment: null
 

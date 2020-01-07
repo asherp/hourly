@@ -5,6 +5,7 @@ nav:
   - WorkLog.md: WorkLog.md
   - API: README.ipynb
   - Payments: btcpayserver.md
+  - Compensation: Compensation.md
   - Author's notes: about.md
   - Press release: press-release.md
 
