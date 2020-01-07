@@ -1,3 +1,6 @@
+
+### 2020-01-07 17:13:47.825366: clock-in: T-13m 
+
 * updated compensation docs
 ### 2020-01-07 02:01:10.275284: clock-out
 
