@@ -1,3 +1,7 @@
+### 2020-01-06 23:49:06.433811: clock-out
+
+* writing hourly blurb for bitcoin&markets newsletter
+* updated configuration README
 
 ### 2020-01-06 23:03:59.405807: clock-in
 

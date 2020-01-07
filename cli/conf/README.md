@@ -1,9 +1,9 @@
 
 # Configuration
 
-This directory sets hourly's default configuration using Hydra.
+The `cli/conf` directory sets hourly's default configuration using [Hydra's composition rules](https://hydra.cc/docs/tutorial/composition/). Options that are mutually exclusive are grouped in the same subfolder.
 
-Defaults are given priority in descending order:
+Defaults are given priority in ascending order:
 
 ```yaml
 defaults:
@@ -12,8 +12,7 @@ defaults:
   - invoice: Null
 ```
 
-The final configuration will be a merger of the keys
-from `hourly` with those specified by `payment` and `invoice`.
+In other words, your `invoice` config overrides the `payment` config which overrides `hourly` config, such that the final configuration will be a merger of the keys and values from all of the above.
 
 Since payment options are mutually exclusive, we group them in the payment subfolder.
 Similarly, invoice parameters are mutually exclusive and are grouped in the
