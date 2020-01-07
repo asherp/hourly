@@ -1,8 +1,14 @@
+
+### 2020-01-06 23:03:59.405807: clock-in
+
+* Need to send blurb to Ansel by friday, mention upwork, write up what you know about tradeoffs with lightning (costs, availability, etc)
+* Need to add a gui and dockerize
 * minor site fixes
 * adding btcpay invoice screenshot
 * fixed typo in docs, updated version
 * touching up documentation
 * updating work graph for hourly repo
+
 ### 2020-01-06 14:52:28.511302: clock-out
 
 * merging with master
