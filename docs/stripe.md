@@ -16,7 +16,7 @@ This allows us to generate invoices in a single command:
 
 #### Step 2 - Create a stripe account
 
-You will need an account at [Stripe](https://stripe.com/). Be sure to follow the steps for a developer looking to handle one-time payments. 
+You will need an account at [Stripe](https://stripe.com/). Be sure to follow the steps for a developer looking to handle one-time payments. You should also set up your [invoice template settings](https://dashboard.stripe.com/account/billing/invoice).
 
 #### Step 3 - Set environment variables
 

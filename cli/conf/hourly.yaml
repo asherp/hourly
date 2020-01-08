@@ -33,9 +33,8 @@ commit:
 
 compensation: [] # sets wages and currency per developer
 
-payment: null
-
-invoice: null
+btcpay: null
+stripe: null
 
 work_log: 
   filename: WorkLog.md

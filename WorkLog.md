@@ -1,3 +1,8 @@
+### 2020-01-08 03:36:04.021070: clock-out
+
+* Got stripe integration!
+* Refactored invoice configuration
+* Simplified invoice command: `hourly invoice=btcpay` or `hourly invoice=stripe`
 
 ### 2020-01-08 00:05:07.910803: clock-in
 

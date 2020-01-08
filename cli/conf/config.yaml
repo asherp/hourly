@@ -1,7 +1,6 @@
 
 defaults:
   - hourly
-  - payment: Null
   - invoice: Null
 
 
