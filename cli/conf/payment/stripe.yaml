@@ -1,0 +1,3 @@
+payment:
+  type: stripe
+  secret_key: ${env:STRIPE_API_SECRET_KEY}

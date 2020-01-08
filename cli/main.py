@@ -9,6 +9,7 @@ from omegaconf import OmegaConf, DictConfig
 import hydra
 from os import path
 import sys
+import decimal
 
     
 def commit_(repo, commit_message, logfile = None):
@@ -214,7 +215,12 @@ def run(cfg):
                         if cfg.payment is not None:
                             print('generating invoice for current user {}'.format(current_user_id))
                             try:
-                                invoice = get_btcpay_invoice(cfg, labor, current_user, compensation)
+                                if cfg.payment.type == 'btcpay':
+                                    invoice = get_btcpay_invoice(cfg, labor, current_user, compensation)
+                                elif cfg.payment.type == 'stripe':
+                                    invoice = get_stripe_invoice(cfg, labor, current_user, compensation)
+                                else:
+                                    raise IOError("Payment type not yet supported!")
                                 print("Success! Your invoice may be paid here: {}".format(invoice.url))
                             except IOError as m:
                                 print("Could not generate invoice: {}".format(m))
@@ -297,7 +303,7 @@ def get_btcpay_invoice(cfg, labor, current_user, compensation):
             raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
 
     print(btcpay_invoice.pretty())
-    user_confirms = input("Is this correct? (yes/n)")
+    user_confirms = input("Is this correct? (yes/n): ")
     if user_confirms.lower() != 'yes':
         print("Ok, try again later")
         sys.exit()
@@ -364,6 +370,71 @@ def get_btcpay_client(cfg):
 
     client = BTCPayClient(host = host, pem = pem, tokens = tokens)
     return client
+
+def get_stripe_invoice(cfg, labor, current_user, compensation):
+    try:
+        import stripe
+    except ImportError:
+        print("You must install stripe first!\n\tpip install --upgrade stripe")
+        print("See https://stripe.com/ for more info")
+        sys.exit()
+
+
+    if compensation is None:
+        raise IOError("No compensation provided.")
+
+    stripe_invoice = cfg.invoice
+
+    # make sure stripe configuration takes precedence
+
+    hours_worked = get_hours_worked(labor)
+
+    cent = decimal.Decimal('0.01')
+
+    if stripe_invoice.line_items[0].amount is None:
+        if compensation.wage is not None:
+            earnings = decimal.Decimal(hours_worked * compensation.wage)
+        else:
+            raise IOError("Must specify compensation wage or invoice.price")
+        
+        earnings = float(earnings.quantize(cent, rounding = decimal.ROUND_UP))
+        stripe_invoice.line_items[0].amount = earnings
+
+
+    if stripe_invoice.line_items[0].description is None:
+        stripe_invoice.line_items[0].description = get_labor_description(labor)
+
+    if stripe_invoice.line_items[0].currency is None:
+        if compensation.currency is not None:
+            stripe_invoice.line_items[0].currency = compensation.currency
+        else:
+            raise IOError("Must specify invoice.line_items.currency (e.g. USD, FIAT) or compensation currency")
+
+    print(stripe_invoice.pretty())
+    user_confirms = input("Is this correct? (yes/n): ")
+    if user_confirms.lower() != 'yes':
+        print("Ok, try again later")
+        sys.exit()
+
+    stripe.api_key = str(cfg.payment.secret_key)
+    print(stripe.api_key, type(stripe.api_key))
+
+    try:
+        stripe_d = OmegaConf.to_container(stripe_invoice)
+        invoice = stripe.checkout.Session.create(
+            OmegaConf.to_container(stripe_invoice))
+    except:
+        for k,v in stripe_d.items():
+            print(k,v)
+        raise
+    return OmegaConf.create(invoice)
+
+
+
+
+
+    session = stripe.checkout.Session.create(cfg.invoice)
+    print(session)
 
 @hydra.main(config_path="conf/config.yaml")
 def main(cfg):

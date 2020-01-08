@@ -1,7 +1,12 @@
+### 2020-01-07 19:53:09.572565: clock-out
+
+* started stripe integration
+* added FAQ
 
 ### 2020-01-07 17:13:47.825366: clock-in: T-13m 
 
 * updated compensation docs
+
 ### 2020-01-07 02:01:10.275284: clock-out
 
 * attending announcement on bitcoinmeister show

@@ -1,4 +1,5 @@
 payment:
+  type: btcpay
   host: ${env:BTCPAYSERVER_HOST}
   tokens:
     merchant: ${env:BTCPAYSERVER_MERCHANT}

@@ -1,0 +1,16 @@
+# see Stripe's one-time payment api https://stripe.com/docs/payments/checkout/one-time
+invoice:
+  # customer: null
+  # customer_email: null
+  payment_method_types:
+    - card
+  line_items:
+    - name: null # 'T-shirt'
+      description: null # will be honored if set
+      images:
+        - # 'https://your.website.com/your-logo.png'
+      amount: null # will be honored if set
+      currency: # will be honored if set
+      quantity: 1
+  success_url: https://example.com/success?session_id={CHECKOUT_SESSION_ID}
+  cancel_url: https://example.com/cancel

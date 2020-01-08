@@ -1,6 +1,8 @@
 # Payments
 
-Hourly can issue invoices based on your timesheets. Currently, only [BTCPay](https://btcpayserver.org/) is supported.
+Hourly can issue invoices based on your timesheets. Currently, only [BTCPay](https://btcpayserver.org/) and [Stripe](https://stripe.com/) are supported.
+
+{! docs/stripe.md !}
 
 ## BTCPayServer
 
@@ -99,7 +101,7 @@ client = BTCPayClient(
 )
 ```
 
-### Generating a sample invoice
+#### Step 6 - Generate a test invoice
 
 Assuming you have completed the steps to connect a wallet to your btcpayserver,
 you should be able to run the following code to generate an invoice.
