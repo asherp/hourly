@@ -1,3 +1,4 @@
+* updated press release to include stripe
 * redirected to Authors notes rather than email
 * updating work graph
 ### 2020-01-09 02:35:00.616095: clock-out
