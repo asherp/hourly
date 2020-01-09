@@ -1,3 +1,6 @@
+
+### 2020-01-09 09:06:20.553382: clock-in
+
 * adding stripe screen shot
 ### 2020-01-09 03:23:49.529611: clock-out
 
