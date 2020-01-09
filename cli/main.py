@@ -75,7 +75,7 @@ def process_commit(cfg, work, repo):
                 time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
                 raise IOError(
                     "You already clocked out!\n" + \
-                    "\tlast clock out: {}, ({:.2f} hours ago)".format(
+                    "\tlast clock out: {} ({:.2f} hours ago)".format(
                         last_out,
                         time_since_out.total_seconds()/3600.))
             else:
@@ -460,7 +460,7 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
 
     if result.hosted_invoice_url is not None:
         print("Invoice may be paid at {}".format(result.hosted_invoice_url))
-        
+
     print("View your invoice at https://dashboard.stripe.com")
     return result
 
