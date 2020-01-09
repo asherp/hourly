@@ -74,8 +74,28 @@ Hourly is hosted on github under the Apache 2.0 license: [https://github.com/ash
 * gitpython
 * [plotly](https://plot.ly/python/)
 * [hydra](https://hydra.cc/docs/intro)
+* [stripe](https://github.com/stripe/stripe-python) (optional)
 * [btcpay-python](https://btcpayserver.org/) (optional)
 
+You can get these dependencies like this:
+
+```console
+pip install pandas gitpython plotly
+pip install hydra-core --upgrade
+```
+
+For invoicing:
+
+```console
+pip install btcpay-python
+pip install stripe
+```
+
+For hourly's docs:
+
+```console
+pip install mkdocs mkdocs-material markdown-include mknotebooks
+```
 
 ### Tests
 

@@ -2,16 +2,14 @@ site_name: Hourly
 
 nav:
   - Home: index.md
-  - WorkLog.md: WorkLog.md
-  - API: README.ipynb
-  - Payments: Payments.md
-  # - Stripe: stripe.md
-  # - BTCPay: btcpayserver.md
+  - Invoicing: Payments.md
+  - Time Estimation: README.ipynb
   - Compensation: Compensation.md
+  - WorkLog: WorkLog.md
   - FAQ: FAQ.md
-  - Author's notes: about.md
   - Press release: press-release.md
-
+  - Author's notes: about.md
+  
 theme: material
 
 use_directory_urls: false

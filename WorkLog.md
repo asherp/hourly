@@ -1,3 +1,4 @@
+* added further install instructions
 
 ### 2020-01-09 03:22:04.616199: clock-in
 
