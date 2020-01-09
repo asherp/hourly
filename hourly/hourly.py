@@ -1,10 +1,6 @@
 import git
-
 import pandas as pd
-
 import warnings
-import dash
-import dash_table
 import plotly.graph_objs as go
 import plotly.offline as po
 
@@ -73,7 +69,7 @@ def get_clocks(work,
 
     # handle case where start and dates have different utc offsets
     clocks = clocks.loc[start_date:].loc[:end_date]
-    
+
     if adjust_clocks:
         clocks = adjust_time(clocks)
     return clocks

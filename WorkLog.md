@@ -1,3 +1,4 @@
+* fixed up requirements
 
 ### 2020-01-09 02:47:45.455102: clock-in
 
