@@ -3,6 +3,8 @@ A simple hour tracker for git projects, ```hourly``` parses your commit messages
 
 ## Usage
 
+### Work sessions
+
 To clock in:
 ```console
   hourly-in
@@ -14,6 +16,8 @@ When you are finished committing other work for this session, you may clock out:
 ```console
   hourly-out
 ```
+
+### Timesheets
 
 When you are ready to generate a timesheet for your repo, run hourly from your git directory:
 
@@ -35,7 +39,7 @@ ignoring pro bono
 0 days 02:42:28, 2.71 hours worked
 ```
 
-To store the logs in a csv file, include an ouput prefix:
+To save the timesheet as a csv file, include an ouput prefix:
 
 ```console
 hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono" report.filename=Pembroke
@@ -50,11 +54,21 @@ writing to file Pembroke-20181028-134448_to_20190225-124951.csv
 
 Visit the [Tutorial](README.ipynb) for a detailed walk-through of how hourly generates timesheets.
 
+### Invoicing
+
+To generate an invoice using stripe:
+
+```console
+hourly invoice=btcpay repo.start_date="Jan 1, 2020" stripe.customer.email="myclient@momandpop.com"
+```
+
 To generate an invoice using btcpay:
 
 ```console
-hourly invoice=btcpay payment=btcpay repo.start_date="Jan 1, 2020" repo.end_date="Jan 6, 2020"
+hourly invoice=btcpay repo.start_date="Jan 1, 2020"
 ```
+
+
 
 Visit the [Payments](Payments.md) section for more info.
 
