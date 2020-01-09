@@ -14,7 +14,7 @@ See the [Instructions for configuring hourly with a BTCPay server](btcpayserver.
 
 Currently, only `BTCPay` and `Stripe` are supported. If you are interested
 in adding support for other invoicing platforms, issue a pull request. 
-If you want to sponsor development for an hourly feature, contact [Asher](emailto:apembroke+hourly@gmail.com).
+If you want to sponsor development for an hourly feature, contact [Asher](about.md).
 
 {! docs/stripe.md !}
 
