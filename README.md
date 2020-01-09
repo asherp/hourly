@@ -192,9 +192,14 @@ This will update the WorkLog.md file and commit a clock-in message without visua
 !!! note
     `hourly-in` is just syntactic sugar for `hourly commit.clock=in vis=null report.timesheet=False`.
 
-But if we want to override hourly's default without typing it in each time,
+But if we want to override hourly's defaults without typing them in each time,
 we can specify an hourly.yaml file in our git repo. Hourly will look
-for this file (via the `config_override` option) and override its default configuration (and any command-line arguments!). An example of a custom override file is found in the top-level of the hourly repo:
+for this file (via the `config_override` option) and override its default configuration.
+
+!!! bug
+    Your project's `config_override` will even override command line arguments!
+
+An example of a custom override file is found in the top-level of the hourly repo:
 
 ```yaml
 {! hourly.yaml !}

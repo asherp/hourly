@@ -52,10 +52,12 @@ def process_commit(cfg, work, repo):
         if cfg.commit.clock.lower() == 'in':
             last_in = is_clocked_in(work)
             if last_in is not None:
+                time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
                 raise IOError(
                     "You are still clocked in!\n" + \
-                    "\tlast clock in: {}, T-{} ago".format(last_in, 
-                    pd.datetime.now(last_in.tzinfo) - last_in))
+                    "\tlast clock in: {}  ({:.2f} hours ago)".format(
+                        last_in,
+                        time_since_in.total_seconds()/3600.))
             else:
                 if len(commit_message) == 0:
                     commit_message = "clock-in"
@@ -70,10 +72,12 @@ def process_commit(cfg, work, repo):
         elif cfg.commit.clock.lower() == 'out': # prevent clock in and out at the same time
             last_out = is_clocked_out(work)
             if last_out is not None:
+                time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
                 raise IOError(
                     "You already clocked out!\n" + \
-                    "\tlast clock out: {}, T-{} ago".format(last_out,
-                    pd.datetime.now(last_out.tzinfo) - last_out))
+                    "\tlast clock out: {}, ({:.2f} hours ago)".format(
+                        last_out,
+                        time_since_out.total_seconds()/3600.))
             else:
                 if len(commit_message) == 0:
                     commit_message = "clock-out"
@@ -383,6 +387,9 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
         print("See https://stripe.com/ for more info")
         sys.exit()
 
+    if cfg.stripe.customer.email is None:
+        raise IOError("stripe.customer.email required for stripe invoicing")
+
     logger = logging.getLogger('stripe')
     logger.setLevel(cfg.stripe.logging)
 
@@ -426,7 +433,6 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
 
     if cfg.stripe.send_invoice:
         cfg.stripe.invoice.auto_advance = False
-        cfg.stripe.invoice.collection_method = 'send_invoice'
 
     print(cfg.stripe.pretty())
     user_confirms = input("Is this correct? (yes/n): ")
@@ -450,10 +456,12 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
         print(result.pretty())
     else:
         print("Success!")
+        print("Invoice will be sent to {}".format(result.customer_email))
 
     if result.hosted_invoice_url is not None:
         print("Invoice may be paid at {}".format(result.hosted_invoice_url))
-
+        
+    print("View your invoice at https://dashboard.stripe.com")
     return result
 
 

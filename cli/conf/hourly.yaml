@@ -64,3 +64,5 @@ vis: # set to null to prevent plotting
       include_mathjax: 'cdn'
       auto_play: True
       animation_opts: Null
+
+

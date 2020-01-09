@@ -1,30 +1,21 @@
-# Payments
-
-Hourly can issue invoices based on your timesheets. Currently, only [BTCPay](https://btcpayserver.org/) and [Stripe](https://stripe.com/) are supported.
-
-{! docs/stripe.md !}
-
-## BTCPayServer
+## BTCPay
 
 ### Background
 
-`BTCPay Server` is an open-source payment processing application for cryptocurrency.
-Integration  with hourly means we can issue invoices and receive payments at 
-command-line with minimal cost. You can use a third-party provider
-or host it yourself - the only difference will be the domain
-name used to create the local client.
+[BTCPay](https://btcpayserver.org/) is a decentralized payment processing platform for accepting cryptocurrency. With BTCpay integration, you can issue invoices and receive crypto payments with maximum privacy and minimal cost. You can use a third-party provider or host it yourself - the only difference will be the domain name used to create the local client.
 
 ### Setup
 
-First you will need to register and create a store on a `BTCPay server`. 
-There are a few free ones [listed on the BTCPay Server website](https://docs.btcpayserver.org/deployment/thirdpartyhosting), but please use caution. 
-For maximum privacy and security, you can host one yourself.
+First you will need to register and create a store on a `BTCPay server`.  There are a few free ones [listed on btcpayserver.org](https://docs.btcpayserver.org/deployment/thirdpartyhosting), but please use caution when choosing a free service, as there are trade privacy trade-offs to consider. For maximum privacy and security, you can host one yourself.
 
-Once you've chosen a server, connect a bitcoin wallet to your new store. This can be done in your store's general settings, under
-`Derivation Scheme`, where you provide your wallet's `xpubkey` - BTCPay Server uses this key to generate a unique payment address for every invoice issued.
+Once you've chosen a server, connect a bitcoin wallet to your new store. This can be done in your store's general settings, under `Derivation Scheme`, where you provide your wallet's `xpubkey` - BTCPay Server uses this key to generate a unique payment address for every invoice issued.
 
 !!! warning
     A legitimate BTCPay Server should only ask for your wallet's `xpubkey` and **NEVER YOUR PRIVATE KEY**
+
+!!! info
+    BTCPay also supports [Lightning](https://lightning.network/) invoices, which allows for instant settlement. This involves some tradeoffs in security and availability.
+
 
 Then you will need to install the btcpay-python client
 

@@ -4,7 +4,9 @@ nav:
   - Home: index.md
   - WorkLog.md: WorkLog.md
   - API: README.ipynb
-  - Payments: btcpayserver.md
+  - Payments: Payments.md
+  # - Stripe: stripe.md
+  # - BTCPay: btcpayserver.md
   - Compensation: Compensation.md
   - FAQ: FAQ.md
   - Author's notes: about.md
