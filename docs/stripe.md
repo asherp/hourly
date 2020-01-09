@@ -88,7 +88,7 @@ View your invoice at https://dashboard.stripe.com
 !!! note
     I have redacted actual payment URL 
 
-In about an hour, the recipient should get an email from stripe to pay by credit card. 
+The recipient should get an email from stripe to pay by credit card. 
 You can test credit card payment using one of their [testing cards](https://stripe.com/docs/testing#cards).
 Meanwhile, visiting the url should show you a page like this:
 
