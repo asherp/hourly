@@ -1,3 +1,4 @@
+* got hydra.errors.MissingConfigException on mac
 
 ### 2020-01-09 10:34:21.933690: clock-in
 
