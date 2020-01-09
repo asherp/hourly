@@ -1,3 +1,4 @@
+* adding stripe screen shot
 ### 2020-01-09 03:23:49.529611: clock-out
 
 * added further install instructions
