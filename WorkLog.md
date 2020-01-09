@@ -1,3 +1,4 @@
+* yo
 * quieter logging from stripe api
 * kept invoice config from sharing customer data between repos
 * updated requirements.txt to include hydra
