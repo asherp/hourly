@@ -153,8 +153,9 @@ def run(cfg):
     if cfg.report.work:
         for user_id, user_work in work.groupby(identifier):
             print("\nWork for {}".format(user_id))
-            print(user_work.loc[start_date:end_date])
 
+            # handle case where start and end dates have different utc offsets
+            print(user_work.loc[start_date:].loc[:end_date])
 
     # parse work logs for clock in/out messages
     clocks = get_clocks(work, 

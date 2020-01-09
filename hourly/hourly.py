@@ -61,21 +61,6 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
         else:
             return commits[commits[column].str.contains('|'.join(filters), case = case_sensitive)]
 
-def filter_dates(clocked, start_date, end_date):
-    if start_date is None:
-        start_date = clocked.index[0]
-    else:
-        start_date = pd.to_datetime(start_date)
-    if end_date is None:
-        end_date = clocked.index[-1]
-    else:
-        end_date = pd.to_datetime(end_date)
-    try:
-        clocked = clocked.loc[start_date:end_date]
-    except:
-        print(clocked)
-        raise
-    return clocked
 
 def get_clocks(work, 
             start_date = None,
@@ -85,7 +70,10 @@ def get_clocks(work,
             adjust_clocks = True):
     """Filter work by messages conataining the word 'clock' """
     clocks = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
-    clocks = filter_dates(clocks, start_date, end_date)
+
+    # handle case where start and dates have different utc offsets
+    clocks = clocks.loc[start_date:].loc[:end_date]
+    
     if adjust_clocks:
         clocks = adjust_time(clocks)
     return clocks

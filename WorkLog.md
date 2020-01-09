@@ -1,3 +1,4 @@
+* fixed bug that raised error when only start or end given
 
 ### 2020-01-08 22:28:20.520139: clock-in
 
