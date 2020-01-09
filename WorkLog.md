@@ -1,3 +1,6 @@
+
+### 2020-01-08 22:28:20.520139: clock-in
+
 ### 2020-01-08 03:36:04.021070: clock-out
 
 * Got stripe integration!
