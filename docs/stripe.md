@@ -3,7 +3,7 @@
 
 [Stripe](https://stripe.com/) is a popular global payment processing platform for credit cards. They have an [invoice API](https://stripe.com/docs/billing/invoices/sending) that allows hourly to issue invoices on your behalf in a single command:
 
-`hourly invoice=stripe stripe.customer.email="my.client@momandpop.com"`
+`hourly invoice=stripe stripe.customer.email=my.client@momandpop.com`
 
 ### Stripe Setup
 

@@ -2,7 +2,7 @@
 
 With hourly, issuing invoices is a breeze. To issue a stripe invoice:
 
-	hourly invoice=stripe stripe.customer.email="myclient@momandpop.com"
+	hourly invoice=stripe stripe.customer.email=myclient@momandpop.com
 
 See the [Instructions for configuring hourly for Stripe](stripe.md).
 

@@ -59,7 +59,7 @@ Visit the [Tutorial](README.ipynb) for a detailed walk-through of how hourly gen
 To generate an invoice using stripe:
 
 ```console
-hourly invoice=btcpay repo.start_date="Jan 1, 2020" stripe.customer.email="myclient@momandpop.com"
+hourly invoice=btcpay repo.start_date="Jan 1, 2020" stripe.customer.email=myclient@momandpop.com
 ```
 
 To generate an invoice using btcpay:
