@@ -10,6 +10,8 @@ import hydra
 from os import path
 import sys
 import decimal
+import logging
+import copy
 
     
 def commit_(repo, commit_message, logfile = None):
@@ -123,6 +125,7 @@ def get_user_work(work, current_user, identifier):
             return user_work
 
 def run(cfg):
+
     if cfg.repo.ignore is not None:
         ignore =  cfg.repo.ignore.encode('ascii','ignore')
 
@@ -214,9 +217,17 @@ def run(cfg):
                 if user_id == current_user_id:
                     try:
                         if cfg.stripe is not None:
-                            invoice = get_stripe_invoice(cfg, labor, current_user, compensation)
+                            invoice = get_stripe_invoice(
+                                copy.deepcopy(cfg), # don't leak customer info!
+                                labor,
+                                current_user,
+                                compensation)
                         elif cfg.btcpay is not None:
-                            invoice = get_btcpay_invoice(cfg, labor, current_user, compensation)
+                            invoice = get_btcpay_invoice(
+                                copy.deepcopy(cfg), # don't leak customer info! 
+                                labor, 
+                                current_user, 
+                                compensation)
                     except IOError as m:
                         print("Could not generate invoice: {}".format(m))
                         sys.exit()
@@ -372,6 +383,9 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
         print("See https://stripe.com/ for more info")
         sys.exit()
 
+    logger = logging.getLogger('stripe')
+    logger.setLevel(cfg.stripe.logging)
+
     stripe.api_key = cfg.stripe.secret_key
 
     if compensation is None:
@@ -412,6 +426,7 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
 
     if cfg.stripe.send_invoice:
         cfg.stripe.invoice.auto_advance = False
+        cfg.stripe.invoice.collection_method = 'send_invoice'
 
     print(cfg.stripe.pretty())
     user_confirms = input("Is this correct? (yes/n): ")
