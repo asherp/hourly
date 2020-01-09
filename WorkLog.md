@@ -1,3 +1,4 @@
+* anonymized default stripe customer, changed invoice footer
 * yo
 * quieter logging from stripe api
 * kept invoice config from sharing customer data between repos
