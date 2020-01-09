@@ -1,3 +1,5 @@
+### 2020-01-09 11:00:35.544185: clock-out
+
 * added MANIFEST.in
 * got hydra.errors.MissingConfigException on mac
 
