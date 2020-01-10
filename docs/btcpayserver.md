@@ -6,7 +6,7 @@
 
 ### Setup
 
-First you will need to register and create a store on a `BTCPay server`.  There are a few free ones [listed on btcpayserver.org](https://docs.btcpayserver.org/deployment/thirdpartyhosting), but please use caution when choosing a free service, as there are trade privacy trade-offs to consider. For maximum privacy and security, you can host one yourself.
+First you will need to register and create a store on a `BTCPay server`.  There are a few free ones [listed on btcpayserver.org](https://docs.btcpayserver.org/deployment/thirdpartyhosting), but please use caution when choosing a free service, as there are privacy trade-offs to consider. For maximum privacy and security, host one yourself.
 
 Once you've chosen a server, connect a bitcoin wallet to your new store. This can be done in your store's general settings, under `Derivation Scheme`, where you provide your wallet's `xpubkey` - BTCPay Server uses this key to generate a unique payment address for every invoice issued.
 
@@ -60,7 +60,7 @@ but you can use a different name.
 
 #### Step 3 - Create a client
 
-Cr#eate a client using host url of your `btcpayserver`  (e.g. https://btc.exitpay.org) and private key:
+Create a client using host url of your `btcpayserver`  (e.g. https://btc.exitpay.org) and private key:
 
 ```python
 client = BTCPayClient(host=host_url, pem=privkey)
@@ -78,7 +78,7 @@ token = client.pair_client(pairing_code)
 merchant_token = token['merchant']
 ```
 
-S#ave the merchant_token as an environment variable `BTCPAYSERVER_MERCHANT`
+Save the merchant_token as an environment variable `BTCPAYSERVER_MERCHANT`
 
 #### Step 5 - Recreate the client 
 
@@ -112,16 +112,16 @@ for a short period of time (default is 15 minutes). There is a trade-off here: a
 Hourly creates a `BTCPayClient` through the following configuration:
 
 ```yaml
-{! cli/conf/payment/btcpay.yaml !}
+{! cli/conf/invoice/btcpay.yaml !}
 ```
 
 This allows hourly to access your environment variables and the `pem` file you created above.
 Any of these parameters can be overridden when you run hourly. Here are some examples.
 
 ```console
-hourly invoice=btcpay invoice.pem=<private key> 
-hourly invoice=btcpay invoice.pem=/path/to/other/btcpayserver.pem
-hourly invoice=btcpay invoice.host=https://myprivateserver.com
+hourly invoice=btcpay btcpay.pem=<private key> 
+hourly invoice=btcpay btcpay.pem=/path/to/other/btcpayserver.pem
+hourly invoice=btcpay btcpay.host=https://myprivateserver.com
 ```
 
 ## Hourly Invoicing

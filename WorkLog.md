@@ -1,3 +1,4 @@
+* updated btcpay config docs
 
 ### 2020-01-10 09:11:40.795394: clock-in
 
