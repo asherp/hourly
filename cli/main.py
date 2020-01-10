@@ -128,7 +128,123 @@ def get_user_work(work, current_user, identifier):
         if user_id == current_user:
             return user_work
 
+btcpay_not_installed ="""
+You must install btcpay-python first:
+    pip install btcpay-python
+    See BTCPay Server for more info:
+        https://btcpayserver.org/
+    See btcpay python api for configuration:
+        https://bitpay.com/api/#rest-api-resources-invoices-create-an-invoice
+"""
+
+btcpay_instructions = """
+Initializing hourly-btcpay configuration:
+
+Log in to {} and create a new token:
+    Stores > Store settings > Access tokens > Create new token
+
+Fill in the form:
+    Label: <any string that will help you remember what this pairing is used for>
+    Public key: leave blank
+
+Click save and then copy the 7 digit pairing_code from the success page
+"""
+
+# btcpay:
+#   host: ${env:BTCPAYSERVER_HOST}
+#   tokens:
+#     merchant: ${env:BTCPAYSERVER_MERCHANT}
+#   pem: btcpayserver.pem # file holding btcpayserver private key
+#   return_status: false
+#   invoice:
+#     currency: null # will be honored if set
+#     price: null # will be honored if set, else determined by wage
+#     orderId: null 
+#     fullNotifications: True
+#     extendedNotifications: True
+#     transactionSpeed: medium
+#     notificationURL: null # https://mywebhook.com
+#     notificationEmail: null # myemail@email.com
+#     redirectURL: null # https://yourredirecturl.com
+#     buyer: 
+#       email: null # fox.mulder@trustno.one
+#       name: null # Fox Mulder
+#       phone: null # 555-123-456
+#       address1: null # 2630 Hegal Place
+#       address2: null # Apt 42
+#       locality: null # Alexandria
+#       region: # VA
+#       postalCode: # 23242
+#       country: # US
+#       notify: True
+#     itemDesc: null # will be honored if set, else hourly will provide
+
+def initialize_btcpay(cfg):
+    btcpay = cfg.btcpay
+
+    cfg.btcpay.host = input("Enter your btcpay server's host name (blank to quit) :")
+
+    if len(cfg.btcpay.host) == 0:
+        sys.exit()
+
+    print(btcpay_instructions.format(btcpay.host))
+
+    generate_privkey = input("Should hourly generate your private key? (yes/n) ")
+    if generate_privkey.lower() == 'yes':
+        try:
+            from btcpay import crypto
+        except ImportError():
+            print(btcpay_not_installed)
+            sys.exit()
+
+        btcpay.pem = crypto.generate_privkey()
+
+        save_privkey = input("Should hourly save your private key? (yes/n) ")
+
+        if save_privkey == 'yes':
+            pem_file = input("Enter private key filename (leave blank for btcpayserver.pem):")
+            if len(pem_file) == 0:
+                pem_file = 'btcpayserver.pem'
+            
+            if path.exists(pem_file):
+                print("File already exists! Exiting.")
+                sys.exit()
+
+            with open(privkey_file, 'w') as pem:
+                pem.write(btcpay.pem)
+                print("private key written to {}".format(btcpay.pem))
+                print("Do not commit {} to your repo! List it in .gitignore just to be safe".format(btcpay.pem))
+    else:
+        print("Ok, assuming your btcpay.pem has not yet been paired already")
+
+    
+
+    client = BTCPayClient(host = btcpay.host, pem = btcpay.pem)
+
+    pairing_code = input("Paste your 7 digit pairing code here: ")
+    if len(pairing_code) != 7:
+        print("Pairing code is not 7 digits!")
+        sys.exit()
+
+    btcpay.tokens = client.pair_client(pairing_code)
+    print("merchant token generated")
+
+    save_configuration = input("save configuration? (yes/n) ")
+    if save_configuration.lower() == 'yes':
+        btcpay_filename = print("enter configuration file name (leave blank for btcpay.yaml):")
+        with open(btcpay_filename, 'w') as btcpay_file:
+            btcpay_file.write(btcpay.pretty())
+            print("btcpay config written to {}".format(btcpay_filename))
+            print("Do not commit {} to your repo! List ig in .gitignore just to be safe".format(btcpay_filename))
+    
+    print("Your btcpay configuration is given below:\n")
+    print(btcpay.pretty())
+
+
 def run(cfg):
+    if cfg.init == 'btcpay':
+        initialize_btcpay(cfg)
+        sys.exit()
 
     if cfg.repo.ignore is not None:
         ignore =  cfg.repo.ignore.encode('ascii','ignore')
@@ -330,10 +446,7 @@ def get_btcpay_client(cfg):
     try: 
         from btcpay import BTCPayClient
     except ImportError:
-        print("You must install btcpay-python first:\n\tpip install btcpay-python")
-        print("See BTCPay Server for more info:\n\thttps://btcpayserver.org/")
-        print("See btcpay python api for configuration:")
-        print("\thttps://bitpay.com/api/#rest-api-resources-invoices-create-an-invoice")
+        print(btcpay_not_installed)
         sys.exit()
 
 

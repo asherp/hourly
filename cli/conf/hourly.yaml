@@ -1,5 +1,7 @@
 config_override: hourly.yaml
 
+init: null
+
 repo:
   gitdir: .
   start_date: null 

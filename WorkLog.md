@@ -1,3 +1,5 @@
+### 2020-01-10 10:41:14.079277: clock-out
+
 * simplifying btcpay setup
 * updated btcpay config docs
 
