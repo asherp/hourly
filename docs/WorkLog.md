@@ -13,12 +13,11 @@ While simple and convenient for solo projects, there may be merge conflicts if m
 There are at least two ways to work around this:
 
 1. Use the `work_log.filename` option to specify an alternate log file (e.g. `MyWorkLog.md`) in which to store your session details.
-2. Delete your `WorkLog.md` before merging. 
+2. Delete your `WorkLog.md` before merging. Hourly can still generate a timesheet even if the `WorkLog.md` is missing.
 
 !!! note
     Git keeps the history of your branch's WorkLog after deletion. Recover with `git log --all --full-history -- "**/WorkLog.*"`
 
-Because `hourly`  relies on commit timestamps, it can still generate a timesheet even if the `WorkLog.md` is missing.
 
 ### MkDocs 
 

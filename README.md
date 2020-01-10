@@ -79,7 +79,7 @@ Hourly is hosted on github under the Apache 2.0 license: [https://github.com/ash
 
 ### Install
 
-    pip install hourly
+`pip install hourly --upgrade`
 
 
 ### Requirements

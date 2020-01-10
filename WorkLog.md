@@ -1,3 +1,4 @@
+* actually added MANIFEST.in this time
 * updating docs
 
 ### 2020-01-09 22:22:01.026039: clock-in
