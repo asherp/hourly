@@ -1,3 +1,6 @@
+
+### 2020-01-09 23:52:30.625119: clock-in
+
 ### 2020-01-09 23:30:09.366730: clock-out
 
 * actually added MANIFEST.in this time
