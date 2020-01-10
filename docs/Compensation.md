@@ -14,22 +14,20 @@ compensation:
 !!! note
     Hourly does not yet support public key signatures, but developers could include a signature in `invoice.itemDesc`
 
-This creates some interesting consequences, depending on who authors the configuration.
+This has some interesting consequences, depending on who authors the configuration!
 
-## If compensation is public
 
-Developer `compensation` can be made public by committing `hourly.yaml` to the master branch of your git repo. This implies that the listed developers:
+## Market signaling through compensation
 
-1. may issue invoices for that repo
-2. may be compensated according to the specified wage
+`compensation` details can be made public by committing `hourly.yaml` to the master branch of your git repo. This implies that the listed developers may issue invoices for that repo and might be compensated according to the specified wage. So, if a developer is in high demand, there could be a bidding war between projects to attract that developer's attention.
 
-As a consequence, if the developer is in high demand, there could be a bidding war between projects to attract that developer's attention.
+Conversely, setting your own compensation is an indication of the rates you're offering (and in what currencies). This represents the supply side of a fully decentralized labor market, where "order matching" could be done through email!
 
-## If compensation is private
 
-Suppose there is no compensation set in the project's `hourly.yaml` (or you are not listed). Developers could issue invoices for any amount, but there is no expectation that maintainers would pay. However, there is still a benefit to using hourly!
+## Market signaling through time
 
-1. Your contributions to open source projects can be measured in hours
-2. It demonstrates how valuable your time on their project is, even if they haven't paid you!
+Suppose there is no compensation set in the project's `hourly.yaml` (or you are not a listed developer). There is still a benefit to using hourly: your contributions to open source projects can be measured *in hours*, thereby demonstrating the value of your time. 
 
+!!! note
+    Developers could still issue invoices for any amount, but there is no expectation that maintainers would pay (at least not publicly).
 

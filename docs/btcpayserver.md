@@ -19,7 +19,7 @@ Once you've chosen a server, connect a bitcoin wallet to your new store. This ca
 
 Then you will need to install the btcpay-python client
 
-	pip install btcpay-python
+`pip install btcpay-python`
 
 ### Pairing with BTCPay server
 
@@ -118,9 +118,11 @@ Hourly creates a `BTCPayClient` through the following configuration:
 This allows hourly to access your environment variables and the `pem` file you created above.
 Any of these parameters can be overridden when you run hourly. Here are some examples.
 
-	hourly invoice=btcpay invoice.pem=<private key> 
-	hourly invoice=btcpay invoice.pem=/path/to/other/btcpayserver.pem
-	hourly invoice=btcpay invoice.host=https://myprivateserver.com
+```console
+hourly invoice=btcpay invoice.pem=<private key> 
+hourly invoice=btcpay invoice.pem=/path/to/other/btcpayserver.pem
+hourly invoice=btcpay invoice.host=https://myprivateserver.com
+```
 
 ## Hourly Invoicing
 
