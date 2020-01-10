@@ -1,3 +1,5 @@
+### 2020-01-09 23:30:09.366730: clock-out
+
 * actually added MANIFEST.in this time
 * updating docs
 
