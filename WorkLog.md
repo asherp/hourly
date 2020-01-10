@@ -1,3 +1,5 @@
+### 2020-01-09 23:55:09.691335: clock-out
+
 * added work graph to WorkLog docs
 
 ### 2020-01-09 23:52:30.625119: clock-in
