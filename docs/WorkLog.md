@@ -40,7 +40,9 @@ For example, we can use this method to insert this site's work session details b
 
 ## Hourly's WorkLog
 
-The work sessions for the hourly project are documented below. 
+{! docs/hourly-work.html !}
+
+Individual work sessions for the hourly project are documented below. 
  
 !!! note
     We have used `work_log.header_depth=3` option for clocking in/out so that H3 headers are generated
