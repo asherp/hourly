@@ -1,3 +1,6 @@
+
+### 2020-01-10 22:43:27.852238: clock-in
+
 ### 2020-01-10 22:42:50.681004: clock-out: T-40m 
 
 * adding a years worth of labor
