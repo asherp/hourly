@@ -22,3 +22,6 @@
 [submodule "NASA_ccmc"]
 	path = NASA_ccmc
 	url = https://github.com/asherp/ccmc.git
+[submodule "touchDesigner"]
+	path = touchDesigner
+	url = https://github.com/asherp/touchd.git
