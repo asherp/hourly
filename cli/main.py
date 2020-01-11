@@ -12,6 +12,7 @@ import sys
 import decimal
 import logging
 import copy
+import git
 
     
 def commit_(repo, commit_message, logfile = None):
@@ -251,7 +252,9 @@ def run(cfg):
 
     gitdir = hydra.utils.to_absolute_path(cfg.repo.gitdir)
 
-    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+    repo = git.Repo(gitdir)
+
+    work = get_work_commits(repo, ascending = True, tz = 'US/Eastern')
 
     current_user = get_current_user(repo)
     current_user_id = identify_user(current_user, cfg)

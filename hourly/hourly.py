@@ -23,9 +23,8 @@ def adjust_time(work, dt_str = 'T-'):
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
+def get_work_commits(repo, ascending = True, tz = 'US/Eastern'):
     """Retrives work commits from repo"""
-    repo = git.Repo(repo_addr)
 
     logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits()]
 
@@ -36,7 +35,7 @@ def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         work = work.sort_index(ascending = ascending)
-    return work, repo
+    return work
 
 def get_current_user(repo):
     reader = repo.config_reader()
