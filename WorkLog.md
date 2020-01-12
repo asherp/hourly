@@ -1,3 +1,4 @@
+* added verbosity setting, error handling
 * moved invoicing code into their own module
 
 ### 2020-01-12 15:11:08.113248: clock-in

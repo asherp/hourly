@@ -6,7 +6,7 @@ work_log:
   header_depth: 3
 commit:
   identity:
-  - name
+  - email
 vis:
   frequency: '1 d'
   plotly: # plotly keywords
@@ -16,10 +16,7 @@ vis:
       filename: docs/hourly-work.html
 
 compensation:
-  - name: asherp
-    wage: 100.
-    currency: USD
   - name: Asher Pembroke
-    wage: 100.
-    currency: USD
-    
+    email: apembroke@gmail.com
+    wage:
+      π: 1

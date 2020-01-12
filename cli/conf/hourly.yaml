@@ -21,7 +21,7 @@ report:
     display:
       max_rows: null
       max_columns: 10
-      max_colwidth: 45
+      max_colwidth: 25
       width: 600
 
 
@@ -64,4 +64,5 @@ vis: # set to null to prevent plotting
       auto_play: True
       animation_opts: Null
 
-
+handle_errors: exit # or raise
+verbosity: 0

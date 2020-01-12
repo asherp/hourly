@@ -131,9 +131,9 @@ def get_hours_worked(labor):
     return labor.Hours.sum()
 
 
-def get_earnings(hours, wage, currency = ''):    
-    print("{0:.2f} {1}".format(round(hours*wage,2), currency))
-    return round(hours*wage,2) 
+def get_earnings(hours, wage):
+    return {currency: float(hours*wage[currency]) for currency in wage}
+
 
 
 def get_labor_range(labor):

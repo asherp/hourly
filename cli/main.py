@@ -3,6 +3,7 @@ import pandas as pd
 from hourly import get_work_commits, is_clocked_in, is_clocked_out, update_log, commit_log, get_labor
 from hourly import get_hours_worked, get_earnings, get_labor_range
 from hourly import plot_labor, get_current_user, get_clocks
+from hourly import invoice
 import plotly.graph_objs as go
 import plotly.offline as po
 from omegaconf import OmegaConf, DictConfig
@@ -13,6 +14,13 @@ import decimal
 import logging
 import copy
 
+def handle_errors(cfg, error_msg = None):
+    if error_msg is not None:
+        print(error_msg)
+    if cfg.handle_errors == 'exit':
+        sys.exit()
+    else:
+        raise
     
 def commit_(repo, commit_message, logfile = None):
     if logfile is not None:
@@ -182,7 +190,9 @@ Click save and then copy the 7 digit pairing_code from the success page
 def initialize_btcpay(cfg):
     btcpay = cfg.btcpay
 
-    cfg.btcpay.host = input("Enter your btcpay server's host name (blank to quit) :")
+    host = input("Enter your btcpay server's host name (blank to quit) :")
+
+    cfg.btcpay.host = host
 
     if len(cfg.btcpay.host) == 0:
         sys.exit()
@@ -242,9 +252,13 @@ def initialize_btcpay(cfg):
 
 
 def run(cfg):
-    if cfg.init == 'btcpay':
-        initialize_btcpay(cfg)
-        sys.exit()
+    if cfg.verbosity > 1:
+        print(cfg.pretty())
+    if cfg.init:
+        if cfg.invoice is not None:
+            if cfg.invoice == 'btcpay':
+                initialize_btcpay(cfg)
+                sys.exit()
 
     if cfg.repo.ignore is not None:
         ignore =  cfg.repo.ignore.encode('ascii','ignore')
@@ -274,11 +288,17 @@ def run(cfg):
 
     identifier = list(cfg.commit.identity)
     if cfg.report.work:
-        for user_id, user_work in work.groupby(identifier):
-            print("\nWork for {}".format(user_id))
+        try:
+            for user_id, user_work in work.groupby(identifier):
+                print("\nWork for {}".format(user_id))
 
-            # handle case where start and end dates have different utc offsets
-            print(user_work.loc[start_date:].loc[:end_date])
+                # handle case where start and end dates have different utc offsets
+                print(user_work.loc[start_date:].loc[:end_date])
+        except KeyError as m:
+            print(m)
+            print(work.columns)
+            sys.exit()
+            raise
 
     # parse work logs for clock in/out messages
     clocks = get_clocks(work, 
@@ -329,7 +349,10 @@ def run(cfg):
                 compensation = get_compensation(cfg, identifier, user_id)
 
                 if compensation is not None:
-                    earnings = get_earnings(hours_worked, compensation.wage, compensation.currency)
+                    # should return {'currency': earnings} dictionary
+                    # this way, preferred currency is communicated by relative price!
+                    earnings = get_earnings(hours_worked, compensation.wage) 
+                    print(pd.Series(earnings).to_string())
 
                 if cfg.report.filename is not None:
                     save_report(cfg, labor, user_id)
@@ -389,80 +412,20 @@ def run(cfg):
 
 def get_compensation(cfg, identifier, user_id):
     compensation = pd.DataFrame(OmegaConf.to_container(cfg.compensation))
+    if cfg.verbosity > 0:
+        print("Compensation for {}".format(user_id))
+        print(compensation)
     if len(compensation) > 0:
-        for user_, comp in compensation.groupby(identifier):
-            if user_ == user_id:
-                return OmegaConf.create(comp.iloc[0].to_dict())
+        try:
+            for user_, comp in compensation.groupby(identifier):
+                if user_ == user_id:
+                    return OmegaConf.create(comp.iloc[0].to_dict())
+        except KeyError as m:
+            error_msg = "Problem getting compensation:"
+            error_msg += "identifiers: {}\n".format(identifier)
+            error_msg += "compensation: {}".format(compensation)
+            handle_errors(cfg, error_msg)
 
-
-def get_btcpay_invoice(cfg, labor, current_user, compensation):
-    """generates invoice from btcpay config"""
-    print("Generating btcpay invoice for {}".format(current_user))
-    if compensation is None:
-        raise IOError("No compensation provided.")
-
-    # make sure btcpayserver configuration takes precedence
-
-    client = get_btcpay_client(cfg)
-
-    hours_worked = get_hours_worked(labor)
-
-    if cfg.btcpay.invoice.price is None:
-        if compensation.wage is not None:
-            # can be fractions of btc
-            earnings = float(hours_worked * compensation.wage) 
-        else:
-            raise IOError("Must specify compensation wage or invoice.price")
-        cfg.btcpay.invoice.price = earnings
-
-    if cfg.btcpay.invoice.itemDesc is None:
-        cfg.btcpay.invoice.itemDesc = get_labor_description(labor)
-
-    if cfg.btcpay.invoice.currency is None:
-        if compensation.currency is not None:
-            cfg.btcpay.invoice.currency = compensation.currency
-        else:
-            raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
-
-    print(cfg.btcpay.invoice.pretty())
-    user_confirms = input("Is this correct? (yes/n): ")
-    if user_confirms.lower() != 'yes':
-        print("Ok, try again later")
-        sys.exit()
-
-    btcpay_d = OmegaConf.to_container(cfg.btcpay.invoice)
-    invoice = client.create_invoice(OmegaConf.to_container(cfg.btcpay.invoice))
-
-    result = OmegaConf.create(invoice)
-
-    if cfg.btcpay.return_status:
-        print(result.pretty())
-
-    return result
-
-def get_btcpay_client(cfg):
-    """Reconstruct client credentials"""
-
-    try: 
-        from btcpay import BTCPayClient
-    except ImportError:
-        print(btcpay_not_installed)
-        sys.exit()
-
-
-    # extract host, private key and merchant token
-    host = cfg.btcpay.host
-    pem = cfg.btcpay.pem
-    tokens = dict(merchant = cfg.btcpay.tokens.merchant)
-
-    # see if private key points to a pem file
-    pem_file = hydra.utils.to_absolute_path(cfg.btcpay.pem)
-    if path.exists(pem_file):
-        with open(pem_file) as f:
-            pem = f.read()
-
-    client = BTCPayClient(host = host, pem = pem, tokens = tokens)
-    return client
 
 
 def get_labor_description(labor):
@@ -490,95 +453,7 @@ def save_report(cfg, labor, user_id):
 
 
 
-
-def get_stripe_invoice(cfg, labor, current_user, compensation):
-    print("Generating stripe invoice for {}".format(current_user))
-    try:
-        import stripe
-    except ImportError:
-        print("You must install stripe first!\n\tpip install --upgrade stripe")
-        print("See https://stripe.com/ for more info")
-        sys.exit()
-
-    if cfg.stripe.customer.email is None:
-        raise IOError("stripe.customer.email required for stripe invoicing")
-
-    logger = logging.getLogger('stripe')
-    logger.setLevel(cfg.stripe.logging)
-
-    stripe.api_key = cfg.stripe.secret_key
-
-    if compensation is None:
-        raise IOError("No compensation provided.")
-
-    if cfg.stripe.customer_id is None:
-        print("creating new customer")    
-        customer = stripe.Customer.create(**cfg.stripe.customer)
-        cfg.stripe.customer_id = customer['id']
-        print("new customer_id: {}".format(cfg.stripe.customer_id))
-
-    cfg.stripe.invoice_item.customer = cfg.stripe.customer_id
-    cfg.stripe.invoice.customer = cfg.stripe.customer_id
-
-    hours_worked = get_hours_worked(labor)
-
-    if cfg.stripe.invoice_item.amount is None:
-        if compensation.wage is not None:
-            earnings = decimal.Decimal(hours_worked * compensation.wage)
-        else:
-            raise IOError("Must specify compensation wage or invoice.price")
-        
-        # stripe requires payment to be made in cents
-        cent = decimal.Decimal('0.01')
-        earnings = int(100*float(earnings.quantize(cent, rounding = decimal.ROUND_UP)))
-        cfg.stripe.invoice_item.amount = earnings
-
-    if cfg.stripe.invoice_item.description is None:
-        cfg.stripe.invoice_item.description = get_labor_description(labor)
-
-    if cfg.stripe.invoice_item.currency is None:
-        if compensation.currency is not None:
-            cfg.stripe.invoice_item.currency = compensation.currency
-        else:
-            raise IOError("Must specify stripe.invoice_item.currency " +\
-                " (e.g. USD, GBP) or compensation currency")
-        cfg.stripe.invoice_item.currency = cfg.stripe.invoice_item.currency.lower()
-
-    if cfg.stripe.send_invoice:
-        cfg.stripe.invoice.auto_advance = False
-
-    print(cfg.stripe.pretty())
-    user_confirms = input("Is this correct? (yes/n): ")
-    if user_confirms.lower() != 'yes':
-        print("Ok, try again later")
-        sys.exit()
-
-    invoice_item_d = OmegaConf.to_container(cfg.stripe.invoice_item)
-    invoice_item = stripe.InvoiceItem.create(**invoice_item_d)
-
-    invoice_d = OmegaConf.to_container(cfg.stripe.invoice)
-    invoice = stripe.Invoice.create(**invoice_d)
-
-    if cfg.stripe.send_invoice:
-        result = invoice.send_invoice()
-        result = OmegaConf.create(result)
-    else:
-        result = OmegaConf.create(invoice)
-
-    if cfg.stripe.return_status:
-        print(result.pretty())
-    else:
-        print("Success!")
-        print("Invoice will be sent to {}".format(result.customer_email))
-
-    if result.hosted_invoice_url is not None:
-        print("Invoice may be paid at {}".format(result.hosted_invoice_url))
-
-    print("View your invoice at https://dashboard.stripe.com")
-    return result
-
-
-@hydra.main(config_path="conf/config.yaml")
+@hydra.main(config_path="conf/config.yaml", strict = False)
 def main(cfg):
     cfg = config_override(cfg)
     run(cfg)
@@ -586,7 +461,7 @@ def main(cfg):
 def entry():
     main()
 
-@hydra.main(config_path="conf/config.yaml")
+@hydra.main(config_path="conf/config.yaml", strict = False)
 def cli_in(cfg):
     cfg = config_override(cfg)
     cfg.commit.clock = 'in'
@@ -600,7 +475,7 @@ def hourly_in():
     cli_in()
 
 
-@hydra.main(config_path="conf/config.yaml")
+@hydra.main(config_path="conf/config.yaml", strict = False)
 def cli_out(cfg):
     cfg = config_override(cfg)
     cfg.commit.clock = 'out'
