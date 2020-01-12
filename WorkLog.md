@@ -1,3 +1,5 @@
+### 2020-01-12 17:20:03.651580: clock-out
+
 * changed earnings calculation to dictionary
 * added verbosity setting, error handling
 * moved invoicing code into their own module
