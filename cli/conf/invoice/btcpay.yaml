@@ -1,29 +1,31 @@
 # for invoice spec, see https://bitpay.com/api/#rest-api-resources-invoices
-btcpay:
-  host: ${env:BTCPAYSERVER_HOST}
-  tokens:
-    merchant: ${env:BTCPAYSERVER_MERCHANT}
-  pem: btcpayserver.pem # file holding btcpayserver private key
-  return_status: false
-  invoice:
-    currency: null # will be honored if set
-    price: null # will be honored if set, else determined by wage
-    orderId: null 
-    fullNotifications: True
-    extendedNotifications: True
-    transactionSpeed: medium
-    notificationURL: null # https://mywebhook.com
-    notificationEmail: null # myemail@email.com
-    redirectURL: null # https://yourredirecturl.com
-    buyer: 
-      email: null # fox.mulder@trustno.one
-      name: null # Fox Mulder
-      phone: null # 555-123-456
-      address1: null # 2630 Hegal Place
-      address2: null # Apt 42
-      locality: null # Alexandria
-      region: # VA
-      postalCode: # 23242
-      country: # US
-      notify: True
-    itemDesc: null # will be honored if set, else hourly will provide
+
+invoice:
+  btcpay:
+    host: ${env:BTCPAYSERVER_HOST}
+    tokens:
+      merchant: ${env:BTCPAYSERVER_MERCHANT}
+    pem: btcpayserver.pem # file holding btcpayserver private key
+    return_status: false
+    invoice:
+      currency: null # will be honored if set
+      price: null # will be honored if set, else determined by wage
+      orderId: null 
+      fullNotifications: True
+      extendedNotifications: True
+      transactionSpeed: medium
+      notificationURL: null # https://mywebhook.com
+      notificationEmail: null # myemail@email.com
+      redirectURL: null # https://yourredirecturl.com
+      buyer: 
+        email: null # fox.mulder@trustno.one
+        name: null # Fox Mulder
+        phone: null # 555-123-456
+        address1: null # 2630 Hegal Place
+        address2: null # Apt 42
+        locality: null # Alexandria
+        region: # VA
+        postalCode: # 23242
+        country: # US
+        notify: True
+      itemDesc: null # will be honored if set, else hourly will provide

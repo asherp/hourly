@@ -1,6 +1,6 @@
 config_override: hourly.yaml
 
-init: null
+init: false
 
 repo:
   gitdir: .
@@ -34,9 +34,6 @@ commit:
     - email
 
 compensation: [] # sets wages and currency per developer
-
-btcpay: null
-stripe: null
 
 work_log: 
   filename: WorkLog.md
