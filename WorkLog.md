@@ -1,3 +1,6 @@
+
+### 2020-01-12 15:11:08.113248: clock-in
+
 ### 2020-01-12 09:40:04.640256: clock-out
 
 * corrected MANIFEST.in path
