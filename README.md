@@ -1,5 +1,5 @@
 # Hourly
-A simple hour tracker for git projects, ```hourly``` parses your commit messages for `clock-in` and `clock-out` keywords and uses their unix timestamps to precisely calculate work hours.
+Hourly is a command-line time tracking tool for git projects. Hourly parses your commit messages for `clock-in` and `clock-out` keywords to precisely estimate work hours. Designed for developers and project managers, hourly makes it easy to see how and where you spend your time. When configured with Stripe or BTCPay, hourly can generate invoices for your specified wage.
 
 ## Usage
 
@@ -59,19 +59,22 @@ Visit the [Tutorial](README.ipynb) for a detailed walk-through of how hourly gen
 To generate an invoice using stripe:
 
 ```console
-hourly invoice=btcpay repo.start_date="Jan 1, 2020" stripe.customer.email=myclient@momandpop.com
+hourly invoice=stripe repo.start_date="Jan 1, 2020" stripe.customer.email=myclient@momandpop.com
 ```
 
-To generate an invoice using btcpay:
+The above command generates a time sheet for this repo, calculates earnings, prepares a stripe invoice,
+and asks you to confirm details. After confirmation, an email will be sent from your Stripe account
+to myclient@momandpop.com.
+
+The btcpay invoicing is similar:
 
 ```console
 hourly invoice=btcpay repo.start_date="Jan 1, 2020"
 ```
-
-
+After confirmation, hourly tells your btcpay server to generate an invoice and displays the corresponding payment url.
+Note that BTCPay can be configured for lightning, so streaming payments are possible!
 
 Visit the [Payments](Payments.md) section for more info.
-
 
 ## Getting Started
 

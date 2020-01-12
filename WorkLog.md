@@ -1,3 +1,4 @@
+* updated README intro
 
 ### 2020-01-12 08:23:25.178670: clock-in
 
