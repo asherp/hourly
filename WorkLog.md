@@ -1,3 +1,4 @@
+* removing Dashboard prototyping notebook
 ### 2020-01-12 09:06:00.564390: clock-out: T-20m 
 
 * updated README intro
