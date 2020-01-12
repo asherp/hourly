@@ -1,3 +1,4 @@
+* changed earnings calculation to dictionary
 * added verbosity setting, error handling
 * moved invoicing code into their own module
 
