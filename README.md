@@ -69,7 +69,7 @@ Visit the [Tutorial](README.ipynb) for a detailed walk-through of how hourly gen
 To generate an invoice using stripe:
 
 ```console
-hourly invoice=stripe repo.start_date="Jan 1, 2020" stripe.customer.email=myclient@momandpop.com
+hourly-report invoice=stripe repo.start_date="Jan 1, 2020" stripe.customer.email=myclient@momandpop.com
 ```
 
 The above command generates a time sheet for this repo, calculates earnings, prepares a stripe invoice,
@@ -88,7 +88,9 @@ Visit the [Payments](Payments.md) section for more info.
 
 ## Getting Started
 
-Hourly is hosted on github under the Apache 2.0 license: [https://github.com/asherp/hourly](https://github.com/asherp/hourly)
+Hourly is hosted on github under the Apache 2.0 license
+
+[https://github.com/asherp/hourly](https://github.com/asherp/hourly)
 
 ### Install
 
