@@ -473,7 +473,7 @@ but you can use a different name.</p>
 <p>Assuming you have completed the steps to connect a wallet to your btcpayserver,
 you should be able to run the following code to generate an invoice.</p>
 <div class="codehilite"><pre><span></span><span class="n">new_invoice</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_invoice</span><span class="p">({</span><span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s2">&quot;currency&quot;</span><span class="p">:</span> <span class="s2">&quot;USD&quot;</span><span class="p">})</span>
-<span class="k">print</span><span class="p">(</span><span class="n">new_invoice</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">new_invoice</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
 </pre></div>
 
 
@@ -483,48 +483,50 @@ for a short period of time (default is 15 minutes). There is a trade-off here: a
 <h3 id="hourly-configuration">Hourly configuration<a class="headerlink" href="#hourly-configuration" title="Permanent link">#</a></h3>
 <p>Hourly creates a <code>BTCPayClient</code> through the following configuration:</p>
 <div class="codehilite"><pre><span></span><span class="c1"># for invoice spec, see https://bitpay.com/api/#rest-api-resources-invoices</span>
-<span class="nt">btcpay</span><span class="p">:</span>
-  <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_HOST}</span>
-  <span class="nt">tokens</span><span class="p">:</span>
-    <span class="nt">merchant</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_MERCHANT}</span>
-  <span class="nt">pem</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">btcpayserver.pem</span> <span class="c1"># file holding btcpayserver private key</span>
-  <span class="nt">return_status</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-  <span class="nt">invoice</span><span class="p">:</span>
-    <span class="nt">currency</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set</span>
-    <span class="nt">price</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else determined by wage</span>
-    <span class="nt">orderId</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> 
-    <span class="nt">fullNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-    <span class="nt">extendedNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-    <span class="nt">transactionSpeed</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">medium</span>
-    <span class="nt">notificationURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://mywebhook.com</span>
-    <span class="nt">notificationEmail</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># myemail@email.com</span>
-    <span class="nt">redirectURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://yourredirecturl.com</span>
-    <span class="nt">buyer</span><span class="p">:</span> 
-      <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># fox.mulder@trustno.one</span>
-      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Fox Mulder</span>
-      <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 555-123-456</span>
-      <span class="nt">address1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 2630 Hegal Place</span>
-      <span class="nt">address2</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Apt 42</span>
-      <span class="nt">locality</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Alexandria</span>
-      <span class="nt">region</span><span class="p">:</span> <span class="c1"># VA</span>
-      <span class="nt">postalCode</span><span class="p">:</span> <span class="c1"># 23242</span>
-      <span class="nt">country</span><span class="p">:</span> <span class="c1"># US</span>
-      <span class="nt">notify</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-    <span class="nt">itemDesc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else hourly will provide</span>
+
+<span class="nt">invoice</span><span class="p">:</span>
+  <span class="nt">btcpay</span><span class="p">:</span>
+    <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_HOST}</span>
+    <span class="nt">tokens</span><span class="p">:</span>
+      <span class="nt">merchant</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_MERCHANT}</span>
+    <span class="nt">pem</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">btcpayserver.pem</span> <span class="c1"># file holding btcpayserver private key</span>
+    <span class="nt">return_status</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+    <span class="nt">invoice</span><span class="p">:</span>
+      <span class="nt">currency</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set</span>
+      <span class="nt">price</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else determined by wage</span>
+      <span class="nt">orderId</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> 
+      <span class="nt">fullNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">extendedNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">transactionSpeed</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">medium</span>
+      <span class="nt">notificationURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://mywebhook.com</span>
+      <span class="nt">notificationEmail</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># myemail@email.com</span>
+      <span class="nt">redirectURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://yourredirecturl.com</span>
+      <span class="nt">buyer</span><span class="p">:</span> 
+        <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># fox.mulder@trustno.one</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Fox Mulder</span>
+        <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 555-123-456</span>
+        <span class="nt">address1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 2630 Hegal Place</span>
+        <span class="nt">address2</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Apt 42</span>
+        <span class="nt">locality</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Alexandria</span>
+        <span class="nt">region</span><span class="p">:</span> <span class="c1"># VA</span>
+        <span class="nt">postalCode</span><span class="p">:</span> <span class="c1"># 23242</span>
+        <span class="nt">country</span><span class="p">:</span> <span class="c1"># US</span>
+        <span class="nt">notify</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">itemDesc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else hourly will provide</span>
 </pre></div>
 
 
 <p>This allows hourly to access your environment variables and the <code>pem</code> file you created above.
 Any of these parameters can be overridden when you run hourly. Here are some examples.</p>
-<div class="codehilite"><pre><span></span><span class="go">hourly invoice=btcpay btcpay.pem=&lt;private key&gt; </span>
-<span class="go">hourly invoice=btcpay btcpay.pem=/path/to/other/btcpayserver.pem</span>
-<span class="go">hourly invoice=btcpay btcpay.host=https://myprivateserver.com</span>
+<div class="codehilite"><pre><span></span><span class="go">hourly-report invoice=btcpay btcpay.pem=&lt;private key&gt; </span>
+<span class="go">hourly-report invoice=btcpay btcpay.pem=/path/to/other/btcpayserver.pem</span>
+<span class="go">hourly-report invoice=btcpay btcpay.host=https://myprivateserver.com</span>
 </pre></div>
 
 
 <h2 id="hourly-invoicing">Hourly Invoicing<a class="headerlink" href="#hourly-invoicing" title="Permanent link">#</a></h2>
 <p>If you configured hourly with BTCPay, you can generate an invoice for your git repo in a given date range. Here is what that looks like when applied to the hourly repo:</p>
-<div class="codehilite"><pre><span></span><span class="go">hourly invoice=btcpay payment=btcpay repo.start_date=&quot;Jan 1, 2020&quot; repo.end_date=&quot;Jan 6, 2020&quot;</span>
+<div class="codehilite"><pre><span></span><span class="go">hourly-report invoice=btcpay payment=btcpay repo.start_date=&quot;Jan 1, 2020&quot; repo.end_date=&quot;Jan 6, 2020&quot;</span>
 
 <span class="go">Processing timesheet for Asher Pembroke</span>
 <span class="go">pay period: 2020-01-03 18:44:04-05:00 -&gt; 2020-01-05 18:34:41-05:00</span>
