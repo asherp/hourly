@@ -127,7 +127,7 @@ def config_override(cfg):
     if path.exists(override_path):
         override_conf = OmegaConf.load(override_path)
         # merge overrides first input with second
-        cfg = OmegaConf.merge(cfg, override_conf, OmegaConf.from_cli())
+        cfg = OmegaConf.merge(cfg, override_conf)
     return cfg
 
 def get_user_work(work, current_user, identifier):
@@ -317,14 +317,6 @@ def get_compensation(cfg, identifier, user_id):
 
 
 
-def get_labor_description(labor):
-    hours_worked = get_hours_worked(labor)
-    start, end = get_labor_range(labor)
-    labor_description = "{:.2f} hours worked from {} to {}".format(
-        round(hours_worked,2), # YYYY-MM-DDTHH:mm:ssZ
-        start.isoformat(),
-        end.isoformat())
-    return labor_description
 
 def save_report(cfg, labor, user_id):
     start, end = get_labor_range(labor)
