@@ -1,3 +1,6 @@
+
+### 2020-01-13 21:58:41.887269: clock-in
+
 ### 2020-01-13 21:54:29.330641: clock-out
 
 * updating worklog docs
