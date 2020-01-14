@@ -12,7 +12,7 @@ repo:
   match_logs: False # should all clock-ins be paired with clock-outs
 
 report:
-  timesheet: true # print timesheet
+  timesheet: false # print timesheet
   work: false # print work log
   filename: null # csv file to save report to
   wage: null # numerical wage to multiply by hours

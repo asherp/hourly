@@ -7,29 +7,39 @@ Hourly is a command-line time tracking tool for git projects. Hourly parses your
 
 To clock in:
 ```console
-  hourly-in
+hourly-in
 ```
-The above command updates the `WorkLog.md` file, and commits it with the message "clock-in". Feel free to edit this log file to provide supporting documentation for this work session.
+The above command updates the header of your work log (`WorkLog.md` by default) and commits it with the message "clock-in". 
 
+Stage any changes to your code base. When you are ready to commit:
+
+```console
+hourly commit.message="my commit message"
+```
+
+Hourly updates the work log with your commit message. Feel free to use the work log to provide additional context.
 When you are finished committing other work for this session, you may clock out:
 
 ```console
-  hourly-out
+hourly-out
 ```
+
+Again, hourly updates the work log and commits it with the message "clock-out" along with any other staged files. Read [more
+about configuring your work log](WorkLog.md).
 
 ### Timesheets
 
 When you are ready to generate a timesheet for your repo, run hourly from your git directory:
 
 ```console
-  hourly
+hourly
 ```
 Hourly parses all the commit messages for clock in/out keywords and uses git's timestamps to determine how long each session lasted.
 
 For example, here's what happens when you run hourly *on the hourly repo itself*:
 
 ```console
-  hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono"
+hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono"
 
 pay period: 2018-10-28 13:44:48-04:00 -> 2019-02-25 12:49:51-05:00
 ignoring pro bono
