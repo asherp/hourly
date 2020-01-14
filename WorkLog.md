@@ -1,3 +1,4 @@
+* fixed bug where command line args were ignored by config_override
 * turned off time sheet generation by default, updated README usage section
 
 ### 2020-01-13 22:01:00.641375: clock-in
