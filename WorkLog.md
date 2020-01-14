@@ -1,3 +1,6 @@
+
+### 2020-01-14 02:03:18.253023: clock-in
+
 * trying to figure out submodules
 ### 2020-01-14 00:08:15.447796: clock-out
 

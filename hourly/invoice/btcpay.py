@@ -65,47 +65,52 @@ Click save and then copy the 7 digit pairing_code from the success page
 #     itemDesc: null # will be honored if set, else hourly will provide
 
 
-def get_btcpay_invoice(cfg, labor, current_user, compensation):
+def get_btcpay_invoice(cfg, labor, current_user, earnings):
     """generates invoice from btcpay config"""
     print("Generating btcpay invoice for {}".format(current_user))
-    if compensation is None:
-        raise IOError("No compensation provided.")
 
     # make sure btcpayserver configuration takes precedence
+    btcpay = cfg.invoice.btcpay
 
     client = get_btcpay_client(cfg)
 
     hours_worked = get_hours_worked(labor)
 
-    if cfg.invoice.btcpay.invoice.price is None:
-        if compensation.wage is not None:
-            # can be fractions of btc
-            earnings = float(hours_worked * compensation.wage) 
-        else:
-            raise IOError("Must specify compensation wage or invoice.price")
-        cfg.invoice.btcpay.invoice.price = earnings
+    if btcpay.invoice.currency is None:
+        if len(earnings) > 0:
+            currency = input('choose currency {}:\n{}'.format(
+                tuple(earnings.keys()),
+                OmegaConf.create(earnings).pretty()))
 
-    if cfg.invoice.btcpay.invoice.itemDesc is None:
-        cfg.invoice.btcpay.invoice.itemDesc = get_labor_description(labor)
-
-    if cfg.invoice.btcpay.invoice.currency is None:
-        if compensation.currency is not None:
-            cfg.invoice.btcpay.invoice.currency = compensation.currency
+            btcpay.invoice.currency = currency
         else:
             raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
 
-    print(cfg.invoice.btcpay.invoice.pretty())
+
+    if btcpay.invoice.price is None:
+        if btcpay.invoice.currency in earnings:
+            # can be fractions of btc
+            earnings = earnings[currency] 
+        else:
+            raise IOError("Must specify compensation wage or invoice.price")
+        btcpay.invoice.price = earnings
+
+    if btcpay.invoice.itemDesc is None:
+        btcpay.invoice.itemDesc = get_labor_description(labor)
+
+
+    print(btcpay.invoice.pretty())
     user_confirms = input("Is this correct? (yes/n): ")
     if user_confirms.lower() != 'yes':
         print("Ok, try again later")
         sys.exit()
 
-    btcpay_d = OmegaConf.to_container(cfg.invoice.btcpay.invoice)
-    invoice = client.create_invoice(OmegaConf.to_container(cfg.invoice.btcpay.invoice))
+    btcpay_d = OmegaConf.to_container(btcpay.invoice)
+    invoice = client.create_invoice(OmegaConf.to_container(btcpay.invoice))
 
     result = OmegaConf.create(invoice)
 
-    if cfg.invoice.btcpay.return_status:
+    if btcpay.return_status:
         print(result.pretty())
 
     return result

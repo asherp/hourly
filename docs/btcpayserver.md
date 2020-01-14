@@ -102,10 +102,10 @@ new_invoice = client.create_invoice({"price": 20, "currency": "USD"})
 print(new_invoice['url'])
 ```
 
-This should give you a payment url you can email to your employer.
+This should give you a payment url you can email to your client/employer.
 
 Depending on how you set up your BTCPay Server, the invoice will only be valid
-for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the employer must act quickly to pay the invoice.   
+for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the client/employer must act quickly to pay the invoice.   
  
 ### Hourly configuration
 
