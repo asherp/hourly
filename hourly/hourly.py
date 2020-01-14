@@ -127,6 +127,15 @@ def get_labor(clocked,
     else:
         return labor.drop('hash', axis = 1)
 
+def get_labor_description(labor):
+    hours_worked = get_hours_worked(labor)
+    start, end = get_labor_range(labor)
+    labor_description = "{:.2f} hours worked from {} to {}".format(
+        round(hours_worked,2), # YYYY-MM-DDTHH:mm:ssZ
+        start.isoformat(),
+        end.isoformat())
+    return labor_description
+
 def get_hours_worked(labor):
     return labor.Hours.sum()
 

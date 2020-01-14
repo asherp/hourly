@@ -15,8 +15,6 @@ report:
   timesheet: false # print timesheet
   work: false # print work log
   filename: null # csv file to save report to
-  wage: null # numerical wage to multiply by hours
-  currency: '' # string currency to display earnings
   pandas:
     display:
       max_rows: null

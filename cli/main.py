@@ -141,12 +141,22 @@ def run(cfg):
         print(cfg.pretty())
     if cfg.init:
         if cfg.invoice is not None:
-            if cfg.invoice == 'btcpay':
+            if cfg.invoice.btcpay is not None:
                 from hourly.invoice.btcpay import initialize_btcpay
                 initialize_btcpay(cfg)
                 sys.exit()
+            # elif cfg.invoice.stripe is not None:
+            #     from hourly.invoice.stripe import initalize_stripe
+            #     initalize_stripe(cfg)
+            #     sys.exit()
+            else:
+                print('No method to initialize this invoice type')
+                print(cfg.invoice.pretty())
+                sys.exit()
         else:
             print('no invoice set to initialize')
+            print('options are:\n\tinvoice=stripe\n\tinvoice=btcpay')
+            sys.exit()
 
     gitdir = hydra.utils.to_absolute_path(cfg.repo.gitdir)
 
@@ -178,7 +188,7 @@ def run(cfg):
                 print("\nWork for {}".format(user_id))
 
                 # handle case where start and end dates have different utc offsets
-                print(user_work.loc[start_date:].loc[:end_date])
+                print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
         except KeyError as m:
             print(m)
             print(work.columns)
@@ -217,7 +227,7 @@ def run(cfg):
             print("\nProcessing timesheet for {}".format(user_id))
 
             labor = get_labor(
-                user_work.drop(identifier, axis = 1),
+                user_work.drop(['name','email'], axis = 1),
                 ignore = cfg.repo.ignore.encode('ascii','ignore'), 
                 match_logs = cfg.repo.match_logs,
                 case_sensitive = cfg.repo.case_sensitive)
@@ -368,6 +378,15 @@ def cli_out(cfg):
 def hourly_out():
     cli_out()
 
+
+@hydra.main(config_path="conf/config.yaml", strict = False)
+def cli_report(cfg):
+    cfg = config_override(cfg)
+    cfg.report.timesheet = True
+    run(cfg)
+
+def hourly_report():
+    cli_report()
 
 if __name__ == "__main__":
     main()

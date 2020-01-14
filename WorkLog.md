@@ -1,3 +1,4 @@
+* created hourly-report cli, cleaned up initialization code
 * cli overrides broke grouping
 * fixed bug where command line args were ignored by config_override
 * turned off time sheet generation by default, updated README usage section

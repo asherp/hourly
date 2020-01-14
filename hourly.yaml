@@ -10,9 +10,6 @@ commit:
   identity:
   - email
 
-report:
-  timesheet: true
-
 vis:
   frequency: '1 d'
   plotly: # plotly keywords
