@@ -1,3 +1,6 @@
+
+### 2020-01-13 22:01:00.641375: clock-in
+
 * changing maxwidth again
 ### 2020-01-12 17:20:03.651580: clock-out
 
