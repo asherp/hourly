@@ -32,14 +32,14 @@ about configuring your work log](WorkLog.md).
 When you are ready to generate a timesheet for your repo, run hourly from your git directory:
 
 ```console
-hourly
+hourly-report
 ```
 Hourly parses all the commit messages for clock in/out keywords and uses git's timestamps to determine how long each session lasted.
 
 For example, here's what happens when you run hourly *on the hourly repo itself*:
 
 ```console
-hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono"
+hourly-report repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono"
 
 pay period: 2018-10-28 13:44:48-04:00 -> 2019-02-25 12:49:51-05:00
 ignoring pro bono
@@ -52,7 +52,7 @@ ignoring pro bono
 To save the timesheet as a csv file, include an ouput prefix:
 
 ```console
-hourly repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono" report.filename=Pembroke
+hourly-report repo.start_date="2018-10-21" repo.end_date="2019-3-10" repo.ignore="pro bono" report.filename=Pembroke
 pay period: 2018-10-28 13:44:48-04:00 -> 2019-02-25 12:49:51-05:00
 ignoring pro bono
                      TimeIn           LogIn                   TimeOut          LogOut TimeDelta     Hours
@@ -79,7 +79,7 @@ to myclient@momandpop.com.
 The btcpay invoicing is similar:
 
 ```console
-hourly invoice=btcpay repo.start_date="Jan 1, 2020"
+hourly-report invoice=btcpay repo.start_date="Jan 1, 2020"
 ```
 After confirmation, hourly tells your btcpay server to generate an invoice and displays the corresponding payment url.
 Note that BTCPay can be configured for lightning, so streaming payments are possible!
@@ -126,7 +126,9 @@ pip install mkdocs mkdocs-material markdown-include mknotebooks
 
 ### Tests
 
-I use the pytest suite with pytest-cov
+For integration tests, hourly may be tested against the hourly repo.
+
+Unit tests are based on pytest suite with pytest-cov
 
 ```console
 pip install pytest pytest-cov
