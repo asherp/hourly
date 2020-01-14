@@ -253,15 +253,24 @@ def run(cfg):
                     save_report(cfg, labor, user_id)
 
                 if user_id == current_user_id:
-                    if cfg.infoice is not None:
+                    print('current user:{}'.format(user_id))
+                    if cfg.invoice is not None:
+                        if cfg.verbosity > 0:
+                            print('processing your invoice')
                         try:
                             if cfg.invoice.stripe is not None:
+                                if cfg.verbosity > 0:
+                                    print('creating stripe invoice')
+                                from hourly.invoice.stripe import get_stripe_invoice
                                 invoice = get_stripe_invoice(
                                     copy.deepcopy(cfg), # don't leak customer info!
                                     labor,
                                     current_user,
                                     compensation)
                             elif cfg.invoice.btcpay is not None:
+                                if cfg.verbosity > 0:
+                                    print('creating btcpay invoice')
+                                from hourly.invoice.btcpay import get_btcpay_invoice
                                 invoice = get_btcpay_invoice(
                                     copy.deepcopy(cfg), # don't leak customer info! 
                                     labor, 
@@ -273,6 +282,8 @@ def run(cfg):
                         except IOError as m:
                             print("Could not generate invoice: {}".format(m))
                             sys.exit()
+                else:
+                    print("{} is not the current user".format(user_id))
                         
                 if cfg.vis is not None:
                     if type(user_id) == tuple:
