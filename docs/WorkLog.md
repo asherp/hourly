@@ -1,11 +1,11 @@
 # WorkLog.md
 
-The `hourly` command line utility will update the top-level `WorkLog.md` file when you clock in/out of a project, inserting a clock in/out header with the current time stamp at the top of the file. This file may be edited to add details about the current work session. The `WorkLog.md` file serves a dual purpose:
+When you clock in or out of a repo, `hourly` updates update a work log, determined by the `work_log.filename` parameter. By default, hourly searches for `WorkLog.md` in the top level of your repo. Hourly inserts a clock in/out header with the current time stamp at the top of the file. In addition, `hourly commit.message=my message` will update the work log with your message and commit it along with any other files added with the `git add <my changes>`. The work log can (and should!) be edited to include any supporting documentation for the work session. Thus, the `WorkLog.md` file serves a dual purpose:
 
 1. It provides a human-readable account of work session details
 2. It ensures there is always a file to commit against
 
-This way work sessions can be documented even if there are no committed code changes.
+Note that work sessions should be documented even if there are no committed code changes, such as meetings or any other work related to the repo.
 
 ### Collaborative Development
 

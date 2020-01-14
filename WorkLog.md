@@ -1,3 +1,4 @@
+* updating worklog docs
 
 ### 2020-01-13 21:34:47.381601: clock-in: T-10m 
 
