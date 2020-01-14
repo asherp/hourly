@@ -105,5 +105,5 @@ venv.bak/
 
 # hourly
 hourly-outputs/
-
+docs/hourly-work.html
 btcpayserver.pem
