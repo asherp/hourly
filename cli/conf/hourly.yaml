@@ -21,7 +21,7 @@ report:
     display:
       max_rows: null
       max_columns: 10
-      max_colwidth: 25
+      max_colwidth: 45
       width: 600
 
 
