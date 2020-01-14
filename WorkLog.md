@@ -1,3 +1,5 @@
+### 2020-01-14 00:08:15.447796: clock-out
+
 * minor doc changes
 * updated remaining docs to reflect hourly-report
 * changed README to reflect new hourly-report syntax
