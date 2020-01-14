@@ -1,3 +1,4 @@
+* trying to figure out submodules
 ### 2020-01-14 00:08:15.447796: clock-out
 
 * minor doc changes
