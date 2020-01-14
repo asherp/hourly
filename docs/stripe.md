@@ -3,7 +3,7 @@
 
 [Stripe](https://stripe.com/) is a popular global payment processing platform for credit cards. They have an [invoice API](https://stripe.com/docs/billing/invoices/sending) that allows hourly to issue invoices on your behalf in a single command:
 
-`hourly invoice=stripe stripe.customer.email=my.client@momandpop.com`
+`hourly-report invoice=stripe stripe.customer.email=my.client@momandpop.com`
 
 ### Stripe Setup
 
@@ -50,7 +50,7 @@ However, `stripe.customer.email` is a required field.
 To generate a stripe invoice for your repo, you will need to specify an email address. Hourly will prepare an invoice and ask for confirmation.
 Here is an example of what that looks like when I run hourly on the hourly repo:
 
-`hourly invoice=stripe repo.start_date="Jan 1, 2020" stripe.customer.email=apembroke+hourly@gmail.com"`
+`hourly-report invoice=stripe repo.start_date="Jan 1, 2020" stripe.customer.email=apembroke+hourly@gmail.com"`
 
 ```console
 1 days 04:02:14, 28.04 hours worked

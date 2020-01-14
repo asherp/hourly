@@ -1,3 +1,4 @@
+* updated remaining docs to reflect hourly-report
 * changed README to reflect new hourly-report syntax
 * fixed bug in invoice generation
 * created hourly-report cli, cleaned up initialization code

@@ -5,7 +5,7 @@
 The git repo for hourly has a custom configuration that allows us to embed
 the work hours as a graph in the mkdocs site.
  
-If we run hourly from its own git repo, the graph div gets stored in
+If we run `hourly-report` from its own git repo, the graph div gets stored in
 `docs/hourly-work.html`. 
 
 The graph is embedded using the [markdown-include](https://github.com/cmacmackin/markdown-include) extension in `mkdocs.yml`.

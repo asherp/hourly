@@ -119,9 +119,9 @@ This allows hourly to access your environment variables and the `pem` file you c
 Any of these parameters can be overridden when you run hourly. Here are some examples.
 
 ```console
-hourly invoice=btcpay btcpay.pem=<private key> 
-hourly invoice=btcpay btcpay.pem=/path/to/other/btcpayserver.pem
-hourly invoice=btcpay btcpay.host=https://myprivateserver.com
+hourly-report invoice=btcpay btcpay.pem=<private key> 
+hourly-report invoice=btcpay btcpay.pem=/path/to/other/btcpayserver.pem
+hourly-report invoice=btcpay btcpay.host=https://myprivateserver.com
 ```
 
 ## Hourly Invoicing
@@ -129,7 +129,7 @@ hourly invoice=btcpay btcpay.host=https://myprivateserver.com
 If you configured hourly with BTCPay, you can generate an invoice for your git repo in a given date range. Here is what that looks like when applied to the hourly repo:
 
 ```console
-hourly invoice=btcpay payment=btcpay repo.start_date="Jan 1, 2020" repo.end_date="Jan 6, 2020"
+hourly-report invoice=btcpay payment=btcpay repo.start_date="Jan 1, 2020" repo.end_date="Jan 6, 2020"
 
 Processing timesheet for Asher Pembroke
 pay period: 2020-01-03 18:44:04-05:00 -> 2020-01-05 18:34:41-05:00
