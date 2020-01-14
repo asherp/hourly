@@ -832,13 +832,13 @@ but you can use a different name.</p>
 <p>Assuming you have completed the steps to connect a wallet to your btcpayserver,
 you should be able to run the following code to generate an invoice.</p>
 <div class="codehilite"><pre><span></span><span class="n">new_invoice</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_invoice</span><span class="p">({</span><span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s2">&quot;currency&quot;</span><span class="p">:</span> <span class="s2">&quot;USD&quot;</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">new_invoice</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">new_invoice</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
 </pre></div>
 
 
-<p>This should give you a payment url you can email to your employer.</p>
+<p>This should give you a payment url you can email to your client/employer.</p>
 <p>Depending on how you set up your BTCPay Server, the invoice will only be valid
-for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the employer must act quickly to pay the invoice.   </p>
+for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the client/employer must act quickly to pay the invoice.   </p>
 <h3 id="hourly-configuration_1">Hourly configuration<a class="headerlink" href="#hourly-configuration_1" title="Permanent link">#</a></h3>
 <p>Hourly creates a <code>BTCPayClient</code> through the following configuration:</p>
 <div class="codehilite"><pre><span></span><span class="c1"># for invoice spec, see https://bitpay.com/api/#rest-api-resources-invoices</span>

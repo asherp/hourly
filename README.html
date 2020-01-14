@@ -386,8 +386,8 @@
                 
                 <h1 id="tutorial">Tutorial<a class="headerlink" href="#tutorial" title="Permanent link">#</a></h1>
 <p>We can illustrate how to use hourly by looking at the hourly repo itself.</p>
-<div class="codehilite"><pre><span></span><span class="err">git clone https://github.com/asherp/hourly.git</span>
-<span class="err">cd hourly</span>
+<div class="codehilite"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">asherp</span><span class="o">/</span><span class="n">hourly</span><span class="p">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">hourly</span>
 </pre></div>
 
 
@@ -581,8 +581,8 @@
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">(Timestamp(&#39;2018-10-19 23:40:41-0400&#39;, tz=&#39;US/Eastern&#39;),</span>
-<span class="err"> Timestamp(&#39;2018-11-23 14:14:38-0500&#39;, tz=&#39;US/Eastern&#39;))</span>
+<div class="codehilite"><pre><span></span><span class="p">(</span><span class="k">Timestamp</span><span class="p">(</span><span class="s1">&#39;2018-10-19 23:40:41-0400&#39;</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">),</span>
+ <span class="k">Timestamp</span><span class="p">(</span><span class="s1">&#39;2018-11-23 14:14:38-0500&#39;</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">))</span>
 </pre></div>
 
 
@@ -786,12 +786,12 @@
 <div class="codehilite"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="n">get_labor</span><span class="p">(</span><span class="n">clocks</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">pay period: 2018-10-19 23:57:48-04:00 -&gt; 2018-10-28 13:56:35-04:00</span>
-<span class="err">In/Out logs do not match: clock ins:7, clock outs:8</span>
+<div class="codehilite"><pre><span></span><span class="nv">pay</span> <span class="nv">period</span>: <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">19</span> <span class="mi">23</span>:<span class="mi">57</span>:<span class="mi">48</span><span class="o">-</span><span class="mi">04</span>:<span class="mi">00</span> <span class="o">-&gt;</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">28</span> <span class="mi">13</span>:<span class="mi">56</span>:<span class="mi">35</span><span class="o">-</span><span class="mi">04</span>:<span class="mi">00</span>
+<span class="nv">In</span><span class="o">/</span><span class="nv">Out</span> <span class="nv">logs</span> <span class="k">do</span> <span class="nv">not</span> <span class="nv">match</span>: <span class="nv">clock</span> <span class="nv">ins</span>:<span class="mi">7</span>, <span class="nv">clock</span> <span class="nv">outs</span>:<span class="mi">8</span>
 </pre></div>
 
 
@@ -810,7 +810,7 @@
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">pay period: 2018-10-19 23:57:48-04:00 -&gt; 2018-10-28 13:56:35-04:00</span>
+<div class="codehilite"><pre><span></span><span class="n">pay</span> <span class="n">period</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">19</span> <span class="mi">23</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">48</span><span class="o">-</span><span class="mi">04</span><span class="p">:</span><span class="mi">00</span> <span class="o">-&gt;</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">28</span> <span class="mi">13</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">35</span><span class="o">-</span><span class="mi">04</span><span class="p">:</span><span class="mi">00</span>
 </pre></div>
 
 
@@ -898,7 +898,7 @@
     </tr>
   </tbody>
 </table>
-<p>7 rows × 10 columns</p>
+<p>7 rows Ã— 10 columns</p>
 </div>
 
 <h3 id="filtering-work-session-keywords">Filtering work session keywords<a class="headerlink" href="#filtering-work-session-keywords" title="Permanent link">#</a></h3>
@@ -908,8 +908,8 @@
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">pay period: 2018-10-19 23:57:48-04:00 -&gt; 2018-10-28 13:56:35-04:00</span>
-<span class="err">ignoring pro bono</span>
+<div class="codehilite"><pre><span></span><span class="n">pay</span> <span class="n">period</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">19</span> <span class="mi">23</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">48</span><span class="o">-</span><span class="mi">04</span><span class="p">:</span><span class="mi">00</span> <span class="o">-&gt;</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">28</span> <span class="mi">13</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">35</span><span class="o">-</span><span class="mi">04</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">ignoring</span> <span class="n">pro</span> <span class="n">bono</span>
 </pre></div>
 
 
@@ -989,7 +989,7 @@
     </tr>
   </tbody>
 </table>
-<p>6 rows × 10 columns</p>
+<p>6 rows Ã— 10 columns</p>
 </div>
 
 <h2 id="get-total-earnings">Get total earnings<a class="headerlink" href="#get-total-earnings" title="Permanent link">#</a></h2>
@@ -1002,7 +1002,7 @@
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">3.848055555555556</span>
+<div class="codehilite"><pre><span></span><span class="mi">3</span><span class="p">.</span><span class="mi">848055555555556</span>
 </pre></div>
 
 
@@ -1330,11 +1330,11 @@
 </table>
 </div>
 
-<div class="codehilite"><pre><span></span><span class="n">get_labor</span><span class="p">(</span><span class="n">clocks</span><span class="p">,</span> <span class="n">match_logs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="n">get_labor</span><span class="p">(</span><span class="n">clocks</span><span class="p">,</span> <span class="n">match_logs</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
 </pre></div>
 
 
-<div class="codehilite"><pre><span></span><span class="err">pay period: 2019-02-25 10:19:10-05:00 -&gt; 2019-12-23 12:36:57-05:00</span>
+<div class="codehilite"><pre><span></span><span class="n">pay</span> <span class="n">period</span><span class="p">:</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">25</span> <span class="mi">10</span><span class="p">:</span><span class="mi">19</span><span class="p">:</span><span class="mi">10</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span> <span class="o">-&gt;</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">23</span> <span class="mi">12</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="mi">57</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span>
 </pre></div>
 
 
@@ -1390,11 +1390,11 @@
     </tr>
   </tbody>
 </table>
-<p>3 rows × 8 columns</p>
+<p>3 rows Ã— 8 columns</p>
 </div>
 
 <p>The default behavior can be changed by setting <code>adjust_clocks</code> to <code>False</code>.</p>
-<div class="codehilite"><pre><span></span><span class="n">clocks_raw</span> <span class="o">=</span> <span class="n">get_clocks</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">adjust_clocks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="n">clocks_raw</span> <span class="o">=</span> <span class="n">get_clocks</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">adjust_clocks</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="n">clocks_raw</span><span class="p">[</span><span class="s1">&#39;adjustment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">work</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">clocks_raw</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 <span class="n">clocks_raw</span>
 </pre></div>
