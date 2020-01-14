@@ -1,3 +1,6 @@
+
+### 2020-01-13 21:34:47.381601: clock-in: T-10m 
+
 * removing docs/hourly-work.html
 * added hourly-work to gitignore
 * switching machines
