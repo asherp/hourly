@@ -266,7 +266,7 @@ def run(cfg):
                                     copy.deepcopy(cfg), # don't leak customer info!
                                     labor,
                                     current_user,
-                                    compensation)
+                                    earnings)
                             elif cfg.invoice.btcpay is not None:
                                 if cfg.verbosity > 0:
                                     print('creating btcpay invoice')
@@ -275,7 +275,7 @@ def run(cfg):
                                     copy.deepcopy(cfg), # don't leak customer info! 
                                     labor, 
                                     current_user, 
-                                    compensation)
+                                    earnings)
                             else:
                                 print('hourly cannot process this invoice type yet:')
                                 print(cfg.invoice.pretty())

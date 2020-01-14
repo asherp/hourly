@@ -11,7 +11,7 @@ from omegaconf import OmegaConf
 import sys
 from os import path
 import hydra
-
+import pandas as pd
 
 btcpay_not_installed ="""
 You must install btcpay-python first:
@@ -78,9 +78,7 @@ def get_btcpay_invoice(cfg, labor, current_user, earnings):
 
     if btcpay.invoice.currency is None:
         if len(earnings) > 0:
-            currency = input('choose currency {}:\n{}'.format(
-                tuple(earnings.keys()),
-                OmegaConf.create(earnings).pretty()))
+            currency = input('choose currency {}:'.format(earnings))
 
             btcpay.invoice.currency = currency
         else:

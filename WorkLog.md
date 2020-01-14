@@ -1,3 +1,4 @@
+* fixed bugs in invoice generation
 
 ### 2020-01-14 02:03:18.253023: clock-in
 

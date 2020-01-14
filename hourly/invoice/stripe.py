@@ -8,12 +8,13 @@ from omegaconf import OmegaConf
 import logging
 import sys
 import decimal
+from hourly.hourly import get_labor_description
 
 
 def initalize_stripe(cfg):
     pass
 
-def get_stripe_invoice(cfg, labor, current_user, compensation):
+def get_stripe_invoice(cfg, labor, current_user, earnings):
     print("Generating stripe invoice for {}".format(current_user))
     try:
         import stripe
@@ -22,52 +23,55 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
         print("See https://stripe.com/ for more info")
         sys.exit()
 
-    if cfg.invoice.stripe.customer.email is None:
-        raise IOError("stripe.customer.email required for stripe invoicing")
+    stripe_ = cfg.invoice.stripe
+    if stripe_.customer.email is None:
+        raise IOError("invoice.stripe.customer.email required for stripe invoicing")
 
     logger = logging.getLogger('stripe')
     logger.setLevel(cfg.invoice.stripe.logging)
 
-    stripe.api_key = cfg.invoice.stripe.secret_key
+    stripe.api_key = stripe_.secret_key
 
-    if compensation is None:
-        raise IOError("No compensation provided.")
-
-    if cfg.invoice.stripe.customer_id is None:
+    if stripe_.customer_id is None:
         print("creating new customer")    
         customer = stripe.Customer.create(**cfg.invoice.stripe.customer)
-        cfg.invoice.stripe.customer_id = customer['id']
+        stripe_.customer_id = customer['id']
         print("new customer_id: {}".format(cfg.invoice.stripe.customer_id))
 
-    cfg.invoice.stripe.invoice_item.customer = cfg.invoice.stripe.customer_id
-    cfg.invoice.stripe.invoice.customer = cfg.invoice.stripe.customer_id
+    stripe_.invoice_item.customer = stripe_.customer_id
+    stripe_.invoice.customer = stripe_.customer_id
 
-    hours_worked = get_hours_worked(labor)
 
-    if cfg.invoice.stripe.invoice_item.amount is None:
-        if compensation.wage is not None:
-            earnings = decimal.Decimal(hours_worked * compensation.wage)
+    if stripe_.invoice_item.currency is None:
+        if len(earnings) > 0:
+            currency = input('choose currency {}:'.format(earnings))
+            if currency not in earnings:
+                print('need to choose from {}'.format(tuple(earnings.keys())))
+                sys.exit()
+            stripe_.invoice_item.currency = currency
+        else:
+            raise IOError("Must specify stripe.invoice_item.currency " +\
+                " (e.g. USD, GBP) or compensation currency")
+        stripe_.invoice_item.currency = stripe_.invoice_item.currency.lower()
+
+
+    if stripe_.invoice_item.amount is None:
+        if len(earnings) > 0:
+            earnings_ = decimal.Decimal(earnings[stripe_.invoice_item.currency])
         else:
             raise IOError("Must specify compensation wage or invoice.price")
         
         # stripe requires payment to be made in cents
         cent = decimal.Decimal('0.01')
-        earnings = int(100*float(earnings.quantize(cent, rounding = decimal.ROUND_UP)))
-        cfg.invoice.stripe.invoice_item.amount = earnings
+        earnings_ = int(100*float(earnings_.quantize(cent, rounding = decimal.ROUND_UP)))
+        stripe_.invoice_item.amount = earnings_
 
-    if cfg.invoice.stripe.invoice_item.description is None:
-        cfg.invoice.stripe.invoice_item.description = get_labor_description(labor)
+    if stripe_.invoice_item.description is None:
+        stripe_.invoice_item.description = get_labor_description(labor)
 
-    if cfg.invoice.stripe.invoice_item.currency is None:
-        if compensation.currency is not None:
-            cfg.invoice.stripe.invoice_item.currency = compensation.currency
-        else:
-            raise IOError("Must specify stripe.invoice_item.currency " +\
-                " (e.g. USD, GBP) or compensation currency")
-        cfg.invoice.stripe.invoice_item.currency = cfg.invoice.stripe.invoice_item.currency.lower()
 
-    if cfg.invoice.stripe.send_invoice:
-        cfg.invoice.stripe.invoice.auto_advance = False
+    if stripe_.send_invoice:
+        stripe_.invoice.auto_advance = False
 
     print(cfg.invoice.stripe.pretty())
     user_confirms = input("Is this correct? (yes/n): ")
@@ -81,13 +85,13 @@ def get_stripe_invoice(cfg, labor, current_user, compensation):
     invoice_d = OmegaConf.to_container(cfg.invoice.stripe.invoice)
     invoice = stripe.Invoice.create(**invoice_d)
 
-    if cfg.invoice.stripe.send_invoice:
+    if stripe_.send_invoice:
         result = invoice.send_invoice()
         result = OmegaConf.create(result)
     else:
         result = OmegaConf.create(invoice)
 
-    if cfg.invoice.stripe.return_status:
+    if stripe_.return_status:
         print(result.pretty())
     else:
         print("Success!")
