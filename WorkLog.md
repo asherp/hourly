@@ -1,3 +1,5 @@
+### 2020-01-14 18:41:10.382420: clock-out
+
 * fixed tminus
 * code clean up
 * switching to 'foo' in cfg.bar
