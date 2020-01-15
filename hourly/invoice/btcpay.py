@@ -40,103 +40,6 @@ Click save and then copy the 7 digit pairing_code from the success page
 #   tokens:
 #     merchant: ${env:BTCPAYSERVER_MERCHANT}
 #   pem: btcpayserver.pem # file holding btcpayserver private key
-#   return_status: false
-#   invoice:
-#     currency: null # will be honored if set
-#     price: null # will be honored if set, else determined by wage
-#     orderId: null 
-#     fullNotifications: True
-#     extendedNotifications: True
-#     transactionSpeed: medium
-#     notificationURL: null # https://mywebhook.com
-#     notificationEmail: null # myemail@email.com
-#     redirectURL: null # https://yourredirecturl.com
-#     buyer: 
-#       email: null # fox.mulder@trustno.one
-#       name: null # Fox Mulder
-#       phone: null # 555-123-456
-#       address1: null # 2630 Hegal Place
-#       address2: null # Apt 42
-#       locality: null # Alexandria
-#       region: # VA
-#       postalCode: # 23242
-#       country: # US
-#       notify: True
-#     itemDesc: null # will be honored if set, else hourly will provide
-
-
-def get_btcpay_invoice(cfg, labor, current_user, earnings):
-    """generates invoice from btcpay config"""
-    print("Generating btcpay invoice for {}".format(current_user))
-
-    # make sure btcpayserver configuration takes precedence
-    btcpay = cfg.invoice.btcpay
-
-    client = get_btcpay_client(cfg)
-
-    # hours_worked = get_hours_worked(labor)
-
-    if 'currency' not in btcpay.invoice:
-    # if 'currency' in btcpay.invoice:
-        if len(earnings) > 0:
-            currency = input('choose currency {}:'.format(earnings))
-
-            btcpay.invoice.currency = currency
-        else:
-            raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
-
-    if 'price' not in btcpay.invoice:
-        if btcpay.invoice.currency in earnings:
-            # can be fractions of btc
-            earnings = earnings[currency] 
-        else:
-            raise IOError("Must specify compensation wage or invoice.price")
-        btcpay.invoice.price = earnings
-
-    if 'itemDesc' not in btcpay.invoice:
-        btcpay.invoice.itemDesc = get_labor_description(labor)
-
-
-    print(btcpay.invoice.pretty())
-    user_confirms = input("Is this correct? (yes/n): ")
-    if user_confirms.lower() != 'yes':
-        print("Ok, try again later")
-        sys.exit()
-
-    btcpay_d = OmegaConf.to_container(btcpay.invoice)
-    invoice = client.create_invoice(OmegaConf.to_container(btcpay.invoice))
-
-    result = OmegaConf.create(invoice)
-
-    if btcpay.return_status:
-        print(result.pretty())
-
-    return result
-
-def get_btcpay_client(cfg):
-    """Reconstruct client credentials"""
-
-    try: 
-        from btcpay import BTCPayClient
-    except ImportError:
-        print('btcpay_not_installed')
-        sys.exit()
-
-
-    # extract host, private key and merchant token
-    host = cfg.invoice.btcpay.host
-    pem = cfg.invoice.btcpay.pem
-    tokens = dict(merchant = cfg.invoice.btcpay.tokens.merchant)
-
-    # see if private key points to a pem file
-    pem_filename = hydra.utils.to_absolute_path(cfg.invoice.btcpay.pem)
-    if path.exists(pem_filename):
-        with open(pem_filename) as pem_file:
-            pem = pem_file.read()
-
-    client = BTCPayClient(host = host, pem = pem, tokens = tokens)
-    return client
-
 
 def initialize_btcpay(cfg):
     try: 
@@ -206,4 +109,81 @@ def initialize_btcpay(cfg):
     
     print("Your btcpay configuration is given below:\n")
     print(btcpay.pretty())
+
+
+
+def get_btcpay_invoice(cfg, labor, current_user, earnings):
+    """generates invoice from btcpay config"""
+    print("Generating btcpay invoice for {}".format(current_user))
+
+    # make sure btcpayserver configuration takes precedence
+    btcpay = cfg.invoice.btcpay
+
+    client = get_btcpay_client(cfg)
+
+    # hours_worked = get_hours_worked(labor)
+
+    if 'currency' not in btcpay.invoice:
+    # if 'currency' in btcpay.invoice:
+        if len(earnings) > 0:
+            currency = input('choose currency {}:'.format(earnings))
+
+            btcpay.invoice.currency = currency
+        else:
+            raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
+
+    if 'price' not in btcpay.invoice:
+        if btcpay.invoice.currency in earnings:
+            # can be fractions of btc
+            earnings = earnings[currency] 
+        else:
+            raise IOError("Must specify compensation wage or invoice.price")
+        btcpay.invoice.price = earnings
+
+    if 'itemDesc' not in btcpay.invoice:
+        btcpay.invoice.itemDesc = get_labor_description(labor)
+
+
+    print(btcpay.invoice.pretty(resolve = True))
+    user_confirms = input("Is this correct? (yes/n): ")
+    if user_confirms.lower() != 'yes':
+        print("Ok, try again later")
+        sys.exit()
+
+    btcpay_d = OmegaConf.to_container(btcpay.invoice)
+    invoice = client.create_invoice(OmegaConf.to_container(btcpay.invoice))
+
+    result = OmegaConf.create(invoice)
+
+    if btcpay.return_status:
+        print(result.pretty())
+
+    return result
+
+def get_btcpay_client(cfg):
+    """Reconstruct client credentials"""
+
+    try: 
+        from btcpay import BTCPayClient
+    except ImportError:
+        print('btcpay_not_installed')
+        sys.exit()
+
+
+    # extract host, private key and merchant token
+    host = cfg.invoice.btcpay.host
+    pem = cfg.invoice.btcpay.pem
+    tokens = dict(merchant = cfg.invoice.btcpay.tokens.merchant)
+
+    # see if private key points to a pem file
+    pem_filename = hydra.utils.to_absolute_path(cfg.invoice.btcpay.pem)
+    if path.exists(pem_filename):
+        with open(pem_filename) as pem_file:
+            pem = pem_file.read()
+
+    client = BTCPayClient(host = host, pem = pem, tokens = tokens)
+    return client
+
+
+
 
