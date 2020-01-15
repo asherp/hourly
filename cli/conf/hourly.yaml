@@ -14,7 +14,7 @@ repo:
 report:
   timesheet: false # print timesheet
   work: false # print work log
-  filename: null # csv file to save report to
+  filename: '???' # csv file to save report to
   pandas:
     display:
       max_rows: null
@@ -25,7 +25,7 @@ report:
 
 commit:
   clock: '???' # 'in' will update WorkLog.md and commit with message "clock-in"
-  tminus: '???' # '15m' will prepend 'T-15m' to commit message (ignored if clock is null)
+  tminus: null # '15m' will prepend 'T-15m' to commit message (ignored if clock is null)
   message: '' # 'my message' will append 'my message' to commit message
   identity: # how to identify contributors
     - name

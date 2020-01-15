@@ -255,7 +255,7 @@ def run(cfg):
 
                 if user_id == current_user_id:
                     print('current user:{}'.format(user_id))
-                    if 'invoice' in cfg.invoice:
+                    if 'invoice' in cfg:
                         if cfg.verbosity > 0:
                             print('processing your invoice')
                         try:
