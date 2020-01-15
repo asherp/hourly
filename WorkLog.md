@@ -1,3 +1,4 @@
+* switching to 'foo' in cfg.bar
 
 ### 2020-01-14 17:32:53.638696: clock-in
 

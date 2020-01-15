@@ -74,9 +74,10 @@ def get_btcpay_invoice(cfg, labor, current_user, earnings):
 
     client = get_btcpay_client(cfg)
 
-    hours_worked = get_hours_worked(labor)
+    # hours_worked = get_hours_worked(labor)
 
-    if btcpay.invoice.currency is None:
+    if 'currency' not in btcpay.invoice:
+    # if 'currency' in btcpay.invoice:
         if len(earnings) > 0:
             currency = input('choose currency {}:'.format(earnings))
 
@@ -84,8 +85,7 @@ def get_btcpay_invoice(cfg, labor, current_user, earnings):
         else:
             raise IOError("Must specify invoice.currency (e.g. USD, BTC) or compensation currency")
 
-
-    if btcpay.invoice.price is None:
+    if 'price' not in btcpay.invoice:
         if btcpay.invoice.currency in earnings:
             # can be fractions of btc
             earnings = earnings[currency] 
@@ -93,7 +93,7 @@ def get_btcpay_invoice(cfg, labor, current_user, earnings):
             raise IOError("Must specify compensation wage or invoice.price")
         btcpay.invoice.price = earnings
 
-    if btcpay.invoice.itemDesc is None:
+    if 'itemDesc' not in btcpay.invoice:
         btcpay.invoice.itemDesc = get_labor_description(labor)
 
 

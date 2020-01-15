@@ -23,8 +23,9 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
         print("See https://stripe.com/ for more info")
         sys.exit()
 
+
     stripe_ = cfg.invoice.stripe
-    if stripe_.customer.email is None:
+    if 'email' not in stripe_.customer:
         raise IOError("invoice.stripe.customer.email required for stripe invoicing")
 
     logger = logging.getLogger('stripe')
@@ -32,7 +33,7 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
 
     stripe.api_key = stripe_.secret_key
 
-    if stripe_.customer_id is None:
+    if 'customer_id' not in stripe_:
         print("creating new customer")    
         customer = stripe.Customer.create(**cfg.invoice.stripe.customer)
         stripe_.customer_id = customer['id']
@@ -42,7 +43,7 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
     stripe_.invoice.customer = stripe_.customer_id
 
 
-    if stripe_.invoice_item.currency is None:
+    if 'currency' not in stripe_.invoice_item:
         if len(earnings) > 0:
             currency = input('choose currency {}:'.format(earnings))
             if currency not in earnings:
@@ -55,7 +56,7 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
         stripe_.invoice_item.currency = stripe_.invoice_item.currency.lower()
 
 
-    if stripe_.invoice_item.amount is None:
+    if 'amount' not in stripe_.invoice_item:
         if len(earnings) > 0:
             earnings_ = decimal.Decimal(earnings[stripe_.invoice_item.currency])
         else:
@@ -66,7 +67,7 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
         earnings_ = int(100*float(earnings_.quantize(cent, rounding = decimal.ROUND_UP)))
         stripe_.invoice_item.amount = earnings_
 
-    if stripe_.invoice_item.description is None:
+    if 'description' not in stripe_.invoice_item:
         stripe_.invoice_item.description = get_labor_description(labor)
 
 
@@ -97,7 +98,7 @@ def get_stripe_invoice(cfg, labor, current_user, earnings):
         print("Success!")
         print("Invoice will be sent to {}".format(result.customer_email))
 
-    if result.hosted_invoice_url is not None:
+    if 'hosted_invoice_url' in result:
         print("Invoice may be paid at {}".format(result.hosted_invoice_url))
 
     print("View your invoice at https://dashboard.stripe.com")

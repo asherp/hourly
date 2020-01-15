@@ -51,7 +51,7 @@ def process_commit(cfg, work, repo):
     if len(commit_message) > 0:
         log_message = '{} {}\n'.format(cfg.work_log.bullet, commit_message)
 
-    if cfg.commit.clock is not None:
+    if 'clock' in cfg.commit:
         tminus = cfg.commit.tminus or ''
         if len(tminus) != 0:
             commit_message = "T-{} {}".format(tminus.strip('T-'), commit_message)
@@ -140,8 +140,8 @@ def run(cfg):
     if cfg.verbosity > 1:
         print(cfg.pretty())
     if cfg.init:
-        if cfg.invoice is not None:
-            if cfg.invoice.btcpay is not None:
+        if 'invoice' in cfg:
+            if 'btcpay' in cfg.invoice:
                 from hourly.invoice.btcpay import initialize_btcpay
                 initialize_btcpay(cfg)
                 sys.exit()
@@ -165,17 +165,18 @@ def run(cfg):
     current_user = get_current_user(repo)
     current_user_id = identify_user(current_user, cfg)
 
-    if cfg.repo.start_date is None:
-        start_date = work.index[0]
-    else:
+    if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
-
-    if cfg.repo.end_date is None:
-        end_date = work.index[-1]
     else:
-        end_date = pd.to_datetime(cfg.repo.end_date)
+        start_date = work.index[0]
+        
 
-    if cfg.report.pandas is not None:
+    if 'end_date' in cfg.repo:
+        end_date = pd.to_datetime(cfg.repo.end_date)
+    else:
+        end_date = work.index[-1]  
+
+    if 'pandas' in cfg.report:
         pd_opts = flatten_dict(
             OmegaConf.to_container(cfg.report.pandas)) 
         for k,v in pd_opts.items():
@@ -202,8 +203,8 @@ def run(cfg):
             errant_clocks = cfg.repo.errant_clocks,
             case_sensitive = cfg.repo.case_sensitive)
 
-    if cfg.commit is not None:
-        if (cfg.commit.clock is not None) | len(cfg.commit.message) > 0:
+    if 'commit' in cfg:
+        if ('clock' in cfg.commit) | (len(cfg.commit.message) > 0):
             
             user_work = get_user_work(clocks, current_user_id, identifier)
             try:
@@ -249,16 +250,16 @@ def run(cfg):
                     earnings = get_earnings(hours_worked, compensation.wage) 
                     print(pd.Series(earnings).to_string())
 
-                if cfg.report.filename is not None:
+                if 'filename' in cfg.report:
                     save_report(cfg, labor, user_id)
 
                 if user_id == current_user_id:
                     print('current user:{}'.format(user_id))
-                    if cfg.invoice is not None:
+                    if 'invoice' in cfg.invoice:
                         if cfg.verbosity > 0:
                             print('processing your invoice')
                         try:
-                            if cfg.invoice.stripe is not None:
+                            if 'stripe' in cfg.invoice:
                                 if cfg.verbosity > 0:
                                     print('creating stripe invoice')
                                 from hourly.invoice.stripe import get_stripe_invoice
@@ -267,7 +268,7 @@ def run(cfg):
                                     labor,
                                     current_user,
                                     earnings)
-                            elif cfg.invoice.btcpay is not None:
+                            elif 'btcpay' in cfg.invoice:
                                 if cfg.verbosity > 0:
                                     print('creating btcpay invoice')
                                 from hourly.invoice.btcpay import get_btcpay_invoice
@@ -285,7 +286,7 @@ def run(cfg):
                 else:
                     print("{} is not the current user".format(user_id))
                         
-                if cfg.vis is not None:
+                if 'vis' in cfg:
                     if type(user_id) == tuple:
                         plot_label = "<br>".join(user_id)
                     else:
@@ -299,7 +300,7 @@ def run(cfg):
             else:
                 print('No data for {} to {}'.format(start_date, end_date))
 
-        if cfg.vis is not None:
+        if 'vis' in cfg:
             plot_title = "total hours commited: {0:.2f}".format(total_hours)
             fig = go.Figure(plot_traces)
             fig.update_layout(
@@ -330,7 +331,7 @@ def get_compensation(cfg, identifier, user_id):
             for user_, comp in compensation.groupby(identifier):
                 if user_ == user_id:
                     return OmegaConf.create(comp.iloc[0].to_dict())
-        except KeyError as m:
+        except KeyError:
             error_msg = "Problem getting compensation:"
             error_msg += "identifiers: {}\n".format(identifier)
             error_msg += "compensation: {}".format(compensation)
@@ -355,7 +356,7 @@ def save_report(cfg, labor, user_id):
 
 
 
-@hydra.main(config_path="conf/config.yaml", strict = False)
+@hydra.main(config_path="conf/config.yaml", strict = True)
 def main(cfg):
     cfg = config_override(cfg)
     run(cfg)
@@ -363,7 +364,7 @@ def main(cfg):
 def entry():
     main()
 
-@hydra.main(config_path="conf/config.yaml", strict = False)
+@hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_in(cfg):
     cfg = config_override(cfg)
     cfg.commit.clock = 'in'
@@ -377,7 +378,7 @@ def hourly_in():
     cli_in()
 
 
-@hydra.main(config_path="conf/config.yaml", strict = False)
+@hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_out(cfg):
     cfg = config_override(cfg)
     cfg.commit.clock = 'out'
@@ -390,7 +391,7 @@ def hourly_out():
     cli_out()
 
 
-@hydra.main(config_path="conf/config.yaml", strict = False)
+@hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_report(cfg):
     cfg = config_override(cfg)
     cfg.report.timesheet = True
