@@ -1,3 +1,4 @@
+* trying networkx
 
 ### 2020-01-14 20:06:38.823337: clock-in: T-10m 
 
