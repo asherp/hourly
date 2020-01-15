@@ -1,3 +1,4 @@
+* fixed tminus
 * code clean up
 * switching to 'foo' in cfg.bar
 
