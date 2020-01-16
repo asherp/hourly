@@ -1,3 +1,4 @@
+* added my profile as a submodule
 * created profile repo to point to
 * removing remaining submodules
 * removed submodules
