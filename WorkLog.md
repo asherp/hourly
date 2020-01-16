@@ -1,3 +1,5 @@
+### 2020-01-15 23:52:43.018668: clock-out
+
 * added my profile as a submodule
 * created profile repo to point to
 * removing remaining submodules
