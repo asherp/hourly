@@ -1,3 +1,4 @@
+* 0.3.10
 * changed install path to hourly/cli
 ### 2020-01-14 19:02:53.559393: clock-out
 
