@@ -226,10 +226,11 @@ def run(cfg):
         plot_traces = []
         for user_id, user_work in clocks.groupby(identifier):
             print("\nProcessing timesheet for {}".format(user_id))
-
+            if cfg.repo.ignore is not None:
+                ignore = cfg.repo.ignore.encode('ascii','ignore')
             labor = get_labor(
                 user_work.drop(['name','email'], axis = 1),
-                ignore = cfg.repo.ignore.encode('ascii','ignore'), 
+                ignore = cfg.repo.ignore, 
                 match_logs = cfg.repo.match_logs,
                 case_sensitive = cfg.repo.case_sensitive)
 

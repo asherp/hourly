@@ -113,6 +113,7 @@ def get_labor(clocked,
     labor = labor.assign(Hours = labor['TimeDelta'].apply(lambda x: x.total_seconds()/3600.))
     
     if ignore is not None:
+        ignore = ignore.encode('ascii','ignore')
         if verbose:
             print('ignoring {}'.format(ignore))
         try:
