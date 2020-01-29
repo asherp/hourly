@@ -1,1 +1,1 @@
-recursive-include cli *.yaml
+recursive-include hourly/cli *.yaml
