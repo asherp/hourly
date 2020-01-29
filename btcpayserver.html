@@ -482,37 +482,7 @@ you should be able to run the following code to generate an invoice.</p>
 for a short period of time (default is 15 minutes). There is a trade-off here: a short time period mitigates the risk of currency fluctuation, but requires that the client/employer must act quickly to pay the invoice.   </p>
 <h3 id="hourly-configuration">Hourly configuration<a class="headerlink" href="#hourly-configuration" title="Permanent link">#</a></h3>
 <p>Hourly creates a <code>BTCPayClient</code> through the following configuration:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># for invoice spec, see https://bitpay.com/api/#rest-api-resources-invoices</span>
-
-<span class="nt">invoice</span><span class="p">:</span>
-  <span class="nt">btcpay</span><span class="p">:</span>
-    <span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_HOST}</span>
-    <span class="nt">tokens</span><span class="p">:</span>
-      <span class="nt">merchant</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${env:BTCPAYSERVER_MERCHANT}</span>
-    <span class="nt">pem</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">btcpayserver.pem</span> <span class="c1"># file holding btcpayserver private key</span>
-    <span class="nt">return_status</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-    <span class="nt">invoice</span><span class="p">:</span>
-      <span class="nt">currency</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set</span>
-      <span class="nt">price</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else determined by wage</span>
-      <span class="nt">orderId</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> 
-      <span class="nt">fullNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-      <span class="nt">extendedNotifications</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-      <span class="nt">transactionSpeed</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">medium</span>
-      <span class="nt">notificationURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://mywebhook.com</span>
-      <span class="nt">notificationEmail</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># myemail@email.com</span>
-      <span class="nt">redirectURL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># https://yourredirecturl.com</span>
-      <span class="nt">buyer</span><span class="p">:</span> 
-        <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># fox.mulder@trustno.one</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Fox Mulder</span>
-        <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 555-123-456</span>
-        <span class="nt">address1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># 2630 Hegal Place</span>
-        <span class="nt">address2</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Apt 42</span>
-        <span class="nt">locality</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># Alexandria</span>
-        <span class="nt">region</span><span class="p">:</span> <span class="c1"># VA</span>
-        <span class="nt">postalCode</span><span class="p">:</span> <span class="c1"># 23242</span>
-        <span class="nt">country</span><span class="p">:</span> <span class="c1"># US</span>
-        <span class="nt">notify</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-      <span class="nt">itemDesc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># will be honored if set, else hourly will provide</span>
+<div class="codehilite"><pre><span></span>
 </pre></div>
 
 
