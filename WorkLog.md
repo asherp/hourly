@@ -1,3 +1,6 @@
+
+### 2020-01-28 20:10:17.270214: clock-in
+
 * fixed ignore bug preventing timesheet generation
 * 0.3.10
 * changed install path to hourly/cli
