@@ -1,3 +1,6 @@
+
+### 2020-01-29 23:45:29.962519: clock-in
+
 ### 2020-01-28 20:12:53.326321: clock-out
 
 * fixed MANIFEST since cli moved into hourly module
