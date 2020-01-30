@@ -694,7 +694,72 @@ help command:</p>
 Hourly's default configuration including comments can be seen here.
 </summary>
 
-<div class="codehilite"><pre><span></span>
+<div class="codehilite"><pre><span></span><span class="nt">config_override</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hourly.yaml</span>
+
+<span class="nt">init</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">repo</span><span class="p">:</span>
+  <span class="nt">gitdir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.</span>
+  <span class="nt">start_date</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> 
+  <span class="nt">end_date</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> 
+  <span class="nt">errant_clocks</span><span class="p">:</span> <span class="p p-Indicator">[]</span> <span class="c1"># list of commit hashes to skip</span>
+  <span class="nt">case_sensitive</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># should commit message filters be case-sensitive</span>
+  <span class="nt">ignore</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># ignore work containing string, ie &#39;pro bono&#39;</span>
+  <span class="nt">match_logs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span> <span class="c1"># should all clock-ins be paired with clock-outs</span>
+
+<span class="nt">report</span><span class="p">:</span>
+  <span class="nt">timesheet</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span> <span class="c1"># print timesheet</span>
+  <span class="nt">work</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span> <span class="c1"># print work log</span>
+  <span class="nt">filename</span><span class="p">:</span> <span class="s">&#39;???&#39;</span> <span class="c1"># csv file to save report to</span>
+  <span class="nt">pandas</span><span class="p">:</span>
+    <span class="nt">display</span><span class="p">:</span>
+      <span class="nt">max_rows</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span>
+      <span class="nt">max_columns</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+      <span class="nt">max_colwidth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">45</span>
+      <span class="nt">width</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">600</span>
+
+
+<span class="nt">commit</span><span class="p">:</span>
+  <span class="nt">clock</span><span class="p">:</span> <span class="s">&#39;???&#39;</span> <span class="c1"># &#39;in&#39; will update WorkLog.md and commit with message &quot;clock-in&quot;</span>
+  <span class="nt">tminus</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">null</span> <span class="c1"># &#39;15m&#39; will prepend &#39;T-15m&#39; to commit message (ignored if clock is null)</span>
+  <span class="nt">message</span><span class="p">:</span> <span class="s">&#39;&#39;</span> <span class="c1"># &#39;my message&#39; will append &#39;my message&#39; to commit message</span>
+  <span class="nt">identity</span><span class="p">:</span> <span class="c1"># how to identify contributors</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">email</span>
+
+<span class="nt">compensation</span><span class="p">:</span> <span class="p p-Indicator">[]</span> <span class="c1"># sets wages and currency per developer</span>
+
+<span class="nt">work_log</span><span class="p">:</span> 
+  <span class="nt">filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">WorkLog.md</span>
+  <span class="nt">header_depth</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span> <span class="c1"># determines markdown header size</span>
+  <span class="nt">bullet</span><span class="p">:</span> <span class="s">&#39;*&#39;</span>
+
+<span class="nt">vis</span><span class="p">:</span> <span class="c1"># set to null to prevent plotting</span>
+  <span class="nt">frequency</span><span class="p">:</span> <span class="s">&#39;1</span><span class="nv"> </span><span class="s">d&#39;</span> <span class="c1"># start small - experienced users can override</span>
+  <span class="nt">plotly</span><span class="p">:</span> <span class="c1"># plotly keywords</span>
+    <span class="nt">figure</span><span class="p">:</span>
+      <span class="nt">hovermode</span><span class="p">:</span> <span class="s">&#39;x&#39;</span>
+      <span class="nt">margin</span><span class="p">:</span>
+        <span class="nt">pad</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+    <span class="nt">plot</span><span class="p">:</span>
+      <span class="nt">show_link</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
+      <span class="nt">link_text</span><span class="p">:</span> <span class="s">&#39;Export</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">plot.ly&#39;</span> 
+      <span class="nt">validate</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">output_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file</span>
+      <span class="nt">include_plotlyjs</span><span class="p">:</span> <span class="s">&#39;cdn&#39;</span>
+      <span class="nt">filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hourly-work.html</span>
+      <span class="nt">auto_open</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Null</span>
+      <span class="nt">image_filename</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">plot_image</span>
+      <span class="c1"># image_width: 800</span>
+      <span class="c1"># image_height: 600</span>
+      <span class="nt">config</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Null</span>
+      <span class="nt">include_mathjax</span><span class="p">:</span> <span class="s">&#39;cdn&#39;</span>
+      <span class="nt">auto_play</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+      <span class="nt">animation_opts</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Null</span>
+
+<span class="nt">handle_errors</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exit</span> <span class="c1"># or raise</span>
+<span class="nt">verbosity</span><span class="p">:</span> 
 </pre></div>
 
 
