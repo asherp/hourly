@@ -154,6 +154,9 @@ def get_labor_range(labor):
 
 
 def is_clocked_in(clocks):
+    if clocks is None:
+        return None
+
     clocked_in = clocks.message.str.contains('|'.join(['clock-in', 'clock in']), case = False).to_frame()
     if len(clocked_in) > 0:
         last_in = clocked_in.iloc[-1]
@@ -168,6 +171,9 @@ def is_clocked_in(clocks):
         return None
 
 def is_clocked_out(clocks):
+    if clocks is None:
+        return None
+
     clocked_out = clocks.message.str.contains('|'.join(['clock-out', 'clock out']), case = False).to_frame()
     if len(clocked_out) > 0:
         last_out = clocked_out.iloc[-1]

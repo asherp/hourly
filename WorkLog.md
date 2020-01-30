@@ -1,3 +1,4 @@
+* fixed bug preventing users from clocking in
 
 ### 2020-01-29 23:45:29.962519: clock-in
 
