@@ -32,7 +32,7 @@ You can also paste in the `Secret key` later as a command-line argument argument
 Hourly provides the following default configuration for stripe invoices:
 
 ```yaml
-{! cli/conf/invoice/stripe.yaml !}
+{! hourly/cli/conf/invoice/stripe.yaml !}
 ```
 
 The following fields are subsets of stripe's own API, which has additional fields you can use:

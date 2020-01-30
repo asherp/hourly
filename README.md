@@ -230,7 +230,7 @@ Hourly's default configuration including comments can be seen here.
 </summary>
 
 ```yaml
-{! cli/conf/hourly.yaml !}
+{! hourly/cli/conf/hourly.yaml !}
 ```
 </details>
 

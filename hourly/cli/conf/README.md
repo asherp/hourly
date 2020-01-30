@@ -1,7 +1,7 @@
 
 # Configuration
 
-The `cli/conf` directory sets hourly's default configuration using [Hydra's composition rules](https://hydra.cc/docs/tutorial/composition/). Options that are mutually exclusive are grouped in the same subfolder.
+The `hourly/cli/conf` directory sets hourly's default configuration using [Hydra's composition rules](https://hydra.cc/docs/tutorial/composition/). Options that are mutually exclusive are grouped in the same subfolder.
 
 Defaults are given priority in ascending order:
 
