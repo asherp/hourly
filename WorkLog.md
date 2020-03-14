@@ -1,6 +1,8 @@
+### 2020-03-14 16:25:31.198516: clock-out
+
+* hydra does not respect `os.chdir`!
 
 ### 2020-03-14 15:15:20.182542: clock-in
-
 
 * fixing yaml includes for docs
 
