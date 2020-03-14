@@ -1,3 +1,6 @@
+
+### 2020-03-14 18:56:34.870426: clock-in
+
 ### 2020-03-14 16:25:31.198516: clock-out
 
 * hydra does not respect `os.chdir`!
