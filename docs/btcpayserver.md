@@ -112,7 +112,7 @@ for a short period of time (default is 15 minutes). There is a trade-off here: a
 Hourly creates a `BTCPayClient` through the following configuration:
 
 ```yaml
-{! cli/conf/invoice/btcpay.yaml !}
+{! hourly/cli/conf/invoice/btcpay.yaml !}
 ```
 
 This allows hourly to access your environment variables and the `pem` file you created above.

@@ -1,7 +1,7 @@
-### 2020-02-19 16:38:18.841590: clock-out
 
+* fixing yaml includes for docs
 
-### 2020-02-19 16:37:55.856891: clock-in
+### 2020-01-29 23:59:37.202116: clock-out
 
 * fixed bug preventing users from clocking in
 
@@ -16,6 +16,7 @@
 * fixed ignore bug preventing timesheet generation
 * 0.3.10
 * changed install path to hourly/cli
+
 ### 2020-01-14 19:02:53.559393: clock-out
 
 * 0.3.9
@@ -24,6 +25,7 @@
 ### 2020-01-14 18:47:30.370225: clock-in
 
 * 0.3.8
+
 ### 2020-01-14 18:41:10.382420: clock-out
 
 * fixed tminus
@@ -54,6 +56,7 @@
 ### 2020-01-13 22:01:00.641375: clock-in
 
 * changing maxwidth again
+
 ### 2020-01-12 17:20:03.651580: clock-out
 
 * changed earnings calculation to dictionary
@@ -69,6 +72,7 @@
 ### 2020-01-12 09:37:24.327410: clock-in
 
 * removing Dashboard prototyping notebook
+
 ### 2020-01-12 09:06:00.564390: clock-out: T-20m 
 
 * updated README intro
@@ -101,6 +105,7 @@
 ### 2020-01-09 22:22:01.026039: clock-in
 
 * corrected invoice notification docs
+
 ### 2020-01-09 11:00:35.544185: clock-out
 
 * added MANIFEST.in
@@ -116,6 +121,7 @@
 ### 2020-01-09 09:06:20.553382: clock-in
 
 * adding stripe screen shot
+
 ### 2020-01-09 03:23:49.529611: clock-out
 
 * added further install instructions
@@ -123,6 +129,7 @@
 ### 2020-01-09 03:22:04.616199: clock-in
 
 * updating graph again.. I should really fix this
+
 ### 2020-01-09 02:59:24.294923: clock-out
 
 * fixed up requirements
@@ -132,6 +139,7 @@
 * updated press release to include stripe
 * redirected to Authors notes rather than email
 * updating work graph
+
 ### 2020-01-09 02:35:00.616095: clock-out
 
 
