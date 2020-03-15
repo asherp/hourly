@@ -1,3 +1,4 @@
+* test subdir
 * version push
 * testing hourly in subdir
 
