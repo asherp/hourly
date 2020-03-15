@@ -2,7 +2,7 @@
 
 ### Why do I need hourly to clock-in/out instead of `git commit -m 'clock-in'?`
 
-That's actually work on hourly began - I started adding `clock-in/out` to my git
+That's actually how work on hourly began - I started adding `clock-in/out` to my git
 messages and figured I would eventually generate timesheets based on that. However, 
 doing it manually is a hastle and mistakes will be made! 
 
