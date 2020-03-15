@@ -10,6 +10,7 @@ from hourly.hourly import get_labor_description, get_hours_worked
 from omegaconf import OmegaConf
 import sys
 from os import path
+import os
 import hydra
 import pandas as pd
 
@@ -176,7 +177,8 @@ def get_btcpay_client(cfg):
     tokens = dict(merchant = cfg.invoice.btcpay.tokens.merchant)
 
     # see if private key points to a pem file
-    pem_filename = hydra.utils.to_absolute_path(cfg.invoice.btcpay.pem)
+    # pem_filename = hydra.utils.to_absolute_path(cfg.invoice.btcpay.pem)
+    pem_filename = os.path.abspath(cfg.invoice.btcpay.pem)
     if path.exists(pem_filename):
         with open(pem_filename) as pem_file:
             pem = pem_file.read()

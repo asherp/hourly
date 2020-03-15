@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import git
 import pandas as pd
 from hourly import get_work_commits, is_clocked_in, is_clocked_out, update_log, commit_log, get_labor
 from hourly import get_hours_worked, get_earnings, get_labor_range
@@ -9,6 +10,7 @@ import plotly.offline as po
 from omegaconf import OmegaConf, DictConfig
 import hydra
 from os import path
+import os
 import sys
 import logging
 import copy
@@ -99,7 +101,8 @@ def process_commit(cfg, work, repo):
             raise IOError("unrecocgnized clock value: {}".format(cfg.commit.clock))
 
 
-    logfile = hydra.utils.to_absolute_path(cfg.work_log.filename)
+    # logfile = hydra.utils.to_absolute_path(cfg.work_log.filename)
+    logfile = os.path.abspath(cfg.work_log.filename)
 
     if len(log_message) > 0:
         update_log(logfile, log_message)
@@ -119,15 +122,21 @@ def config_override(cfg):
     """Overrides with user-supplied configuration
 
     hourly will override its configuration using
-    hourly.yaml if it is in the current working directory
+    hourly.yaml if it is in the base git directory
     or users can set an override config:
         config_override=path/to/myconfig.yaml
     """
-    override_path = hydra.utils.to_absolute_path(cfg.config_override)
+    # override_path = hydra.utils.to_absolute_path(cfg.config_override)
+    override_path = os.path.abspath(cfg.config_override)
     if path.exists(override_path):
+        if cfg.verbosity > 0:
+            print("overriding config with {}".format(override_path))
         override_conf = OmegaConf.load(override_path)
         # merge overrides first input with second
         cfg = OmegaConf.merge(cfg, override_conf)
+    else:
+        if cfg.verbosity > 0:
+            print("override path does not exist: {}".format(override_path))
     return cfg
 
 def get_user_work(work, current_user, identifier):
@@ -158,7 +167,7 @@ def run(cfg):
             print('options are:\n\tinvoice=stripe\n\tinvoice=btcpay')
             sys.exit()
 
-    gitdir = hydra.utils.to_absolute_path(cfg.repo.gitdir)
+    gitdir = os.path.abspath(cfg.repo.gitdir)
 
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
@@ -311,8 +320,9 @@ def run(cfg):
             # override figure with plotly figure kwargs
             fig.update_layout(**OmegaConf.to_container(cfg.vis.plotly.figure)) 
 
-            plot_filename = hydra.utils.to_absolute_path(
-                cfg.vis.plotly.plot.filename)
+            # plot_filename = hydra.utils.to_absolute_path(
+            #     cfg.vis.plotly.plot.filename)
+            plot_filename = os.path.abspath(cfg.vis.plotly.plot.filename)
             plot_options = OmegaConf.to_container(cfg.vis.plotly.plot)
             plot_options['filename'] = plot_filename
             # include plotly plot kwargs
@@ -355,7 +365,18 @@ def save_report(cfg, labor, user_id):
     print('writing to file {}'.format(output_file))
     labor.to_csv(output_file)
 
+def get_base_dir(cfg):
+    """obtain the base directory of the git repo"""
+    repo = git.Repo(cfg.repo.gitdir, search_parent_directories=True)
+    base_dir = repo.working_tree_dir
+    return base_dir
 
+def config_gitdir(cfg):
+    """Configure and navigate to the base directory"""
+    base_dir = get_base_dir(cfg)
+    os.chdir(base_dir)
+    cfg.repo.gitdir = base_dir
+    return cfg
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def main(cfg):
@@ -392,9 +413,13 @@ def hourly_out():
     cli_out()
 
 
+
+
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_report(cfg):
+    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
+    print(cfg.repo)
     cfg.report.timesheet = True
     run(cfg)
 
