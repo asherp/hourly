@@ -1,3 +1,4 @@
+* version push
 * testing hourly in subdir
 
 ### 2020-03-14 20:32:40.658394: clock-in
