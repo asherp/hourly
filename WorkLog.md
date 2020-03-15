@@ -1,4 +1,9 @@
 
+### 2020-03-14 20:32:40.658394: clock-in
+
+### Sat Mar 14 19:13:06 2020 -0500: clock-out
+* had to clock out manually during wip
+
 ### 2020-03-14 18:56:34.870426: clock-in
 
 ### 2020-03-14 16:25:31.198516: clock-out
