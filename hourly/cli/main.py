@@ -380,6 +380,7 @@ def config_gitdir(cfg):
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def main(cfg):
+    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     run(cfg)
 
@@ -388,6 +389,7 @@ def entry():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_in(cfg):
+    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     cfg.commit.clock = 'in'
     cfg.vis = None
@@ -402,6 +404,7 @@ def hourly_in():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_out(cfg):
+    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     cfg.commit.clock = 'out'
     cfg.vis = None

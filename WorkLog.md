@@ -1,3 +1,4 @@
+* ENH - can run hourly commands from repo subdirectories
 * test subdir
 * version push
 * testing hourly in subdir
