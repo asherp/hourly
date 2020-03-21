@@ -1,3 +1,6 @@
+
+### 2020-03-21 14:40:42.186740: clock-in
+
 ### 2020-01-15 23:52:43.018668: clock-out
 
 * added my profile as a submodule
