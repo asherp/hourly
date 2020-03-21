@@ -1,3 +1,6 @@
+
+### 2020-03-21 15:48:39.355359: clock-in
+
 ### 2020-03-21 15:02:28.495820: clock-out
 
 * The goal is to list multiple repos or branches in hourly's config.
