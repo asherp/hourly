@@ -126,6 +126,12 @@ def config_override(cfg):
     or users can set an override config:
         config_override=path/to/myconfig.yaml
     """
+
+    change_git_dir(verbosity = cfg.verbosity)
+    # gitdir = get_base_dir()
+    # print("changing to base dir {}".format(gitdir))
+    # os.chdir(gitdir)
+
     # override_path = hydra.utils.to_absolute_path(cfg.config_override)
     override_path = os.path.abspath(cfg.config_override)
     if path.exists(override_path):
@@ -167,170 +173,176 @@ def run(cfg):
             print('options are:\n\tinvoice=stripe\n\tinvoice=btcpay')
             sys.exit()
 
-    gitdir = os.path.abspath(cfg.repo.gitdir)
+    for repo_conf in cfg.repo:
+        # gitdir = os.path.abspath(cfg.repo.gitdir)
+        gitdir = os.path.abspath(repo_conf.gitdir)
+        gitdir = get_base_dir(gitdir)
+        print("changing to {}".format(gitdir))
+        os.chdir(gitdir)
+        print(repo_conf)
 
-    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+        work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
-    current_user = get_current_user(repo)
-    current_user_id = identify_user(current_user, cfg)
+        current_user = get_current_user(repo)
+        current_user_id = identify_user(current_user, cfg)
 
-    if 'start_date' in cfg.repo:
-        start_date = pd.to_datetime(cfg.repo.start_date)
-    else:
-        start_date = work.index[0]
-        
-
-    if 'end_date' in cfg.repo:
-        end_date = pd.to_datetime(cfg.repo.end_date)
-    else:
-        end_date = work.index[-1]  
-
-    if 'pandas' in cfg.report:
-        pd_opts = flatten_dict(
-            OmegaConf.to_container(cfg.report.pandas)) 
-        for k,v in pd_opts.items():
-            pd.set_option(k,v)
-
-    identifier = list(cfg.commit.identity)
-    if cfg.report.work:
-        try:
-            for user_id, user_work in work.groupby(identifier):
-                print("\nWork for {}".format(user_id))
-
-                # handle case where start and end dates have different utc offsets
-                print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
-        except KeyError as m:
-            print(m)
-            print(work.columns)
-            sys.exit()
-            raise
-
-    # parse work logs for clock in/out messages
-    clocks = get_clocks(work, 
-            start_date = start_date,
-            end_date = end_date,
-            errant_clocks = cfg.repo.errant_clocks,
-            case_sensitive = cfg.repo.case_sensitive)
-
-    if 'commit' in cfg:
-        if ('clock' in cfg.commit) | (len(cfg.commit.message) > 0):
+        if 'start_date' in cfg.repo:
+            start_date = pd.to_datetime(cfg.repo.start_date)
+        else:
+            start_date = work.index[0]
             
-            user_work = get_user_work(clocks, current_user_id, identifier)
+
+        if 'end_date' in cfg.repo:
+            end_date = pd.to_datetime(cfg.repo.end_date)
+        else:
+            end_date = work.index[-1]  
+
+        if 'pandas' in cfg.report:
+            pd_opts = flatten_dict(
+                OmegaConf.to_container(cfg.report.pandas)) 
+            for k,v in pd_opts.items():
+                pd.set_option(k,v)
+
+        identifier = list(cfg.commit.identity)
+        if cfg.report.work:
             try:
-                process_commit(cfg, user_work, repo)
-            except IOError as error_msg:
-                print("Could not process commit for {}:\n{}".format(current_user_id, error_msg))
+                for user_id, user_work in work.groupby(identifier):
+                    print("\nWork for {}".format(user_id))
+
+                    # handle case where start and end dates have different utc offsets
+                    print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
+            except KeyError as m:
+                print(m)
+                print(work.columns)
                 sys.exit()
-            except:
-                print(get_current_user(repo))
-                print(current_user_id)
-                print(user_work)
-                print(clocks)
-                print(identifier)
                 raise
 
+        # parse work logs for clock in/out messages
+        clocks = get_clocks(work, 
+                start_date = start_date,
+                end_date = end_date,
+                errant_clocks = repo_conf.errant_clocks,
+                case_sensitive = repo_conf.case_sensitive)
 
-    if cfg.report.timesheet:
-        total_hours = 0
-        plot_traces = []
-        for user_id, user_work in clocks.groupby(identifier):
-            print("\nProcessing timesheet for {}".format(user_id))
-            if cfg.repo.ignore is not None:
-                ignore = cfg.repo.ignore.encode('ascii','ignore')
-            labor = get_labor(
-                user_work.drop(['name','email'], axis = 1),
-                ignore = cfg.repo.ignore, 
-                match_logs = cfg.repo.match_logs,
-                case_sensitive = cfg.repo.case_sensitive)
+        if 'commit' in cfg:
+            if ('clock' in cfg.commit) | (len(cfg.commit.message) > 0):
+                
+                user_work = get_user_work(clocks, current_user_id, identifier)
+                try:
+                    process_commit(cfg, user_work, repo)
+                except IOError as error_msg:
+                    print("Could not process commit for {}:\n{}".format(current_user_id, error_msg))
+                    sys.exit()
+                except:
+                    print(get_current_user(repo))
+                    print(current_user_id)
+                    print(user_work)
+                    print(clocks)
+                    print(identifier)
+                    raise
 
-            if len(labor) > 0:
-                print(labor)
 
-                hours_worked = get_hours_worked(labor)
-                dt = labor.TimeDelta.sum()
-                print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
+        if cfg.report.timesheet:
+            total_hours = 0
+            plot_traces = []
+            for user_id, user_work in clocks.groupby(identifier):
+                print("\nProcessing timesheet for {}".format(user_id))
+                if repo_conf.ignore is not None:
+                    ignore = repo_conf.ignore.encode('ascii','ignore')
+                labor = get_labor(
+                    user_work.drop(['name','email'], axis = 1),
+                    ignore = repo_conf.ignore, 
+                    match_logs = repo_conf.match_logs,
+                    case_sensitive = repo_conf.case_sensitive)
 
-                total_hours += hours_worked
+                if len(labor) > 0:
+                    print(labor)
 
-                compensation = get_compensation(cfg, identifier, user_id)
+                    hours_worked = get_hours_worked(labor)
+                    dt = labor.TimeDelta.sum()
+                    print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
 
-                if compensation is not None:
-                    # should return {'currency': earnings} dictionary
-                    # this way, preferred currency is communicated by relative price!
-                    earnings = get_earnings(hours_worked, compensation.wage) 
-                    print(pd.Series(earnings).to_string())
+                    total_hours += hours_worked
 
-                if 'filename' in cfg.report:
-                    save_report(cfg, labor, user_id)
+                    compensation = get_compensation(cfg, identifier, user_id)
 
-                if user_id == current_user_id:
-                    print('current user:{}'.format(user_id))
-                    if 'invoice' in cfg:
-                        if cfg.verbosity > 0:
-                            print('processing your invoice')
-                        try:
-                            if 'stripe' in cfg.invoice:
-                                if cfg.verbosity > 0:
-                                    print('creating stripe invoice')
-                                from hourly.invoice.stripe import get_stripe_invoice
-                                invoice = get_stripe_invoice(
-                                    copy.deepcopy(cfg), # don't leak customer info!
-                                    labor,
-                                    current_user,
-                                    earnings)
-                            elif 'btcpay' in cfg.invoice:
-                                if cfg.verbosity > 0:
-                                    print('creating btcpay invoice')
-                                from hourly.invoice.btcpay import get_btcpay_invoice
-                                invoice = get_btcpay_invoice(
-                                    copy.deepcopy(cfg), # don't leak customer info! 
-                                    labor, 
-                                    current_user, 
-                                    earnings)
-                            else:
-                                print('hourly cannot process this invoice type yet:')
-                                print(cfg.invoice.pretty())
-                        except IOError as m:
-                            print("Could not generate invoice: {}".format(m))
-                            sys.exit()
-                else:
-                    print("{} is not the current user".format(user_id))
-                        
-                if 'vis' in cfg:
-                    if type(user_id) == tuple:
-                        plot_label = "<br>".join(user_id)
+                    if compensation is not None:
+                        # should return {'currency': earnings} dictionary
+                        # this way, preferred currency is communicated by relative price!
+                        earnings = get_earnings(hours_worked, compensation.wage) 
+                        print(pd.Series(earnings).to_string())
+
+                    if 'filename' in cfg.report:
+                        save_report(cfg, labor, user_id)
+
+                    if user_id == current_user_id:
+                        print('current user:{}'.format(user_id))
+                        if 'invoice' in cfg:
+                            if cfg.verbosity > 0:
+                                print('processing your invoice')
+                            try:
+                                if 'stripe' in cfg.invoice:
+                                    if cfg.verbosity > 0:
+                                        print('creating stripe invoice')
+                                    from hourly.invoice.stripe import get_stripe_invoice
+                                    invoice = get_stripe_invoice(
+                                        copy.deepcopy(cfg), # don't leak customer info!
+                                        labor,
+                                        current_user,
+                                        earnings)
+                                elif 'btcpay' in cfg.invoice:
+                                    if cfg.verbosity > 0:
+                                        print('creating btcpay invoice')
+                                    from hourly.invoice.btcpay import get_btcpay_invoice
+                                    invoice = get_btcpay_invoice(
+                                        copy.deepcopy(cfg), # don't leak customer info! 
+                                        labor, 
+                                        current_user, 
+                                        earnings)
+                                else:
+                                    print('hourly cannot process this invoice type yet:')
+                                    print(cfg.invoice.pretty())
+                            except IOError as m:
+                                print("Could not generate invoice: {}".format(m))
+                                sys.exit()
                     else:
-                        plot_label = user_id
+                        print("{} is not the current user".format(user_id))
+                            
+                    if 'vis' in cfg:
+                        if type(user_id) == tuple:
+                            plot_label = "<br>".join(user_id)
+                        else:
+                            plot_label = user_id
 
-                    user_trace = plot_labor(
-                        labor,
-                        cfg.vis.frequency,
-                        name = plot_label)
-                    plot_traces.append(user_trace)
-            else:
-                print('No data for {} to {}'.format(start_date, end_date))
+                        user_trace = plot_labor(
+                            labor,
+                            cfg.vis.frequency,
+                            name = plot_label)
+                        plot_traces.append(user_trace)
+                else:
+                    print('No data for {} to {}'.format(start_date, end_date))
 
-        if 'vis' in cfg:
-            plot_title = "total hours commited: {0:.2f}".format(total_hours)
-            fig = go.Figure(plot_traces)
-            fig.update_layout(
-                title = plot_title, 
-                yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
+            if 'vis' in cfg:
+                plot_title = "total hours commited: {0:.2f}".format(total_hours)
+                fig = go.Figure(plot_traces)
+                fig.update_layout(
+                    title = plot_title, 
+                    yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
 
-            # override figure with plotly figure kwargs
-            fig.update_layout(**OmegaConf.to_container(cfg.vis.plotly.figure)) 
+                # override figure with plotly figure kwargs
+                fig.update_layout(**OmegaConf.to_container(cfg.vis.plotly.figure)) 
 
-            # plot_filename = hydra.utils.to_absolute_path(
-            #     cfg.vis.plotly.plot.filename)
-            plot_filename = os.path.abspath(cfg.vis.plotly.plot.filename)
-            plot_options = OmegaConf.to_container(cfg.vis.plotly.plot)
-            plot_options['filename'] = plot_filename
-            # include plotly plot kwargs
-            div = po.plot(fig, **plot_options)
-            if cfg.vis.plotly.plot.output_type.lower() == 'div':
-                with open(plot_filename, 'w') as div_output:
-                    div_output.write(div)
-                    div_output.write('\n')
+                # plot_filename = hydra.utils.to_absolute_path(
+                #     cfg.vis.plotly.plot.filename)
+                plot_filename = os.path.abspath(cfg.vis.plotly.plot.filename)
+                plot_options = OmegaConf.to_container(cfg.vis.plotly.plot)
+                plot_options['filename'] = plot_filename
+                # include plotly plot kwargs
+                div = po.plot(fig, **plot_options)
+                if cfg.vis.plotly.plot.output_type.lower() == 'div':
+                    with open(plot_filename, 'w') as div_output:
+                        div_output.write(div)
+                        div_output.write('\n')
 
 def get_compensation(cfg, identifier, user_id):
     compensation = pd.DataFrame(OmegaConf.to_container(cfg.compensation))
@@ -365,22 +377,22 @@ def save_report(cfg, labor, user_id):
     print('writing to file {}'.format(output_file))
     labor.to_csv(output_file)
 
-def get_base_dir(cfg):
+def get_base_dir(directory = '.'):
     """obtain the base directory of the git repo"""
-    repo = git.Repo(cfg.repo.gitdir, search_parent_directories=True)
+    repo = git.Repo(directory, search_parent_directories=True)
     base_dir = repo.working_tree_dir
     return base_dir
 
-def config_gitdir(cfg):
-    """Configure and navigate to the base directory"""
-    base_dir = get_base_dir(cfg)
-    os.chdir(base_dir)
-    cfg.repo.gitdir = base_dir
-    return cfg
+def change_git_dir(directory = '.', verbosity = 0):
+    '''changes to base path of git directory'''
+    gitdir = get_base_dir(directory)
+    if verbosity > 0:
+        print("changing to git directory: {}".format(gitdir))
+    os.chdir(gitdir)
+
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def main(cfg):
-    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     run(cfg)
 
@@ -389,7 +401,6 @@ def entry():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_in(cfg):
-    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     cfg.commit.clock = 'in'
     cfg.vis = None
@@ -404,7 +415,6 @@ def hourly_in():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_out(cfg):
-    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
     cfg.commit.clock = 'out'
     cfg.vis = None
@@ -416,13 +426,9 @@ def hourly_out():
     cli_out()
 
 
-
-
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_report(cfg):
-    cfg = config_gitdir(cfg)
     cfg = config_override(cfg)
-    print(cfg.repo)
     cfg.report.timesheet = True
     run(cfg)
 

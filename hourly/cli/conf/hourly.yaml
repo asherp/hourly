@@ -3,13 +3,14 @@ config_override: hourly.yaml
 init: false
 
 repo:
-  gitdir: .
-  start_date: null 
-  end_date: null 
-  errant_clocks: [] # list of commit hashes to skip
-  case_sensitive: False # should commit message filters be case-sensitive
-  ignore: null # ignore work containing string, ie 'pro bono'
-  match_logs: False # should all clock-ins be paired with clock-outs
+  - gitdir: "." # use directories as keys
+    start_date: null 
+    end_date: null 
+    errant_clocks: [] # list of commit hashes to skip
+    case_sensitive: False # should commit message filters be case-sensitive
+    ignore: null # ignore work containing string, ie 'pro bono'
+    match_logs: False # should all clock-ins be paired with clock-outs
+    branch: null # use currently checked out branch by default
 
 report:
   timesheet: false # print timesheet

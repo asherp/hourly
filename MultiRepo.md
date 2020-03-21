@@ -1,3 +1,8 @@
+### 2020-03-21 18:32:05.992784: clock-out
+
+* we only want to clock in to the current repo and generate reports for all listed repos
+* Listing multiple branches
+* Using chdir for each listed repo
 
 ### 2020-03-21 17:05:31.416456: clock-in
 
