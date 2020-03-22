@@ -1,20 +1,22 @@
 repo:
-  - gitdir: "." # use directories as keys
-    start_date: null 
-    end_date: null 
-    errant_clocks: ['d9ec537b36475b565df6b28d0cab6edc3a89f2da'] # list of commit hashes to skip
-    case_sensitive: False # should commit message filters be case-sensitive
-    ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
-    match_logs: False # should all clock-ins be paired with clock-outs
-    branch: multi-repo-conf # use currently checked out branch by default
-  - gitdir: "." # use directories as keys
-    start_date: null 
-    end_date: null 
-    errant_clocks: ['d9ec537b36475b565df6b28d0cab6edc3a89f2da'] # list of commit hashes to skip
-    case_sensitive: False # should commit message filters be case-sensitive
-    ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
-    match_logs: False # should all clock-ins be paired with clock-outs
-    branch: master # use currently checked out branch by default
+  gitdir: "." # use directories as keys
+  start_date: null 
+  end_date: null 
+  errant_clocks: ['d9ec537b36475b565df6b28d0cab6edc3a89f2da'] # list of commit hashes to skip
+  case_sensitive: False # should commit message filters be case-sensitive
+  ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
+  match_logs: False # should all clock-ins be paired with clock-outs
+
+report:
+  repos:
+    - gitdir: "."
+      start_date: null 
+      end_date: null 
+      errant_clocks: [] # list of commit hashes to skip
+      case_sensitive: False # should commit message filters be case-sensitive
+      ignore: null # ignore work containing string, ie 'pro bono'
+      match_logs: False # should all clock-ins be paired with clock-outs
+      branch: ['master', 'multi-repo-conf'] # use currently checked out branch by default
 
 work_log:
   header_depth: 3
