@@ -10,18 +10,19 @@ repo:
   case_sensitive: False # should commit message filters be case-sensitive
   ignore: null # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
+  branch: null # use currently checked out branch (only affects reports)
+
+server:
+  host: localhost
+  port: 80
+
+client:
+  url: http://${server.host}:${server.port}/
+  server_port: ${server.port}
 
 report:
-  repos:
-    - gitdir: "."
-      start_date: null 
-      end_date: null 
-      errant_clocks: [] # list of commit hashes to skip
-      case_sensitive: False # should commit message filters be case-sensitive
-      ignore: null # ignore work containing string, ie 'pro bono'
-      match_logs: False # should all clock-ins be paired with clock-outs
-      branch: null # list or null to use currently checked out branch
-
+  repos:  # which repos to generate reports for
+    - ${repo} # use primary repo as default
   timesheet: false # print timesheet
   work: false # print work log
   filename: '???' # csv file to save report to

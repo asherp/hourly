@@ -175,9 +175,7 @@ def run(cfg):
     
     gitdir = os.path.abspath(cfg.repo.gitdir)
     gitdir = get_base_dir(gitdir)
-    print("changing to {}".format(gitdir))
     os.chdir(gitdir)
-    print(cfg.repo)
 
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
@@ -239,6 +237,10 @@ def run(cfg):
                 print(identifier)
                 raise
 
+    if cfg.report.timesheet:
+        print(len(cfg.report.repos))
+        for k,v in cfg.report.repos[0].items():
+            print(k,v)
 
     if cfg.report.timesheet:
         total_hours = 0
