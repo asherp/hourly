@@ -1,3 +1,6 @@
+
+### 2020-03-22 23:30:41.959084: clock-in
+
 ### 2020-03-21 23:01:56.800234: clock-out
 
 * added repos option to report
