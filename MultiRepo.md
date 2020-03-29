@@ -1,3 +1,5 @@
+### 2020-03-29 17:00:11.285076: clock-out
+
 * got multiple repos to render
 Instead of repo.gitdir, the gitdir could be determined by the location of the hourly.yaml file.
 That would allow compositions through a custom resolver:
