@@ -1,3 +1,6 @@
+
+### 2020-03-29 14:18:59.040093: clock-in
+
 ### 2020-03-23 00:02:16.968108: clock-out
 
 * using variable interpolation
