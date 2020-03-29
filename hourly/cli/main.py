@@ -14,6 +14,7 @@ import os
 import sys
 import logging
 import copy
+import numpy as np
 
 def handle_errors(cfg, error_msg = None):
     if error_msg is not None:
@@ -149,6 +150,133 @@ def get_user_work(work, current_user, identifier):
         if user_id == current_user:
             return user_work
 
+def resolve(cfg):
+    """Expands a configuration, interpolating variables"""
+    cfg_dict = cfg.to_container(resolve = True)
+    return OmegaConf.create(cfg_dict)
+
+
+
+def run_report(cfg):
+    if cfg.verbosity > 1:
+        print(cfg.pretty())
+
+    repos = resolve(cfg.report.repos)
+    print(repos.pretty())
+
+    if 'start_date' in cfg.repo:
+        start_date = pd.to_datetime(cfg.repo.start_date)
+    else:
+        start_date = None
+        
+
+    if 'end_date' in cfg.repo:
+        end_date = pd.to_datetime(cfg.repo.end_date)
+    else:
+        end_date = None
+
+    clocks = pd.DataFrame()
+
+    identifier = list(cfg.commit.identity) + ['repo']
+
+    for repo_conf in repos:
+        # handle '.' case
+        # gitdir = os.path.abspath(repo_conf.gitdir)
+        # # handle subdirectory case
+        # print('current gitdir:' + gitdir)
+        gitdir = get_base_dir(repo_conf.gitdir)
+        print(gitdir)
+
+        work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+
+        clocks_ = get_clocks(work,
+                start_date = start_date,
+                end_date = end_date,
+                errant_clocks = repo_conf.errant_clocks,
+                case_sensitive = repo_conf.case_sensitive)    
+        clocks_ = clocks_.assign(repo = repo_conf.name)
+
+        if cfg.report.work:
+            for user_id, user_work in clocks_.groupby(identifier):
+                print("\nWork for {}".format(user_id))
+                print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
+
+        clocks = pd.concat((clocks, clocks_))
+
+
+    hours = []
+    plot_traces = [] 
+
+
+    for user_id, user_work in clocks.groupby(identifier):
+        print("\nProcessing timesheet for {}".format(user_id))
+
+        labor = get_labor(
+            user_work.drop(['name','email'], axis = 1),
+            ignore = cfg.repo.ignore, 
+            match_logs = cfg.repo.match_logs,
+            case_sensitive = cfg.repo.case_sensitive)
+
+        if len(labor) > 0:
+            print(labor)
+
+            hours_worked = get_hours_worked(labor)
+            dt = labor.TimeDelta.sum()
+            print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
+
+            hours.append(hours_worked)
+
+            # compensation = get_compensation(cfg, identifier, user_id)
+            compensation = None
+
+            if compensation is not None:
+                # should return {'currency': earnings} dictionary
+                # this way, preferred currency is communicated by relative price!
+                earnings = get_earnings(hours_worked, compensation.wage) 
+                print(pd.Series(earnings).to_string())
+
+            if 'filename' in cfg.report:
+                save_report(cfg, labor, user_id)
+                    
+            if 'vis' in cfg:
+                if type(user_id) == tuple:
+                    plot_label = "<br>".join(user_id)
+                else:
+                    plot_label = user_id
+
+                user_trace = plot_labor(
+                    labor,
+                    cfg.vis.frequency,
+                    name = plot_label)
+                plot_traces.append(user_trace)
+        else:
+            print('No data for {} to {}'.format(start_date, end_date))
+
+
+    if 'vis' in cfg:
+        plot_title = "total hours commited: {0:.2f}".format(sum(hours))
+        plot_traces = [plot_traces[i] for i in np.argsort(hours)[::-1]]
+        fig = go.Figure(plot_traces)
+        fig.update_layout(
+            title = plot_title, 
+            yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
+
+        # override figure with plotly figure kwargs
+        fig.update_layout(**OmegaConf.to_container(cfg.vis.plotly.figure)) 
+
+        # plot_filename = hydra.utils.to_absolute_path(
+        #     cfg.vis.plotly.plot.filename)
+        plot_filename = os.path.abspath(cfg.vis.plotly.plot.filename)
+        plot_options = OmegaConf.to_container(cfg.vis.plotly.plot)
+        plot_options['filename'] = plot_filename
+        # include plotly plot kwargs
+        div = po.plot(fig, **plot_options)
+        if cfg.vis.plotly.plot.output_type.lower() == 'div':
+            with open(plot_filename, 'w') as div_output:
+                div_output.write(div)
+                div_output.write('\n')
+
+
 
 def run(cfg):
     if cfg.verbosity > 1:
@@ -237,10 +365,6 @@ def run(cfg):
                 print(identifier)
                 raise
 
-    if cfg.report.timesheet:
-        print(len(cfg.report.repos))
-        for k,v in cfg.report.repos[0].items():
-            print(k,v)
 
     if cfg.report.timesheet:
         total_hours = 0
@@ -377,7 +501,8 @@ def save_report(cfg, labor, user_id):
 
 def get_base_dir(directory = '.'):
     """obtain the base directory of the git repo"""
-    repo = git.Repo(directory, search_parent_directories=True)
+    user_dir = os.path.expanduser(directory)
+    repo = git.Repo(user_dir, search_parent_directories=True)
     base_dir = repo.working_tree_dir
     return base_dir
 
@@ -428,7 +553,7 @@ def hourly_out():
 def cli_report(cfg):
     cfg = config_override(cfg)
     cfg.report.timesheet = True
-    run(cfg)
+    run_report(cfg)
 
 def hourly_report():
     cli_report()

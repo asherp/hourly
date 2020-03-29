@@ -11,6 +11,7 @@ repo:
   ignore: null # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
   branch: null # use currently checked out branch (only affects reports)
+  name: null
 
 server:
   host: localhost

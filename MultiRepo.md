@@ -1,3 +1,25 @@
+* got multiple repos to render
+Instead of repo.gitdir, the gitdir could be determined by the location of the hourly.yaml file.
+That would allow compositions through a custom resolver:
+
+```python
+OmegaConf.register_resolver("repo", lambda cfg_file: OmegaConf.load(cfg_file).repo)
+```
+
+```yaml
+repo: <conf>
+report:
+	repos:
+		- ${repo:hourly.yaml}
+		- ${repo:path/to/other/hourly.yaml}
+```
+Here, the resolver has to take into account user directories and relative paths
+
+You may need to use the hydra decorator to pick up default args:
+```python
+hydra.main(config_path="conf/config.yaml", strict = True)
+```
+
 
 ### 2020-03-29 14:18:59.040093: clock-in
 

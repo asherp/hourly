@@ -61,11 +61,15 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
 def get_clocks(work, 
             start_date = None,
             end_date = None,
-            errant_clocks = [],
+            errant_clocks = None,
             case_sensitive = False,
             adjust_clocks = True):
     """Filter work by messages conataining the word 'clock' """
-    clocks = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
+
+    if errant_clocks is not None:
+        work = work[~work.hash.isin(errant_clocks)]
+
+    clocks = commit_filter(work, 'clock', case_sensitive = case_sensitive)
 
     # handle case where start and dates have different utc offsets
     clocks = clocks.loc[start_date:].loc[:end_date]
