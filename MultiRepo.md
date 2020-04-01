@@ -1,3 +1,6 @@
+
+### 2020-04-01 16:32:39.430697: clock-in
+
 ### 2020-03-29 17:00:11.285076: clock-out
 
 * got multiple repos to render
