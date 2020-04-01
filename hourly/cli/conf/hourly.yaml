@@ -11,15 +11,8 @@ repo:
   ignore: null # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
   branch: null # use currently checked out branch (only affects reports)
-  name: null
+  name: ''
 
-server:
-  host: localhost
-  port: 80
-
-client:
-  url: http://${server.host}:${server.port}/
-  server_port: ${server.port}
 
 report:
   repos:  # which repos to generate reports for

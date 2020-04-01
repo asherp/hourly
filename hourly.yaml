@@ -6,6 +6,8 @@ repo:
   case_sensitive: False # should commit message filters be case-sensitive
   ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
+  name: hourly
+
 
 report:
   repos:
@@ -19,6 +21,9 @@ commit:
   identity:
   # - name
   - email
+
+vis:
+  frequency: '1 M'
 
 # vis:
 #   frequency: '1 d'

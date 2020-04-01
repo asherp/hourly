@@ -1,3 +1,4 @@
+* set default repo name to empty str
 
 ### 2020-04-01 16:32:39.430697: clock-in
 
