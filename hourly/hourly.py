@@ -23,11 +23,11 @@ def adjust_time(work, dt_str = 'T-'):
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
+def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', branch = None):
     """Retrives work commits from repo"""
     repo = git.Repo(repo_addr)
 
-    logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits()]
+    logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits(branch)]
 
     work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash', 'name', 'email'])
 

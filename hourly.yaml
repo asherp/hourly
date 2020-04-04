@@ -7,6 +7,10 @@ repo:
   ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
   name: hourly
+  branch:
+    - master
+    - multi-repo-conf
+
 
 
 report:
@@ -20,7 +24,9 @@ work_log:
 commit:
   identity:
   # - name
-  - email
+  # - email
+  - repo
+  - branch
 
 vis:
   frequency: '1 M'

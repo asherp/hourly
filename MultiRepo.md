@@ -1,3 +1,4 @@
+* got multiple branches to work
 * moved cli arg override into config_override
 * fixed bug preventing command line args from overriding those specified in config_override
 

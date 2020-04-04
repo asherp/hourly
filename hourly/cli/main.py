@@ -182,28 +182,47 @@ def run_report(cfg):
     else:
         end_date = None
 
+    if 'pandas' in cfg.report:
+        pd_opts = flatten_dict(
+            OmegaConf.to_container(cfg.report.pandas)) 
+        for k,v in pd_opts.items():
+            pd.set_option(k,v)
+
     clocks = pd.DataFrame()
 
     identifier = list(cfg.commit.identity)
 
     for repo_conf in repos:
-        # handle '.' case
-        # gitdir = os.path.abspath(repo_conf.gitdir)
-        # # handle subdirectory case
-        # print('current gitdir:' + gitdir)
         gitdir = get_base_dir(repo_conf.gitdir)
-        print(gitdir)
 
-        work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+        # get list of branches
+        if type(repo_conf.branch.to_container()) == list:
+            branches = repo_conf.branch
+        else:
+            branches = [repo_conf.branch]
+    
+        work = pd.DataFrame()
+        for branch in branches:
+            if cfg.verbosity > 0:
+                print("getting commits for repo:branch {}:{}".format(gitdir,branch))
 
-        if cfg.verbosity > 0:
-            print(len(work))
+            branch_work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', branch = branch)
+            if branch is None:
+                branch_name = ''
+            else:
+                branch_name = branch
+            branch_work = branch_work.assign(branch = branch_name)
+            work = work.append(branch_work)
 
+        work.drop_duplicates('hash', inplace=True)
+
+    
         clocks_ = get_clocks(work,
                 start_date = start_date,
                 end_date = end_date,
                 errant_clocks = repo_conf.errant_clocks,
                 case_sensitive = repo_conf.case_sensitive)    
+
         clocks_ = clocks_.assign(repo = repo_conf.name)
 
         if cfg.report.work:
@@ -212,8 +231,6 @@ def run_report(cfg):
                 print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
 
         clocks = pd.concat((clocks, clocks_))
-
-        
 
 
     hours = []
