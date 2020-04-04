@@ -17,6 +17,11 @@ repo:
 report:
   repos:  # which repos to generate reports for
     - ${repo} # use primary repo as default
+  grouping:
+    - repo
+    - branch
+    # - email
+    # - name
   timesheet: false # print timesheet
   work: false # print work log
   filename: '???' # csv file to save report to

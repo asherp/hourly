@@ -33,7 +33,8 @@ def commit_(repo, commit_message, logfile = None):
 def identify_user(user, cfg):
     user_id = []
     for id_type in cfg.commit.identity:
-        user_id.append(getattr(user, id_type))
+        if id_type in ['name', 'email']:
+            user_id.append(getattr(user, id_type))
     if len(user_id) > 1:
         return tuple(user_id)
     else:
@@ -196,10 +197,13 @@ def run_report(cfg):
         gitdir = get_base_dir(repo_conf.gitdir)
 
         # get list of branches
-        if type(repo_conf.branch.to_container()) == list:
-            branches = repo_conf.branch
+        if repo_conf.branch is not None:
+            if type(repo_conf.branch.to_container()) == list:
+                branches = repo_conf.branch
+            else:
+                branches = [repo_conf.branch]
         else:
-            branches = [repo_conf.branch]
+            branches = [None]
     
         work = pd.DataFrame()
         for branch in branches:
@@ -212,8 +216,12 @@ def run_report(cfg):
             else:
                 branch_name = branch
             branch_work = branch_work.assign(branch = branch_name)
-            work = work.append(branch_work)
+            if cfg.verbosity > 0:
+                print("{} work commits found".format(len(branch_work)))
+            work = work.append(branch_work.sort_index())
 
+        if cfg.verbosity > 1:
+            print('removing duplicates by hash')
         work.drop_duplicates('hash', inplace=True)
 
     
@@ -237,11 +245,10 @@ def run_report(cfg):
     plot_traces = [] 
 
     if cfg.verbosity > 0:
-        print(len(clocks))
         print(identifier)
-        print(clocks.head())
 
-    for user_id, user_work in clocks.groupby(identifier):
+
+    for user_id, user_work in clocks.groupby(cfg.report.grouping.to_container()):
         if cfg.verbosity > 0:
             print("\nProcessing timesheet for {}".format(user_id))
 

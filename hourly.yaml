@@ -9,13 +9,18 @@ repo:
   name: hourly
   branch:
     - master
+    - multi-repo
     - multi-repo-conf
-
 
 
 report:
   repos:
     - ${repo}
+  grouping:
+    - repo
+    - branch
+    # - email
+    - name
 
 work_log:
   header_depth: 3
@@ -23,10 +28,7 @@ work_log:
 
 commit:
   identity:
-  # - name
-  # - email
-  - repo
-  - branch
+  - email
 
 vis:
   frequency: '1 M'
