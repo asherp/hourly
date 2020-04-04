@@ -162,7 +162,9 @@ def run_report(cfg):
         print(cfg.pretty())
 
     repos = resolve(cfg.report.repos)
-    print(repos.pretty())
+
+    if cfg.verbosity > 1:
+        print(repos.pretty())
 
     if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
@@ -177,7 +179,7 @@ def run_report(cfg):
 
     clocks = pd.DataFrame()
 
-    identifier = list(cfg.commit.identity) + ['repo']
+    identifier = list(cfg.commit.identity)
 
     for repo_conf in repos:
         # handle '.' case
@@ -188,6 +190,9 @@ def run_report(cfg):
         print(gitdir)
 
         work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+
+        if cfg.verbosity > 0:
+            print(len(work))
 
         clocks_ = get_clocks(work,
                 start_date = start_date,
@@ -203,13 +208,21 @@ def run_report(cfg):
 
         clocks = pd.concat((clocks, clocks_))
 
+        
+
 
     hours = []
     plot_traces = [] 
 
+    if cfg.verbosity > 0:
+        print(len(clocks))
+        print(identifier)
+        print(clocks.head())
 
     for user_id, user_work in clocks.groupby(identifier):
-        print("\nProcessing timesheet for {}".format(user_id))
+        if cfg.verbosity > 0:
+            print("\nProcessing timesheet for {}".format(user_id))
+
 
         labor = get_labor(
             user_work.drop(['name','email'], axis = 1),
@@ -250,7 +263,7 @@ def run_report(cfg):
                     name = plot_label)
                 plot_traces.append(user_trace)
         else:
-            print('No data for {} to {}'.format(start_date, end_date))
+            print('No data for {} to {}: {}'.format(start_date, end_date, user_id))
 
 
     if 'vis' in cfg:
@@ -551,7 +564,16 @@ def hourly_out():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_report(cfg):
+    # get default arguments
+    # cfg = compose('conf/kamodo.yaml')
+
+    # apply custom override
     cfg = config_override(cfg)
+
+    # merge in command line arguments
+    cli_conf = OmegaConf.from_cli()
+    cfg = OmegaConf.merge(cfg, cli_conf)
+    
     cfg.report.timesheet = True
     run_report(cfg)
 
