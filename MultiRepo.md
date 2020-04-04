@@ -1,3 +1,5 @@
+### 2020-04-04 15:12:34.630127: clock-out
+
 * added 'report.grouping' to specify name, email, repo, branch
 * got multiple branches to work
 * moved cli arg override into config_override
