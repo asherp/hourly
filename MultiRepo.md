@@ -1,6 +1,9 @@
+
+### 2020-04-04 12:38:56.777222: clock-in
+
 ### 2020-04-01 16:50:06.390562: clock-out
 
-* set default repo name to empty str
+* set default repo name to empty str (pandas groupby ignores `None` values)
 
 ### 2020-04-01 16:32:39.430697: clock-in
 
