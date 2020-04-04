@@ -1,3 +1,4 @@
+* moved cli arg override into config_override
 * fixed bug preventing command line args from overriding those specified in config_override
 
 ### 2020-04-04 12:38:56.777222: clock-in

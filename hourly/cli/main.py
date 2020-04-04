@@ -143,6 +143,11 @@ def config_override(cfg):
     else:
         if cfg.verbosity > 0:
             print("override path does not exist: {}".format(override_path))
+
+    # merge in command line arguments
+    cli_conf = OmegaConf.from_cli()
+    cfg = OmegaConf.merge(cfg, cli_conf)
+
     return cfg
 
 def get_user_work(work, current_user, identifier):
@@ -552,6 +557,7 @@ def hourly_in():
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_out(cfg):
     cfg = config_override(cfg)
+
     cfg.commit.clock = 'out'
     cfg.vis = None
     cfg.report.work = False
@@ -564,16 +570,10 @@ def hourly_out():
 
 @hydra.main(config_path="conf/config.yaml", strict = True)
 def cli_report(cfg):
-    # get default arguments
-    # cfg = compose('conf/kamodo.yaml')
 
     # apply custom override
     cfg = config_override(cfg)
 
-    # merge in command line arguments
-    cli_conf = OmegaConf.from_cli()
-    cfg = OmegaConf.merge(cfg, cli_conf)
-    
     cfg.report.timesheet = True
     run_report(cfg)
 
