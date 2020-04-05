@@ -169,9 +169,6 @@ def run_report(cfg):
 
     repos = resolve(cfg.report.repos)
 
-    if cfg.verbosity > 1:
-        print(repos.pretty())
-
     if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
     else:
@@ -213,7 +210,7 @@ def run_report(cfg):
         work = pd.DataFrame()
         for branch in branches:
             if cfg.verbosity > 0:
-                print("getting commits for repo:branch {}:{}".format(gitdir,branch))
+                print("getting commits for repo:branch {}:{}".format(gitdir, branch))
 
             branch_work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', branch = branch)
             if branch is None:
@@ -229,6 +226,7 @@ def run_report(cfg):
             print('removing duplicates by hash')
         work.drop_duplicates('hash', inplace=True)
 
+        print('unique branches:', work.branch.unique())
     
         clocks = get_clocks(work,
                 start_date = start_date,
@@ -280,15 +278,18 @@ def run_report(cfg):
 
     print(labor.columns)
     print(report_grouping)
+    print(labor.head())
+
+    print(labor.branch.unique())
 
     for labor_id, labor_ in labor.groupby(report_grouping):
         hours_worked = get_hours_worked(labor_)
         dt = labor_.TimeDelta.sum()
-        print("{0}: {1}, {2:.2f} hours worked".format(labor_id, dt, round(hours_worked,2)))
+        print("{0}: {1} sessions, {2}, {3:.2f} hours worked".format(labor_id, len(labor_), dt, round(hours_worked,2)))
 
         hours.append(hours_worked)
 
-        print(len(labor_))
+
 
         if 'vis' in cfg:
             if type(labor_id) == tuple:
