@@ -36,7 +36,7 @@ Use `report.repos` to list other repos and their configurations.
 ### Report groupings
 
 `report.grouping` will determine how labor will be grouped for time sheets and plotting. 
-Which grouping you choose depends on your time tracking needs.
+This grouping is designed to be flexible to fit your time tracking needs.
 
 #### Labor distributed accross repos, branches, and developer
 
@@ -74,6 +74,8 @@ report:
 ```
 
 #### Total labor per developer, independent of repos and branches
+
+This may be used for tracking work for generating time sheets for a team of developers.
 
 ```yaml
 report:
