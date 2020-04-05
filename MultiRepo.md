@@ -1,3 +1,4 @@
+* fixing bugs not allowing group by name
 
 ### 2020-04-05 12:06:16.000383: clock-in
 

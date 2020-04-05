@@ -191,17 +191,22 @@ def run_report(cfg):
 
     clocks = pd.DataFrame()
 
-    identifier = list(cfg.commit.identity)
+    if type(cfg.commit.identity) is str:
+        identifier = [cfg.commit.identity]
+    else:
+        identifier = cfg.commit.identity.to_container()
+
+    labor = pd.DataFrame()
 
     for repo_conf in repos:
         gitdir = get_base_dir(repo_conf.gitdir)
 
         # get list of branches
         if repo_conf.branch is not None:
-            if type(repo_conf.branch.to_container()) == list:
-                branches = repo_conf.branch
-            else:
+            if type(repo_conf.branch) is str:
                 branches = [repo_conf.branch]
+            else:
+                branches = repo_conf.branch.to_container()
         else:
             branches = [None]
     
@@ -225,78 +230,77 @@ def run_report(cfg):
         work.drop_duplicates('hash', inplace=True)
 
     
-        clocks_ = get_clocks(work,
+        clocks = get_clocks(work,
                 start_date = start_date,
                 end_date = end_date,
                 errant_clocks = repo_conf.errant_clocks,
                 case_sensitive = repo_conf.case_sensitive)    
 
-        clocks_ = clocks_.assign(repo = repo_conf.name)
+        clocks = clocks.assign(repo = repo_conf.name)
+        clocks = clocks.loc[start_date:].loc[:end_date]
 
-        if cfg.report.work:
-            for user_id, user_work in clocks_.groupby(identifier):
+        if branch is None:
+            branch = ''
+
+        id_dict = dict(repo = repo_conf.name, branch = branch)
+        for user_id, user_work in clocks.groupby(identifier):
+            if type(user_id) is tuple:
+                for i, identifier_ in enumerate(identifier):
+                    id_dict[identifier_] = user_id[i]
+            else:
+                id_dict[identifier[0]] = user_id
+
+
+            if cfg.report.work:
                 print("\nWork for {}".format(user_id))
-                print(user_work.drop(['name', 'email'], axis = 1).loc[start_date:].loc[:end_date])
+                print(user_work.drop(['name', 'email'], axis = 1))
 
-        clocks = pd.concat((clocks, clocks_))
+            user_labor = get_labor(
+                user_work.drop(['name', 'email', 'repo', 'branch'], axis = 1),
+                ignore = repo_conf.ignore, 
+                match_logs = repo_conf.match_logs,
+                case_sensitive = repo_conf.case_sensitive)
 
+            
+            user_labor = user_labor.assign(**id_dict)
 
-    hours = []
-    plot_traces = [] 
+            labor = pd.concat((labor, user_labor))
 
-    if cfg.verbosity > 0:
-        print(identifier)
+    if 'filename' in cfg.report:
+        # ToDo: replace 'total' prefix with user ids
+        save_report(cfg, labor, 'total')
 
     if type(cfg.report.grouping) is str:
         report_grouping = [cfg.report.grouping]
     else:
         report_grouping = cfg.report.grouping.to_container()
 
-    for user_id, user_work in clocks.groupby(report_grouping):
-        if cfg.verbosity > 0:
-            print("\nProcessing timesheet for {}".format(user_id))
+    hours = []
+    plot_traces = []
 
+    print(labor.columns)
+    print(report_grouping)
 
-        labor = get_labor(
-            user_work.drop(['name','email'], axis = 1),
-            ignore = cfg.repo.ignore, 
-            match_logs = cfg.repo.match_logs,
-            case_sensitive = cfg.repo.case_sensitive)
+    for labor_id, labor_ in labor.groupby(report_grouping):
+        hours_worked = get_hours_worked(labor_)
+        dt = labor_.TimeDelta.sum()
+        print("{0}: {1}, {2:.2f} hours worked".format(labor_id, dt, round(hours_worked,2)))
 
-        if len(labor) > 0:
-            print(labor)
+        hours.append(hours_worked)
 
-            hours_worked = get_hours_worked(labor)
-            dt = labor.TimeDelta.sum()
-            print("{0}, {1:.2f} hours worked".format(dt, round(hours_worked,2)))
+        print(len(labor_))
 
-            hours.append(hours_worked)
+        if 'vis' in cfg:
+            if type(labor_id) == tuple:
+                plot_label = "<br>".join(labor_id)
+            else:
+                plot_label = labor_id
 
-            # compensation = get_compensation(cfg, identifier, user_id)
-            compensation = None
-
-            if compensation is not None:
-                # should return {'currency': earnings} dictionary
-                # this way, preferred currency is communicated by relative price!
-                earnings = get_earnings(hours_worked, compensation.wage) 
-                print(pd.Series(earnings).to_string())
-
-            if 'filename' in cfg.report:
-                save_report(cfg, labor, user_id)
-                    
-            if 'vis' in cfg:
-                if type(user_id) == tuple:
-                    plot_label = "<br>".join(user_id)
-                else:
-                    plot_label = user_id
-
-                user_trace = plot_labor(
-                    labor,
-                    cfg.vis.frequency,
-                    name = plot_label)
-                plot_traces.append(user_trace)
-        else:
-            print('No data for {} to {}: {}'.format(start_date, end_date, user_id))
+            labor_trace = plot_labor(
+                labor_,
+                cfg.vis.frequency,
+                name = plot_label)
+            plot_traces.append(labor_trace)
 
 
     if 'vis' in cfg:
