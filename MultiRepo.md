@@ -1,3 +1,6 @@
+
+### 2020-04-05 13:36:21.847920: clock-in
+
 ### 2020-04-05 13:18:53.515173: clock-out
 
 * fixing bugs not allowing group by name
