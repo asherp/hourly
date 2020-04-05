@@ -1,3 +1,4 @@
+* grouping by name
 
 ### 2020-04-05 11:00:51.458868: clock-in
 

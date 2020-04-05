@@ -247,8 +247,12 @@ def run_report(cfg):
     if cfg.verbosity > 0:
         print(identifier)
 
+    if type(cfg.report.grouping) is str:
+        report_grouping = [cfg.report.grouping]
+    else:
+        report_grouping = cfg.report.grouping.to_container()
 
-    for user_id, user_work in clocks.groupby(cfg.report.grouping.to_container()):
+    for user_id, user_work in clocks.groupby(report_grouping):
         if cfg.verbosity > 0:
             print("\nProcessing timesheet for {}".format(user_id))
 
