@@ -1,3 +1,6 @@
+
+### 2020-04-04 23:20:09.144648: clock-in
+
 ### 2020-04-04 15:12:34.630127: clock-out
 
 * added 'report.grouping' to specify name, email, repo, branch
