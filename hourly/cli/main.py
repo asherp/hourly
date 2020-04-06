@@ -207,7 +207,7 @@ def run_report(cfg):
         else:
             branches = [None]
     
-        work = pd.DataFrame()
+        work = []
         for branch in branches:
             if cfg.verbosity > 0:
                 print("getting commits for repo:branch {}:{}".format(gitdir, branch))
@@ -217,50 +217,60 @@ def run_report(cfg):
                 branch_name = ''
             else:
                 branch_name = branch
+            print('assigning branch name {}'.format(branch_name))
             branch_work = branch_work.assign(branch = branch_name)
             if cfg.verbosity > 0:
                 print("{} work commits found".format(len(branch_work)))
-            work = work.append(branch_work.sort_index())
+            print(branch_work.head())
+            work.append(branch_work.sort_index())
+
+        work = pd.concat(work)
+        print('available work columns:', work.columns)
 
         if cfg.verbosity > 1:
             print('removing duplicates by hash')
+
         work.drop_duplicates('hash', inplace=True)
 
-        print('unique branches:', work.branch.unique())
+        print('unique branches:', work['branch'].unique())
     
         clocks = get_clocks(work,
                 start_date = start_date,
                 end_date = end_date,
                 errant_clocks = repo_conf.errant_clocks,
-                case_sensitive = repo_conf.case_sensitive)    
+                case_sensitive = repo_conf.case_sensitive)  
+
+
 
         clocks = clocks.assign(repo = repo_conf.name)
         clocks = clocks.loc[start_date:].loc[:end_date]
 
-        if branch is None:
-            branch = ''
+        print('clock columns:{}'.format(clocks.columns))  
 
-        id_dict = dict(repo = repo_conf.name, branch = branch)
+        # id_dict = dict(repo = repo_conf.name, branch = branch)
+
+
         for user_id, user_work in clocks.groupby(identifier):
-            if type(user_id) is tuple:
-                for i, identifier_ in enumerate(identifier):
-                    id_dict[identifier_] = user_id[i]
-            else:
-                id_dict[identifier[0]] = user_id
+            # if type(user_id) is tuple:
+            #     for i, identifier_ in enumerate(identifier):
+            #         id_dict[identifier_] = user_id[i]
+            # else:
+            #     id_dict[identifier[0]] = user_id
 
+    
+
+            print(user_work.head())
 
             if cfg.report.work:
                 print("\nWork for {}".format(user_id))
                 print(user_work.drop(['name', 'email'], axis = 1))
 
             user_labor = get_labor(
-                user_work.drop(['name', 'email', 'repo', 'branch'], axis = 1),
+                user_work,
                 ignore = repo_conf.ignore, 
                 match_logs = repo_conf.match_logs,
                 case_sensitive = repo_conf.case_sensitive)
 
-            
-            user_labor = user_labor.assign(**id_dict)
 
             labor = pd.concat((labor, user_labor))
 
@@ -276,11 +286,11 @@ def run_report(cfg):
     hours = []
     plot_traces = []
 
-    print(labor.columns)
+    print('labor columns!', labor.columns)
     print(report_grouping)
     print(labor.head())
 
-    print(labor.branch.unique())
+    print('unique branches', labor.branch.unique())
 
     for labor_id, labor_ in labor.groupby(report_grouping):
         hours_worked = get_hours_worked(labor_)

@@ -1,3 +1,4 @@
+* got groupings to work by name or repo
 
 ### 2020-04-05 23:10:16.904078: clock-in: T-30m 
 

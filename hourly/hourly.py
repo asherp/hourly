@@ -111,7 +111,7 @@ def get_labor(clocked,
             clock_in.drop(clock_in.tail(1).index, inplace=True) # drop last rows
 
     
-    labor = pd.concat([clock_in, clock_out], axis = 1)
+    labor = pd.concat([clock_in[['TimeIn','LogIn']], clock_out], axis = 1)
     labor.dropna(inplace=True)
     labor = labor.assign(TimeDelta = labor.TimeOut - labor.TimeIn)
     labor = labor.assign(Hours = labor['TimeDelta'].apply(lambda x: x.total_seconds()/3600.))
