@@ -24,7 +24,7 @@ report:
 
 
 commit:
-  clock: '???' # 'in' will update WorkLog.md and commit with message "clock-in"
+  clock: null # 'in' will update WorkLog.md and commit with message "clock-in"
   tminus: null # '15m' will prepend 'T-15m' to commit message (ignored if clock is null)
   message: '' # 'my message' will append 'my message' to commit message
   identity: # how to identify contributors

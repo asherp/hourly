@@ -54,51 +54,52 @@ def process_commit(cfg, work, repo):
         log_message = '{} {}\n'.format(cfg.work_log.bullet, commit_message)
 
     if 'clock' in cfg.commit:
-        tminus = cfg.commit.tminus or ''
-        if len(tminus) != 0:
-            commit_message = "T-{} {}".format(tminus.strip('T-'), commit_message)
+        if cfg.commit.clock is not None:
+            tminus = cfg.commit.tminus or ''
+            if len(tminus) != 0:
+                commit_message = "T-{} {}".format(tminus.strip('T-'), commit_message)
 
-        if cfg.commit.clock.lower() == 'in':
-            last_in = is_clocked_in(work)
-            if last_in is not None:
-                time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-                raise IOError(
-                    "You are still clocked in!\n" + \
-                    "\tlast clock in: {}  ({:.2f} hours ago)".format(
-                        last_in,
-                        time_since_in.total_seconds()/3600.))
-            else:
-                if len(commit_message) == 0:
-                    commit_message = "clock-in"
+            if cfg.commit.clock.lower() == 'in':
+                last_in = is_clocked_in(work)
+                if last_in is not None:
+                    time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
+                    raise IOError(
+                        "You are still clocked in!\n" + \
+                        "\tlast clock in: {}  ({:.2f} hours ago)".format(
+                            last_in,
+                            time_since_in.total_seconds()/3600.))
                 else:
-                    commit_message = "clock-in: {}".format(commit_message)
-                log_message = "\n{} {}: {}\n\n".format(
-                    header_depth, 
-                    pd.datetime.now(), 
-                    commit_message)
-                print("clocking in with message: {} ".format(commit_message))
+                    if len(commit_message) == 0:
+                        commit_message = "clock-in"
+                    else:
+                        commit_message = "clock-in: {}".format(commit_message)
+                    log_message = "\n{} {}: {}\n\n".format(
+                        header_depth, 
+                        pd.datetime.now(), 
+                        commit_message)
+                    print("clocking in with message: {} ".format(commit_message))
 
-        elif cfg.commit.clock.lower() == 'out': # prevent clock in and out at the same time
-            last_out = is_clocked_out(work)
-            if last_out is not None:
-                time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-                raise IOError(
-                    "You already clocked out!\n" + \
-                    "\tlast clock out: {} ({:.2f} hours ago)".format(
-                        last_out,
-                        time_since_out.total_seconds()/3600.))
-            else:
-                if len(commit_message) == 0:
-                    commit_message = "clock-out"
+            elif cfg.commit.clock.lower() == 'out': # prevent clock in and out at the same time
+                last_out = is_clocked_out(work)
+                if last_out is not None:
+                    time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
+                    raise IOError(
+                        "You already clocked out!\n" + \
+                        "\tlast clock out: {} ({:.2f} hours ago)".format(
+                            last_out,
+                            time_since_out.total_seconds()/3600.))
                 else:
-                    commit_message = "clock-out: {}".format(commit_message)
-                log_message = "{} {}: {}\n\n".format(
-                    header_depth,
-                    pd.datetime.now(),
-                    commit_message)
-                print("clocking out with message: {} ".format(commit_message))
-        else:
-            raise IOError("unrecocgnized clock value: {}".format(cfg.commit.clock))
+                    if len(commit_message) == 0:
+                        commit_message = "clock-out"
+                    else:
+                        commit_message = "clock-out: {}".format(commit_message)
+                    log_message = "{} {}: {}\n\n".format(
+                        header_depth,
+                        pd.datetime.now(),
+                        commit_message)
+                    print("clocking out with message: {} ".format(commit_message))
+            else:
+                raise IOError("unrecocgnized clock value: {}".format(cfg.commit.clock))
 
 
     # logfile = hydra.utils.to_absolute_path(cfg.work_log.filename)
