@@ -1,3 +1,4 @@
+* fixing time adjustment
 ### 2020-04-05 23:12:17.506294: clock-out
 
 * got groupings to work by name or repo
