@@ -20,7 +20,7 @@ def adjust_time(work, dt_str = 'T-'):
         if dt_str == 'T-':    
             # work.time.update(up_) # broken
             up_ = work.loc[adjustments.index].time - adjustments.timedelta
-            work.loc[up_.index].time = up_
+            work.loc[up_.index, 'time'] = up_
         else:
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
