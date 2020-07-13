@@ -74,7 +74,8 @@ def get_clocks(work,
     clocks = commit_filter(work, 'clock', case_sensitive = case_sensitive)
 
     # handle case where start and dates have different utc offsets
-    clocks = clocks.loc[start_date:].loc[:end_date]
+    clocks = clocks.loc[start_date:]
+    clocks = clocks.loc[:end_date]
 
     if adjust_clocks:
         clocks = adjust_time(clocks)

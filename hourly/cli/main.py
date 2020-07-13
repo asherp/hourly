@@ -15,6 +15,7 @@ import sys
 import logging
 import copy
 import numpy as np
+import datetime
 
 def handle_errors(cfg, error_msg = None):
     if error_msg is not None:
@@ -162,6 +163,14 @@ def resolve(cfg):
     return OmegaConf.create(cfg_dict)
 
 
+def localize(t):
+    if t is None:
+        return t
+    if t.tzinfo is None:
+        LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone(datetime.timedelta(0))).astimezone().tzinfo
+        return t.tz_localize(LOCAL_TIMEZONE)
+    else:
+        return t
 
 def run_report(cfg):
     if cfg.verbosity > 1:
@@ -171,12 +180,14 @@ def run_report(cfg):
 
     if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
+        start_date = localize(start_date)
     else:
         start_date = None
         
 
     if 'end_date' in cfg.repo:
         end_date = pd.to_datetime(cfg.repo.end_date)
+        end_date = localize(end_date)
     else:
         end_date = None
 
@@ -234,15 +245,22 @@ def run_report(cfg):
 
         print('unique branches:', work['branch'].unique())
     
-        clocks = get_clocks(work,
-                start_date = start_date,
-                end_date = end_date,
-                errant_clocks = repo_conf.errant_clocks,
-                case_sensitive = repo_conf.case_sensitive)  
+        try:
+            clocks = get_clocks(work,
+                    start_date = start_date,
+                    end_date = end_date,
+                    errant_clocks = repo_conf.errant_clocks,
+                    case_sensitive = repo_conf.case_sensitive)  
+        except:
+            print('issue with repo: {}'.format(gitdir))
+            print('start_date: {}'.format(start_date))
+            print('end_date: {}'.format(end_date))
+            raise
 
 
 
         clocks = clocks.assign(repo = repo_conf.name)
+        clocks.sort_index(inplace=True)
         clocks = clocks.loc[start_date:].loc[:end_date]
 
         print('clock columns:{}'.format(clocks.columns))  
