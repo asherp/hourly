@@ -31,7 +31,7 @@ commit:
   - name
 
 vis:
-  frequency: '1 M'
+  frequency: '30 d'
 
 # vis:
 #   frequency: '1 d'

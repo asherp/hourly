@@ -333,9 +333,29 @@ def run_report(cfg):
 
 
     if 'vis' in cfg:
-        plot_title = "total hours commited: {0:.2f}".format(sum(hours))
+        total_hours = sum(hours)
+        plot_title = "total hours commited: {0:.2f}".format(total_hours)
         plot_traces = [plot_traces[i] for i in np.argsort(hours)[::-1]]
         fig = go.Figure(plot_traces)
+
+        time_range_sec = (clocks.index[-1] - clocks.index[0]).total_seconds()
+        print('freq: {}'.format(cfg.vis.frequency))
+        print('time range [sec]: {}'.format(time_range_sec))
+        bin_size_val, bin_size_unit = cfg.vis.frequency.split(' ')
+        bin_size = pd.Timedelta(float(bin_size_val), unit = bin_size_unit)
+        bin_size_sec = bin_size.total_seconds()
+        print('bin size : {} [sec]: {}'.format(bin_size, bin_size_sec))
+        time_bins = time_range_sec/bin_size_sec
+        avg_time = total_hours/time_bins
+        print('hours: {} bins: {} average time: {}'.format(total_hours, time_bins, avg_time))
+        fig.add_trace(go.Scatter(
+            x = clocks.index[[0,-1]],
+            y = 2*[avg_time],
+            mode = 'lines',
+            name="average",
+            text= 2*['{0:.2f}'.format(avg_time)],
+        ))
+
         fig.update_layout(
             title = plot_title, 
             yaxis = dict(title_text = 'hours per {}'.format(cfg.vis.frequency)))
@@ -546,6 +566,8 @@ def run(cfg):
                 with open(plot_filename, 'w') as div_output:
                     div_output.write(div)
                     div_output.write('\n')
+
+
 
 def get_compensation(cfg, identifier, user_id):
     compensation = pd.DataFrame(OmegaConf.to_container(cfg.compensation))
