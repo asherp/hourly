@@ -1,3 +1,4 @@
+* added average time
 
 ### 2020-07-29 19:09:05.013725: clock-in: T-30m 
 
