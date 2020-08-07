@@ -50,7 +50,7 @@ work_log:
 
 vis: # set to null to prevent plotting
   frequency: '1 d' # start small - experienced users can override
-  normalize: 1 # scale hours per frequency (8 for daily, 40 for weekly full time)
+  normalize: # 5.714 for 40 hr week
   plotly: # plotly keywords
     figure:
       hovermode: 'x'

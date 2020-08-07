@@ -172,6 +172,30 @@ def localize(t):
     else:
         return t
 
+def get_avg_time(cfg, labor, total_hours):
+
+    tdelta = labor.set_index('TimeIn').TimeDelta.groupby(pd.Grouper(freq = cfg.vis.frequency)).sum()
+    
+    tmin = tdelta.index.min()
+    tmax = tdelta.index.max()
+
+    time_range_sec = (tmax - tmin).total_seconds()
+    if cfg.verbosity:
+        print('freq: {}'.format(cfg.vis.frequency))
+        print('time range [sec]: {}'.format(time_range_sec))
+    bin_size_val, bin_size_unit = cfg.vis.frequency.split(' ')
+    bin_size = pd.Timedelta(float(bin_size_val), unit = bin_size_unit)
+    bin_size_sec = bin_size.total_seconds()
+    if cfg.verbosity:
+        print('bin size : {} [sec]: {}'.format(bin_size, bin_size_sec))
+    time_bins = (time_range_sec/bin_size_sec) + 1
+    avg_time = total_hours/time_bins
+    if cfg.verbosity:
+        print('hours: {} bins: {} average time: {}'.format(total_hours, time_bins, avg_time))
+    return avg_time, tmin, tmax
+
+
+
 def run_report(cfg):
     if cfg.verbosity > 1:
         print(cfg.pretty())
@@ -317,9 +341,31 @@ def run_report(cfg):
 
         hours.append(hours_worked)
 
+        # # move this down
+        # if 'vis' in cfg:
+        #     if type(labor_id) == tuple:
+        #         plot_label = "<br>".join(labor_id)
+        #     else:
+        #         plot_label = labor_id
+
+        #     labor_trace = plot_labor(
+        #         labor_,
+        #         cfg.vis.frequency,
+        #         name = plot_label)
+        #     plot_traces.append(labor_trace)
 
 
-        if 'vis' in cfg:
+
+    if 'vis' in cfg:
+        total_hours = sum(hours)
+        avg_time, tmin, tmax = get_avg_time(cfg, labor, total_hours)
+
+        if cfg.vis.normalize:
+            norm = cfg.vis.normalize/avg_time # norm > 1 if avg_time < normalization
+        else:
+            norm = 1    
+
+        for labor_id, labor_ in labor.groupby(report_grouping):
             if type(labor_id) == tuple:
                 plot_label = "<br>".join(labor_id)
             else:
@@ -328,33 +374,32 @@ def run_report(cfg):
             labor_trace = plot_labor(
                 labor_,
                 cfg.vis.frequency,
-                name = plot_label)
+                name = plot_label,
+                norm = norm)
             plot_traces.append(labor_trace)
 
 
-    if 'vis' in cfg:
-        total_hours = sum(hours)
-        plot_title = "total hours commited: {0:.2f}".format(total_hours)
+
+
+        plot_title = "total hours commited: {0:.2f}".format(total_hours*norm)
         plot_traces = [plot_traces[i] for i in np.argsort(hours)[::-1]]
         fig = go.Figure(plot_traces)
 
-        time_range_sec = (clocks.index[-1] - clocks.index[0]).total_seconds()
-        print('freq: {}'.format(cfg.vis.frequency))
-        print('time range [sec]: {}'.format(time_range_sec))
-        bin_size_val, bin_size_unit = cfg.vis.frequency.split(' ')
-        bin_size = pd.Timedelta(float(bin_size_val), unit = bin_size_unit)
-        bin_size_sec = bin_size.total_seconds()
-        print('bin size : {} [sec]: {}'.format(bin_size, bin_size_sec))
-        time_bins = time_range_sec/bin_size_sec
-        avg_time = total_hours/time_bins
-        print('hours: {} bins: {} average time: {}'.format(total_hours, time_bins, avg_time))
-        fig.add_trace(go.Scatter(
-            x = clocks.index[[0,-1]],
-            y = 2*[avg_time],
+        
+        avg_x = pd.date_range(start = tmin, end = tmax, freq = cfg.vis.frequency)
+
+
+        avg_trace = go.Scatter(
+            x = avg_x,
+            y = len(avg_x)*[avg_time*norm],
             mode = 'lines',
             name="average",
             text= 2*['{0:.2f}'.format(avg_time)],
-        ))
+            # yaxis="y2",
+            )
+
+        fig.add_trace(avg_trace)
+
 
         fig.update_layout(
             title = plot_title, 
