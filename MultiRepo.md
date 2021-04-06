@@ -1,3 +1,4 @@
+* added division of labor for multiple repo names
 
 ### 2021-04-05 22:00:06.101441: clock-in
 

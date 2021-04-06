@@ -7,7 +7,7 @@ from hourly import plot_labor, get_current_user, get_clocks
 from hourly import invoice
 import plotly.graph_objs as go
 import plotly.offline as po
-from omegaconf import OmegaConf, DictConfig
+from omegaconf import OmegaConf, DictConfig, ListConfig
 import hydra
 from os import path
 import os
@@ -195,6 +195,22 @@ def get_avg_time(cfg, labor, total_hours):
     return avg_time, tmin, tmax
 
 
+def divide_labor(labor):
+    """divides labor among multiple repo names"""
+    rows = []
+    for _, row in labor.iterrows():
+        if isinstance(row.repo, tuple):
+            #  divide evenly among the tags
+            tag_count = len(row.repo)
+            row_tag = row
+            for repo_name in row.repo:
+                row_tag.repo = repo_name
+                row_tag.TimeDelta = row.TimeDelta/tag_count
+                row_tag.Hours = row.Hours/tag_count
+                rows.append(pd.DataFrame(row_tag).T)
+        else:
+            rows.append(pd.DataFrame(row).T)
+    return pd.concat(rows)
 
 def run_report(cfg):
     if cfg.verbosity > 1:
@@ -283,7 +299,12 @@ def run_report(cfg):
 
 
 
-        clocks = clocks.assign(repo = repo_conf.name)
+        # clocks = clocks.assign(repo = repo_conf.name)
+        # allow repo name to be a list
+        if isinstance(repo_conf.name, ListConfig):
+            clocks = clocks.assign(repo = [tuple(repo_conf.name)]*len(clocks))
+        else:
+            clocks = clocks.assign(repo=repo_conf.name)
         clocks.sort_index(inplace=True)
         clocks = clocks.loc[start_date:].loc[:end_date]
 
@@ -334,6 +355,8 @@ def run_report(cfg):
 
     print('unique branches', labor.branch.unique())
 
+    labor = divide_labor(labor)
+
     for labor_id, labor_ in labor.groupby(report_grouping):
         hours_worked = get_hours_worked(labor_)
         dt = labor_.TimeDelta.sum()
@@ -362,12 +385,17 @@ def run_report(cfg):
 
         if cfg.vis.normalize:
             norm = cfg.vis.normalize/avg_time # norm > 1 if avg_time < normalization
+            if cfg.verbosity:
+                print('normalization factor: {}'.format(norm))
         else:
             norm = 1    
 
         for labor_id, labor_ in labor.groupby(report_grouping):
             if type(labor_id) == tuple:
-                plot_label = "<br>".join(labor_id)
+                try:
+                    plot_label = "<br>".join(labor_id)
+                except:
+                    raise NameError('something wrong with {}'.format(labor_id))
             else:
                 plot_label = labor_id
 
@@ -377,8 +405,6 @@ def run_report(cfg):
                 name = plot_label,
                 norm = norm)
             plot_traces.append(labor_trace)
-
-
 
 
         plot_title = "total hours commited: {0:.2f}".format(total_hours*norm)

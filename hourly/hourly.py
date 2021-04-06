@@ -216,7 +216,7 @@ def plot_labor(labor, freq, name = None, norm = 1):
 
     tdelta_trace = go.Scatter(
         x = pd.Series(tdelta.index),
-        y = [norm*td.total_seconds()/3600 for td in tdelta],
+        y = [norm*td.total_seconds()/3600. for td in tdelta],
         mode='lines',
         stackgroup = 'one',
         text = [str(td) for td in tdelta],
