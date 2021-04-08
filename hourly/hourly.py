@@ -25,11 +25,11 @@ def adjust_time(work, dt_str = 'T-'):
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern'):
+def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', branch = None):
     """Retrives work commits from repo"""
     repo = git.Repo(repo_addr)
 
-    logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits()]
+    logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits(branch)]
 
     work = pd.DataFrame.from_records(logs, columns = ['time', 'message', 'hash', 'name', 'email'])
 
@@ -63,14 +63,19 @@ def commit_filter(commits, filters, column = 'message', case_sensitive = False, 
 def get_clocks(work, 
             start_date = None,
             end_date = None,
-            errant_clocks = [],
+            errant_clocks = None,
             case_sensitive = False,
             adjust_clocks = True):
     """Filter work by messages conataining the word 'clock' """
-    clocks = commit_filter(work[~work.hash.isin(errant_clocks)], 'clock', case_sensitive = case_sensitive)
+
+    if errant_clocks is not None:
+        work = work[~work.hash.isin(errant_clocks)]
+
+    clocks = commit_filter(work, 'clock', case_sensitive = case_sensitive)
 
     # handle case where start and dates have different utc offsets
-    clocks = clocks.loc[start_date:].loc[:end_date]
+    clocks = clocks.loc[start_date:]
+    clocks = clocks.loc[:end_date]
 
     if adjust_clocks:
         clocks = adjust_time(clocks)
@@ -109,7 +114,7 @@ def get_labor(clocked,
             clock_in.drop(clock_in.tail(1).index, inplace=True) # drop last rows
 
     
-    labor = pd.concat([clock_in, clock_out], axis = 1)
+    labor = pd.concat([clock_in[['TimeIn','LogIn']], clock_out], axis = 1)
     labor.dropna(inplace=True)
     labor = labor.assign(TimeDelta = labor.TimeOut - labor.TimeIn)
     labor = labor.assign(Hours = labor['TimeDelta'].apply(lambda x: x.total_seconds()/3600.))
@@ -206,12 +211,12 @@ def commit_log(repo, logfile, commit_message):
     commit = repo.index.commit(commit_message)
     return commit
 
-def plot_labor(labor, freq, name = None):
+def plot_labor(labor, freq, name = None, norm = 1):
     tdelta = labor.set_index('TimeIn').TimeDelta.groupby(pd.Grouper(freq = freq)).sum()
 
     tdelta_trace = go.Scatter(
         x = pd.Series(tdelta.index),
-        y = [td.total_seconds()/3600 for td in tdelta],
+        y = [norm*td.total_seconds()/3600. for td in tdelta],
         mode='lines',
         stackgroup = 'one',
         text = [str(td) for td in tdelta],

@@ -3,15 +3,25 @@ config_override: hourly.yaml
 init: false
 
 repo:
-  gitdir: .
+  gitdir: "."
   start_date: null 
   end_date: null 
   errant_clocks: [] # list of commit hashes to skip
   case_sensitive: False # should commit message filters be case-sensitive
   ignore: null # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
+  branch: null # use currently checked out branch (only affects reports)
+  name: ''
+
 
 report:
+  repos:  # which repos to generate reports for
+    - ${repo} # use primary repo as default
+  grouping:
+    - repo
+    - branch
+    # - email
+    # - name
   timesheet: false # print timesheet
   work: false # print work log
   filename: '???' # csv file to save report to
@@ -40,6 +50,7 @@ work_log:
 
 vis: # set to null to prevent plotting
   frequency: '1 d' # start small - experienced users can override
+  normalize: # 5.714 for 40 hr week
   plotly: # plotly keywords
     figure:
       hovermode: 'x'

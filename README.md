@@ -247,8 +247,8 @@ But if we want to override hourly's defaults without typing them in each time,
 we can specify an hourly.yaml file in our git repo. Hourly will look
 for this file (via the `config_override` option) and override its default configuration.
 
-!!! bug
-    Your project's `config_override` will even override command line arguments!
+!!! note
+    Settings in your project's `config_override` can still be overriden by command line arguments.
 
 An example of a custom override file is found in the top-level of the hourly repo:
 
