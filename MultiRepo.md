@@ -1,3 +1,4 @@
+* bug preventing multiple names from adding across multiple repos
 
 ### 2021-05-15 15:15:48.282768: clock-in
 
