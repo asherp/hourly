@@ -195,20 +195,26 @@ def get_avg_time(cfg, labor, total_hours):
     return avg_time, tmin, tmax
 
 
-def divide_labor(labor):
+def divide_labor(cfg, labor):
     """divides labor among multiple repo names"""
     rows = []
     for _, row in labor.iterrows():
         if isinstance(row.repo, tuple):
+            if cfg.verbosity > 1:
+                print("!!!!!!!Found multiple names {} !!!!!!".format(row.repo))
             #  divide evenly among the tags
             tag_count = len(row.repo)
             row_tag = row
+            row_tag.TimeDelta = row.TimeDelta/tag_count
+            row_tag.Hours = row.Hours/tag_count
             for repo_name in row.repo:
                 row_tag.repo = repo_name
-                row_tag.TimeDelta = row.TimeDelta/tag_count
-                row_tag.Hours = row.Hours/tag_count
                 rows.append(pd.DataFrame(row_tag).T)
+                if cfg.verbosity > 1:
+                    print('  appending {}'.format(repo_name))
         else:
+            if cfg.verbosity > 1:
+                print('appending {}'.format(row.repo))
             rows.append(pd.DataFrame(row).T)
     return pd.concat(rows)
 
@@ -355,7 +361,7 @@ def run_report(cfg):
 
     print('unique branches', labor.branch.unique())
 
-    labor = divide_labor(labor)
+    labor = divide_labor(cfg, labor)
 
     for labor_id, labor_ in labor.groupby(report_grouping):
         hours_worked = get_hours_worked(labor_)
