@@ -1,3 +1,6 @@
+
+### 2021-05-15 16:16:43.647226: clock-in
+
 ### 2021-05-15 16:07:06.595128: clock-out: T-20m 
 
 * bug preventing multiple names from adding across multiple repos
