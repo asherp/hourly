@@ -16,6 +16,9 @@ def adjust_time(work, dt_str = 'T-'):
     adjustments = work[work.message.str.contains(dt_str)].message.str.split(dt_str, expand = True)
     if len(adjustments) > 0:
         adjustments.columns = ['message','timedelta']
+        # split again to remove any extra message bets
+        df = adjustments.timedelta.str.split(expand=True)
+        adjustments.timedelta = df[df.columns[0]]
         adjustments.timedelta = adjustments.timedelta.apply(pd.Timedelta)
         if dt_str == 'T-':    
             # work.time.update(up_) # broken
@@ -157,7 +160,7 @@ def get_labor_range(labor):
     start = labor.iloc[0].TimeIn
     end = labor.iloc[-1].TimeOut
     return start, end
-   
+
 
 
 def is_clocked_in(clocks):

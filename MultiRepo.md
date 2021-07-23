@@ -1,3 +1,4 @@
+* fixed time adjustment with message bug
 
 ### 2021-07-22 22:52:16.602663: clock-in
 
