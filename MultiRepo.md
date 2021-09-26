@@ -1,0 +1,1 @@
+* ignoring hourly.yaml

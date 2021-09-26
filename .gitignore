@@ -107,3 +107,4 @@ venv.bak/
 hourly-outputs/
 docs/hourly-work.html
 btcpayserver.pem
+hourly.yaml
