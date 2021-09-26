@@ -1,3 +1,6 @@
+
+### 2021-09-26 13:13:08.492389: clock-in
+
 ### 2021-07-23 01:06:09.646169: clock-out
 
 * fixed time adjustment with message bug
