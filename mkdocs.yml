@@ -2,6 +2,7 @@ site_name: Hourly
 
 nav:
   - Home: index.md
+  - MultiRepo: Multi-Repo.md
   - Invoicing: Payments.md
   - Time Estimation: README.ipynb
   - Compensation: Compensation.md

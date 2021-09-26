@@ -1,22 +1,45 @@
 repo:
-  errant_clocks:
-  - d9ec537b36475b565df6b28d0cab6edc3a89f2da
-  ignore: 'pro bono'
+  gitdir: "." # use directories as keys
+  start_date: null 
+  end_date: null 
+  errant_clocks: ['d9ec537b36475b565df6b28d0cab6edc3a89f2da'] # list of commit hashes to skip
+  case_sensitive: False # should commit message filters be case-sensitive
+  ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
+  match_logs: False # should all clock-ins be paired with clock-outs
+  name: hourly
+  branch:
+    - master
+    - multi-repo-conf
+
+
+report:
+  repos:
+    - ${repo}
+  grouping:
+    # - repo
+    - branch
+    # - email
+    # - name
 
 work_log:
   header_depth: 3
+  filename: WorkLog.md
 
 commit:
   identity:
   - email
+  - name
 
 vis:
-  frequency: '1 d'
-  plotly: # plotly keywords
-    plot:
-      output_type: div 
-      auto_open: false
-      filename: docs/hourly-work.html
+  frequency: '30 d'
+
+# vis:
+#   frequency: '1 d'
+#   plotly: # plotly keywords
+#     plot:
+#       output_type: div 
+#       auto_open: false
+#       filename: docs/hourly-work.html
 
 compensation:
   - name: Asher Pembroke
