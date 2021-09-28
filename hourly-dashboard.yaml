@@ -1,0 +1,58 @@
+import:
+  dcc: dash.dcc
+  html: dash.html
+  dbc: dash_bootstrap_components
+
+app:
+  jupyter_dash.JupyterDash:
+    external_stylesheets:
+      - https://codepen.io/chriddyp/pen/bWLwgP.css
+    title: Hourly
+
+layout:
+  html.Div:
+    children:
+    - dcc.Location:
+        id: url
+        refresh: False
+    - html.H2: Hourly Visualizer
+    - html.H4:
+        id: clock-status
+        children: Clock status
+    - dcc.Interval:
+        id: clock-interval
+        n_intervals: 0
+        interval: 1000
+    - html.Content:
+        children:
+        - dash_table.DataTable:
+            id: table
+            style_data:
+              whiteSpace: normal
+              height: auto
+              lineHeight: 15px
+            style_cell:
+              textAlign: left
+
+callbacks:
+  clock_status:
+    input:
+      - id: url
+        attr: pathname
+      - id: clock-interval
+        attr: n_intervals
+    output:
+      - id: clock-status
+        attr: children
+  update_table:
+    input:
+      - id: url
+        attr: pathname
+    output:
+      - id: table
+        attr: columns
+      - id: table
+        attr: data
+
+
+

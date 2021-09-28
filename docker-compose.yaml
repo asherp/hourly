@@ -1,0 +1,25 @@
+version: '3.4'
+networks: {}
+services:
+  notebook:
+    container_name: hourly-notebook
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+    - "8888:8888"
+    - "8050:8050"
+    image: apembroke/hourly
+    volumes:
+    - type: bind
+      source: ${PWD}
+      target: /dashboard
+    environment:
+      JUPYTER_NOTEBOOKS: /dashboard
+      JUPYTER_PORT: 8888
+    working_dir: /dashboard
+    command:
+    - sh
+    - -c
+    - chmod +x /dashboard/jupyter_run.sh && /dashboard/jupyter_run.sh
