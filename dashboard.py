@@ -76,9 +76,41 @@ def dt_format(dt):
     minutes, seconds = divmod(remainder, 60)
     # Formatted only for hours and minutes as requested
     return '{}h {}m {}s'.format(int(hours), math.floor(minutes), round(seconds))
+
+@callbacks.clock_switch
+def clock_switch(url):
+    work, repo = get_work_commits('.')
     
-@callbacks.clock_status
+    last_in = is_clocked_in(work)
+    if last_in is not None:
+        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
+        return True, 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+
+    last_out = is_clocked_out(work)
+    if last_out is not None:
+        time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
+        return False, 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+
+        
+    
+
+@callbacks.clock_button
+def clock_button(url, n_clicks):
+    work, repo = get_work_commits('.')
+    last_in = is_clocked_in(work)
+    if last_in is not None:
+        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
+        return ('Clocked In',
+                'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in)))
+    last_out = is_clocked_out(work)
+    if last_out is not None:
+        time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
+        return ('Clocked Out',
+               'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out)))
+
+# @callbacks.clock_status
 def clock_status(url, n_intervals):
+    work, repo = get_work_commits('.')
     last_in = is_clocked_in(work)
     if last_in is not None:
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
@@ -90,6 +122,7 @@ def clock_status(url, n_intervals):
     
 @callbacks.update_table
 def update_table(url):
+    work, repo = get_work_commits('.')
     work_ = work.reset_index().iloc[::-1]
     columns = [{"name": i, "id": i} for i in work_.columns]
     data = work_.to_dict('records')
@@ -97,25 +130,3 @@ def update_table(url):
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True)
-# -
-
-flo
-
-time_since_in.components.hours
-
-work, repo = get_work_commits('.')
-work.head()
-
-work.tail()
-
-dash.__version__
-
-work.columns
-
-# +
-# work.to_dict?
-# -
-
-work.to_dict('records')
-
-

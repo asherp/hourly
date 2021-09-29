@@ -8,6 +8,7 @@ RUN conda install -c conda-forge dash pandas scipy numpy networkx
 RUN pip install jupyter-dash
 RUN pip install dash-bootstrap-components
 RUN pip install git+https://github.com/predsci/psidash.git
+RUN pip install dash_daq
 
 COPY . /dashboard
 
