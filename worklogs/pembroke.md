@@ -1,3 +1,6 @@
+
+### 2021-09-28 23:25:14.324913: clock-in
+
 ### 2021-09-27 23:18:48.655650: clock-out
 
 * basic layout, clock in/out counter
