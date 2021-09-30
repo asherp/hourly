@@ -17,15 +17,15 @@ layout:
         id: url
         refresh: False
     - html.H2: Hourly Visualizer
-    - daq.ToggleSwitch:
-        id: clock-switch
-        disabled: True
-        label: Clocked Out
     - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
-        id: clock-button
-        children: Clock
+        id: clock-in
+        children: Clock In
         n_clicks: 0
-    - html.H4:
+    - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
+        id: clock-out
+        children: Clock Out
+        n_clicks: 0
+    - html.Div:
         id: clock-status
         children: Clock status
     - dcc.Interval:
@@ -44,25 +44,20 @@ layout:
               textAlign: left
 
 callbacks:
-  clock_switch:
-    input:
-      - id: url
-        attr: pathname
-    output:
-      - id: clock-switch
-        attr: value
-      - id: clock-switch
-        attr: label
   clock_button:
     input:
       - id: url
         attr: pathname
-      - id: clock-button
+      - id: clock-in
+        attr: n_clicks
+      - id: clock-out
         attr: n_clicks
     output:
-      - id: clock-button
-        attr: children
       - id: clock-status
+        attr: children
+      - id: clock-in
+        attr: children
+      - id: clock-out
         attr: children
   # clock_status:
   #   input:

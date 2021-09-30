@@ -77,36 +77,60 @@ def dt_format(dt):
     # Formatted only for hours and minutes as requested
     return '{}h {}m {}s'.format(int(hours), math.floor(minutes), round(seconds))
 
-@callbacks.clock_switch
+# @callbacks.clock_switch
 def clock_switch(url):
     work, repo = get_work_commits('.')
     
     last_in = is_clocked_in(work)
     if last_in is not None:
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        return True, 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+        return 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in)), False
 
     last_out = is_clocked_out(work)
     if last_out is not None:
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        return False, 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+        return 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out)), False
 
-        
-    
+def get_triggered():
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        button_id = 'No clicks yet'
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    return button_id
 
 @callbacks.clock_button
-def clock_button(url, n_clicks):
+def clock_button(url, clock_in_clicks, clock_out_clicks):
+    button_id = get_triggered()
     work, repo = get_work_commits('.')
     last_in = is_clocked_in(work)
-    if last_in is not None:
-        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        return ('Clocked In',
-                'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in)))
     last_out = is_clocked_out(work)
+    clock_status = ''
+
+    if last_in is not None:
+        clock_in_label = 'Clocked in'
+        clock_out_label = 'Clock Out'
+        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
+        clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+
     if last_out is not None:
+        clock_in_label = 'Clock Out'
+        clock_out_label = 'Clocked Out'
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        return ('Clocked Out',
-               'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out)))
+        clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+    
+    if button_id == 'clock-in':
+        if last_in is not None:
+            clock_status += ': no need to clock in'
+        else:
+            clock_status += ': need to clock in'
+    if button_id == 'clock-out':
+        if last_out is not None:
+            clock_status += ': no need to clock out'
+        else:
+            clock_status += ': need to clock out'
+    
+    return clock_status, clock_in_label, clock_out_label
 
 # @callbacks.clock_status
 def clock_status(url, n_intervals):
