@@ -2,13 +2,16 @@ repo:
   gitdir: "." # use directories as keys
   start_date: null 
   end_date: null 
-  errant_clocks: ['d9ec537b36475b565df6b28d0cab6edc3a89f2da'] # list of commit hashes to skip
+  errant_clocks: # list of commit hashes to skip
+    - d9ec537b36475b565df6b28d0cab6edc3a89f2da
+    - ef37f8ad13118305776aa43d8acd2d18b0b61827
   case_sensitive: False # should commit message filters be case-sensitive
   ignore: 'pro bono' # ignore work containing string, ie 'pro bono'
   match_logs: False # should all clock-ins be paired with clock-outs
   name: hourly
   branch:
     - master
+    - dashboard
     - multi-repo-conf
 
 
@@ -23,7 +26,7 @@ report:
 
 work_log:
   header_depth: 3
-  filename: WorkLog.md
+  filename: worklogs/pembroke.md
 
 commit:
   identity:
@@ -31,7 +34,7 @@ commit:
   - name
 
 vis:
-  frequency: '30 d'
+  frequency: '1 d'
 
 # vis:
 #   frequency: '1 d'
