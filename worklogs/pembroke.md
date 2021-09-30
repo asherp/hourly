@@ -1,3 +1,5 @@
+### 2021-09-30 00:04:21.838617: clock-out
+
 * separate in/out buttons
 
 ### 2021-09-29 23:22:58.657224: clock-in
