@@ -18,6 +18,8 @@ services:
     environment:
       JUPYTER_NOTEBOOKS: /dashboard
       JUPYTER_PORT: 8888
+      GIT_USER_NAME: ${GIT_USER_NAME}
+      GIT_USER_EMAIL: ${GIT_USER_EMAIL}
     working_dir: /dashboard
     command:
     - sh

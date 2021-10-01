@@ -1,3 +1,4 @@
+* adding inout to dashboard
 
 ### 2021-09-30 19:26:53.261218: clock-in
 

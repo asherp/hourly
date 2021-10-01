@@ -16,7 +16,7 @@ layout:
     - dcc.Location:
         id: url
         refresh: False
-    - html.H2: Hourly Visualizer
+    - html.H2: Hourly Dashboard
     - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
         id: clock-in
         children: Clock In
@@ -25,6 +25,9 @@ layout:
         id: clock-out
         children: Clock Out
         n_clicks: 0
+    - dcc.Input:
+        id: message
+        value: ''
     - html.Div:
         id: clock-status
         children: Clock status
@@ -32,6 +35,8 @@ layout:
         id: clock-interval
         n_intervals: 0
         interval: 10000
+    - dcc.Markdown:
+        id: hourly-conf
     - html.Content:
         children:
         - dash_table.DataTable:
@@ -44,7 +49,7 @@ layout:
               textAlign: left
 
 callbacks:
-  clock_button:
+  hourly_conf:
     input:
       - id: url
         attr: pathname
@@ -52,6 +57,9 @@ callbacks:
         attr: n_clicks
       - id: clock-out
         attr: n_clicks
+    state:
+      - id: message
+        attr: value
     output:
       - id: clock-status
         attr: children
@@ -59,6 +67,25 @@ callbacks:
         attr: children
       - id: clock-out
         attr: children
+      - id: table
+        attr: columns
+      - id: table
+        attr: data
+  # clock_button:
+  #   input:
+  #     - id: url
+  #       attr: pathname
+  #     - id: clock-in
+  #       attr: n_clicks
+  #     - id: clock-out
+  #       attr: n_clicks
+  #   output:
+  #     - id: clock-status
+  #       attr: children
+  #     - id: clock-in
+  #       attr: children
+  #     - id: clock-out
+  #       attr: children
   # clock_status:
   #   input:
   #     - id: url
@@ -68,15 +95,15 @@ callbacks:
   #   output:
   #     - id: clock-status
   #       attr: children
-  update_table:
-    input:
-      - id: url
-        attr: pathname
-    output:
-      - id: table
-        attr: columns
-      - id: table
-        attr: data
+  # update_table:
+  #   input:
+  #     - id: url
+  #       attr: pathname
+  #   output:
+  #     - id: table
+  #       attr: columns
+  #     - id: table
+  #       attr: data
 
 
 
