@@ -1,6 +1,10 @@
+
+### 2021-10-17 15:37:55.248115: clock-in
+
 ### 2021-09-30 21:18:36.224621: clock-out
 
 * adding inout to dashboard
+* `process_commit` needs to use registered id
 
 ### 2021-09-30 19:26:53.261218: clock-in
 
