@@ -159,7 +159,7 @@ import git
 from hourly.cli.main import get_base_dir, get_work_commits, get_current_user, identify_user, get_clocks, get_user_work, process_commit
 
 @callbacks.hourly_conf
-def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message):
+def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
 
     gitdir = os.path.abspath(cfg.repo.gitdir)
@@ -168,11 +168,10 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message):
 
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
-    current_user = git.Actor(
-        os.environ.get('GIT_USER_NAME', 'Asher Pembroke'),
-        os.environ.get('GIT_USER_EMAIL', 'apembroke@gmail.com'))
-    
+    current_user = git.Actor(git_user_name, git_user_email)
+    print('current_user:{}'.format(current_user))
     current_user_id = identify_user(current_user, cfg)
+    print(current_user_id)
     
     if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
@@ -250,10 +249,12 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message):
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True)
+
+# +
+# dcc.Input?
 # -
 
-hourly_conf = OmegaConf.load('hourly.yaml')
-hourly_conf
+conf = OmegaConf.load('hourly-dashboard.yaml')
 
 hourly_conf.commit.get('message', '')
 

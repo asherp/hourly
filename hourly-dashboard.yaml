@@ -28,6 +28,13 @@ layout:
     - dcc.Input:
         id: message
         value: ''
+    - dcc.Input:
+        id: git-user-name
+        value: ${env:GIT_USER_NAME}
+    - dcc.Input:
+        id: git-user-email
+        value: ${env:GIT_USER_EMAIL}
+        inputMode: email
     - html.Div:
         id: clock-status
         children: Clock status
@@ -57,6 +64,10 @@ callbacks:
         attr: n_clicks
       - id: clock-out
         attr: n_clicks
+      - id: git-user-name
+        attr: value
+      - id: git-user-email
+        attr: value
     state:
       - id: message
         attr: value
