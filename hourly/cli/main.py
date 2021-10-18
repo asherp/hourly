@@ -25,10 +25,10 @@ def handle_errors(cfg, error_msg = None):
     else:
         raise
     
-def commit_(repo, commit_message, logfile = None):
+def commit_(repo, commit_message, logfile=None, author=None):
     if logfile is not None:
         repo.index.add([logfile])
-    commit = repo.index.commit(commit_message)
+    commit = repo.index.commit(commit_message, author=author)
     return commit
 
 def identify_user(user, cfg):
@@ -42,7 +42,7 @@ def identify_user(user, cfg):
         return user_id[0]
 
 
-def process_commit(cfg, work, repo):
+def process_commit(cfg, work, repo, author=None):
     """commits clock-in/out message
 
     If only a message is supplied, commits without clocking in/out
@@ -110,7 +110,7 @@ def process_commit(cfg, work, repo):
 
     if len(log_message) > 0:
         update_log(logfile, log_message)
-        return commit_(repo, commit_message, logfile)
+        return commit_(repo, commit_message, logfile, author=author)
 
 def flatten_dict(d, sep = '.'):
     '''flattens a dictionary into list of 
