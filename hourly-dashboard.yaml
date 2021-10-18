@@ -44,16 +44,42 @@ layout:
         interval: 10000
     - dcc.Markdown:
         id: hourly-conf
-    - html.Content:
+    - html.Br:
+    - dcc.Tabs:
         children:
-        - dash_table.DataTable:
-            id: table
-            style_data:
-              whiteSpace: normal
-              height: auto
-              lineHeight: 15px
-            style_cell:
-              textAlign: left
+        - dcc.Tab:
+            label: Labor
+            children:
+            - dash_table.DataTable:
+                id: labor-table
+                style_data:
+                  whiteSpace: normal
+                  height: auto
+                  lineHeight: 15px
+                style_cell:
+                  textAlign: left
+        - dcc.Tab:
+            label: Work Commits
+            children:
+            - dash_table.DataTable:
+                id: commits-table
+                style_data:
+                  whiteSpace: normal
+                  height: auto
+                  lineHeight: 15px
+                style_cell:
+                  textAlign: left
+        - dcc.Tab:
+            label: Clock Commits
+            children:
+            - dash_table.DataTable:
+                id: clocks-table
+                style_data:
+                  whiteSpace: normal
+                  height: auto
+                  lineHeight: 15px
+                style_cell:
+                  textAlign: left
 
 callbacks:
   hourly_conf:
@@ -64,12 +90,12 @@ callbacks:
         attr: n_clicks
       - id: clock-out
         attr: n_clicks
+    state:
+      - id: message
+        attr: value
       - id: git-user-name
         attr: value
       - id: git-user-email
-        attr: value
-    state:
-      - id: message
         attr: value
     output:
       - id: clock-status
@@ -78,9 +104,17 @@ callbacks:
         attr: children
       - id: clock-out
         attr: children
-      - id: table
+      - id: commits-table
         attr: columns
-      - id: table
+      - id: commits-table
+        attr: data
+      - id: clocks-table
+        attr: columns
+      - id: clocks-table
+        attr: data
+      - id: labor-table
+        attr: columns
+      - id: labor-table
         attr: data
   # clock_button:
   #   input:

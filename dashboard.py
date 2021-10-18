@@ -49,7 +49,7 @@ import flask
 
 from dash.exceptions import PreventUpdate
 
-from hourly import get_work_commits, is_clocked_in, is_clocked_out
+from hourly import get_work_commits, is_clocked_in, is_clocked_out, get_labor
 
 import logging
 # -
@@ -165,13 +165,17 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     gitdir = os.path.abspath(cfg.repo.gitdir)
     gitdir = get_base_dir(gitdir)
     os.chdir(gitdir)
-
+    
+    if None in [git_user_name, git_user_email]:
+        raise PreventUpdate
+    
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
     current_user = git.Actor(git_user_name, git_user_email)
-    print('current_user:{}'.format(current_user))
+        
     current_user_id = identify_user(current_user, cfg)
-    print(current_user_id)
+    
+    print('current_user_id: {}'.format(current_user_id))
     
     if 'start_date' in cfg.repo:
         start_date = pd.to_datetime(cfg.repo.start_date)
@@ -206,7 +210,7 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
         user_work = get_user_work(clocks, current_user_id, identifier)
         print(user_work.head())
         try:
-            process_commit(cfg, user_work, repo)
+            process_commit(cfg, user_work, repo, current_user)
             pass
         except IOError as error_msg:
             print("Could not process commit for {}:\n{}".format(current_user_id, error_msg))
@@ -235,27 +239,48 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
         clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
     
-            
+    # reloads work
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
     work_ = work.reset_index().iloc[::-1]
-    columns = [{"name": i, "id": i} for i in work_.columns]
-    data = work_.to_dict('records')
+    work_columns = [{"name": i, "id": i} for i in work_.columns]
+    work_records = work_.to_dict('records')
     
-    return clock_status, clock_in_label, clock_out_label, columns, data
+    session_columns = [{"name": i, "id": i} for i in clocks.columns]
+    session_records = clocks.iloc[::-1].to_dict('records')
 
-#     return '```yaml\n{}```'.format(cfg.commit.pretty())
-
+    labor = get_labor(
+        work,
+        ignore = cfg.ignore, 
+        match_logs = cfg.match_logs,
+        case_sensitive = cfg.case_sensitive)
     
+    labor_columns = [{"name": i, "id": i} for i in labor.columns]
+    labor_records = labor.iloc[::-1].to_dict('records')
+    
+    return clock_status, clock_in_label, clock_out_label, \
+            work_columns, work_records, \
+            session_columns, session_records, \
+            labor_columns, labor_records
+
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True)
-
-# +
-# dcc.Input?
 # -
+
+os.environ.get('GIT_USER_EMAIL')
+
+os.environ.get('GIT_USER_NAME')
 
 conf = OmegaConf.load('hourly-dashboard.yaml')
 
 hourly_conf.commit.get('message', '')
+
+pwd
+
+work, repo = get_work_commits('.', ascending = True, tz = 'US/Eastern')
+
+work.iloc[::-1].head()
+
+repo.active_branch
 
 
