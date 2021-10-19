@@ -48,6 +48,17 @@ layout:
     - dcc.Tabs:
         children:
         - dcc.Tab:
+            label: Files
+            children:
+            - dash_table.DataTable:
+                id: file-table
+                style_data:
+                  whiteSpace: normal
+                  height: auto
+                  lineHeight: 15px
+                style_cell:
+                  textAlign: left
+        - dcc.Tab:
             label: Labor
             children:
             - dash_table.DataTable:
@@ -69,17 +80,17 @@ layout:
                   lineHeight: 15px
                 style_cell:
                   textAlign: left
-        - dcc.Tab:
-            label: Clock Commits
-            children:
-            - dash_table.DataTable:
-                id: clocks-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
+        # - dcc.Tab:
+        #     label: Clock Commits
+        #     children:
+        #     - dash_table.DataTable:
+        #         id: clocks-table
+        #         style_data:
+        #           whiteSpace: normal
+        #           height: auto
+        #           lineHeight: 15px
+        #         style_cell:
+        #           textAlign: left
 
 callbacks:
   hourly_conf:
@@ -108,10 +119,10 @@ callbacks:
         attr: columns
       - id: commits-table
         attr: data
-      - id: clocks-table
-        attr: columns
-      - id: clocks-table
-        attr: data
+      # - id: clocks-table
+      #   attr: columns
+      # - id: clocks-table
+      #   attr: data
       - id: labor-table
         attr: columns
       - id: labor-table

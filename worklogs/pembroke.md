@@ -1,3 +1,15 @@
+* fixed button children, buttons working
+
+### 2021-10-19 03:24:24.827527: clock-in
+
+### 2021-10-19 03:24:16.778547: clock-out
+
+* clicking clock out button should changed "clocked in" button to "clock in"
+
+### 2021-10-19 03:19:01.435458: clock-in
+
+### 2021-10-19 03:18:53.143795: clock-out
+
 
 ### 2021-10-19 03:16:26.428876: clock-in
 

@@ -158,6 +158,26 @@ def update_table(url):
 import git
 from hourly.cli.main import get_base_dir, get_work_commits, get_current_user, identify_user, get_clocks, get_user_work, process_commit
 
+
+def get_clock_status(work):
+    last_in = is_clocked_in(work)
+    last_out = is_clocked_out(work)
+    clock_status = ''
+
+    if last_in is not None:
+        clock_in_label = 'Clocked in'
+        clock_out_label = 'Clock Out'
+        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
+        clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+
+    if last_out is not None:
+        clock_in_label = 'Clock in'
+        clock_out_label = 'Clocked Out'
+        time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
+        clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+        
+    return clock_status, clock_in_label, clock_out_label
+
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
@@ -223,30 +243,39 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
             print(identifier)
             raise PreventUpdate
 
-    last_in = is_clocked_in(work)
-    last_out = is_clocked_out(work)
-    clock_status = ''
-
-    if last_in is not None:
-        clock_in_label = 'Clocked in'
-        clock_out_label = 'Clock Out'
-        time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
-
-    if last_out is not None:
-        clock_in_label = 'Clock Out'
-        clock_out_label = 'Clocked Out'
-        time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
     
     # reloads work
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+    
+    clock_status, clock_in_label, clock_out_label = get_clock_status(work)
+    
+    clocks = get_clocks(work, 
+            start_date = start_date,
+            end_date = end_date,
+            errant_clocks = cfg.repo.errant_clocks,
+            case_sensitive = cfg.repo.case_sensitive)
+    
+    labor = pd.DataFrame()
+    
+    for user_id, user_work in clocks.groupby(identifier):
+        if cfg.report.work:
+            print("\nWork for {}".format(user_id))
+            print(user_work.drop(['name', 'email'], axis = 1))
+
+        user_labor = get_labor(
+            user_work,
+            ignore = cfg.ignore, 
+            match_logs = cfg.match_logs,
+            case_sensitive = cfg.case_sensitive)
+
+        labor = pd.concat((labor, user_labor))
+    
     work_ = work.reset_index().iloc[::-1]
     work_columns = [{"name": i, "id": i} for i in work_.columns]
     work_records = work_.to_dict('records')
     
-    session_columns = [{"name": i, "id": i} for i in clocks.columns]
-    session_records = clocks.iloc[::-1].to_dict('records')
+#     session_columns = [{"name": i, "id": i} for i in clocks.columns]
+#     session_records = clocks.iloc[::-1].to_dict('records')
 
     labor = get_labor(
         work,
@@ -259,7 +288,6 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     
     return clock_status, clock_in_label, clock_out_label, \
             work_columns, work_records, \
-            session_columns, session_records, \
             labor_columns, labor_records
 
 
@@ -267,20 +295,22 @@ if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True)
 # -
 
-os.environ.get('GIT_USER_EMAIL')
-
-os.environ.get('GIT_USER_NAME')
-
-conf = OmegaConf.load('hourly-dashboard.yaml')
-
-hourly_conf.commit.get('message', '')
-
-pwd
-
 work, repo = get_work_commits('.', ascending = True, tz = 'US/Eastern')
+
+cfg = OmegaConf.load('hourly.yaml')
+
+cfg.repo.errant_clocks
 
 work.iloc[::-1].head()
 
+
+
 repo.active_branch
 
+dir(repo)
 
+repo.untracked_files
+
+repo_index = (repo.index)
+
+repo_index.i
