@@ -163,18 +163,22 @@ def get_clock_status(work):
     last_in = is_clocked_in(work)
     last_out = is_clocked_out(work)
     clock_status = ''
-
+    clock_in_label = ''
+    clock_out_label = ''
+    
     if last_in is not None:
         clock_in_label = 'Clocked in'
         clock_out_label = 'Clock Out'
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
         clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
-
-    if last_out is not None:
+    elif last_out is not None:
         clock_in_label = 'Clock in'
         clock_out_label = 'Clocked Out'
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
         clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+    else:
+        print('not clocked in or out')
+        raise PreventUpdate
         
     return clock_status, clock_in_label, clock_out_label
 
@@ -247,13 +251,13 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     # reloads work
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
     
-    clock_status, clock_in_label, clock_out_label = get_clock_status(work)
-    
     clocks = get_clocks(work, 
             start_date = start_date,
             end_date = end_date,
             errant_clocks = cfg.repo.errant_clocks,
             case_sensitive = cfg.repo.case_sensitive)
+    
+    clock_status, clock_in_label, clock_out_label = get_clock_status(clocks)
     
     labor = pd.DataFrame()
     
@@ -277,12 +281,7 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 #     session_columns = [{"name": i, "id": i} for i in clocks.columns]
 #     session_records = clocks.iloc[::-1].to_dict('records')
 
-    labor = get_labor(
-        work,
-        ignore = cfg.ignore, 
-        match_logs = cfg.match_logs,
-        case_sensitive = cfg.case_sensitive)
-    
+    labor.sort_values(by=['TimeIn'], inplace=True)
     labor_columns = [{"name": i, "id": i} for i in labor.columns]
     labor_records = labor.iloc[::-1].to_dict('records')
     

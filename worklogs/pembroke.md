@@ -1,3 +1,4 @@
+* sorting by time
 * fixed button children, buttons working
 
 ### 2021-10-19 03:24:24.827527: clock-in
