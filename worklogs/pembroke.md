@@ -1,3 +1,4 @@
+* invoice generation proof of concept
 * added lightning grpc
 * running hourly in plebenet playground
 * generated test invoice

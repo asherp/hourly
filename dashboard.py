@@ -52,9 +52,68 @@ from dash.exceptions import PreventUpdate
 from hourly import get_work_commits, is_clocked_in, is_clocked_out, get_labor
 
 import logging
+
+# +
+import os, sys
+LND_DIR = os.environ.get('LND_DATADIR', '/root/.lnd')
+
+use_test_data = 'true' in os.environ.get('USE_TEST_DATA', 'False').lower()
+
+
+from collections import namedtuple
+# Compiled grpc modules are located in `/grpc`
+sys.path.append('/grpc')
+import codecs, grpc
+# See https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/python.md for instructions.
+import lightning_pb2 as lnrpc, lightning_pb2_grpc as lightningstub
+
+# +
+macaroon = codecs.encode(open(LND_DIR+'/data/chain/bitcoin/signet/admin.macaroon', 'rb').read(), 'hex')
+os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
+cert = open(LND_DIR+'/tls.cert', 'rb').read()
+ssl_creds = grpc.ssl_channel_credentials(cert)
+channel = grpc.secure_channel('playground-lnd:10009', ssl_creds)
+stub = lightningstub.LightningStub(channel)
+# request = lnrpc.ChannelGraphRequest(include_unannounced=True)
+# response = stub.DescribeGraph(request, metadata=[('macaroon', macaroon)])
+
+
+request = lnrpc.Invoice(
+        memo="test payment",
+#         r_preimage=<bytes>,
+#         r_hash=<bytes>,
+        value=500,
+#         value_msat=<int64>,
+#         settled=<bool>,
+#         creation_date=<int64>,
+#         settle_date=<int64>,
+#         payment_request=<string>,
+#         description_hash=<bytes>,
+        expiry=3600*24,
+#         fallback_addr=<string>,
+#         cltv_expiry=<uint64>,
+#         route_hints=<array RouteHint>,
+#         private=<bool>,
+#         add_index=<uint64>,
+#         settle_index=<uint64>,
+#         amt_paid=<int64>,
+#         amt_paid_sat=<int64>,
+#         amt_paid_msat=<int64>,
+#         state=<InvoiceState>,
+#         htlcs=<array InvoiceHTLC>,
+#         features=<array FeaturesEntry>,
+#         is_keysend=<bool>,
+#         payment_addr=<bytes>,
+#         is_amp=<bool>,
+#         amp_invoice_state=<array AmpInvoiceStateEntry>,
+    )
+response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
+response.payment_request
 # -
 
 from omegaconf import OmegaConf
+
+import math
 
 # +
 conf = load_conf('hourly-dashboard.yaml')
@@ -182,6 +241,53 @@ def get_clock_status(work):
         
     return clock_status, clock_in_label, clock_out_label
 
+@callbacks.invoice
+def generate_invoice(selected_rows, data, rate):
+    result = 0
+    if selected_rows is None:
+        raise PreventUpdate
+    if (rate is None):
+        raise PreventUpdate
+    for _ in selected_rows:
+        result += float(data[_]['Hours'])
+    result *= float(rate)
+    result = math.floor(result)
+
+    request = lnrpc.Invoice(
+            memo="test payment",
+    #         r_preimage=<bytes>,
+    #         r_hash=<bytes>,
+            value=result,
+    #         value_msat=<int64>,
+    #         settled=<bool>,
+    #         creation_date=<int64>,
+    #         settle_date=<int64>,
+    #         payment_request=<string>,
+    #         description_hash=<bytes>,
+            expiry=3600*24,
+    #         fallback_addr=<string>,
+    #         cltv_expiry=<uint64>,
+    #         route_hints=<array RouteHint>,
+    #         private=<bool>,
+    #         add_index=<uint64>,
+    #         settle_index=<uint64>,
+    #         amt_paid=<int64>,
+    #         amt_paid_sat=<int64>,
+    #         amt_paid_msat=<int64>,
+    #         state=<InvoiceState>,
+    #         htlcs=<array InvoiceHTLC>,
+    #         features=<array FeaturesEntry>,
+    #         is_keysend=<bool>,
+    #         payment_addr=<bytes>,
+    #         is_amp=<bool>,
+    #         amp_invoice_state=<array AmpInvoiceStateEntry>,
+        )
+    response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
+    payment_request = response.payment_request
+    
+    
+    return "invoice amount: {} sat payment request: {}".format(result, payment_request)
+
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
@@ -302,7 +408,12 @@ cfg.repo.errant_clocks
 
 work.iloc[::-1].head()
 
+import math
 
+
+math.floor(1.5)
+
+round(1.5)
 
 repo.active_branch
 
@@ -311,5 +422,7 @@ dir(repo)
 repo.untracked_files
 
 repo_index = (repo.index)
+
+x
 
 repo_index.i

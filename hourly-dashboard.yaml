@@ -27,6 +27,7 @@ layout:
         n_clicks: 0
     - dcc.Input:
         id: message
+        placeholder: commit message
         value: ''
     - dcc.Input:
         id: git-user-name
@@ -45,6 +46,13 @@ layout:
     - dcc.Markdown:
         id: hourly-conf
     - html.Br:
+    - html.Div:
+        id: invoice
+    - dcc.Input:
+        id: hourly-rate
+        value: 100
+        inputMode: numeric
+        placeholder: hourly rate (sat/hr)
     - dcc.Tabs:
         children:
         - dcc.Tab:
@@ -63,6 +71,7 @@ layout:
             children:
             - dash_table.DataTable:
                 id: labor-table
+                row_selectable: multi
                 style_data:
                   whiteSpace: normal
                   height: auto
@@ -92,7 +101,19 @@ layout:
         #         style_cell:
         #           textAlign: left
 
+
 callbacks:
+  invoice:
+    input:
+      - id: labor-table
+        attr: selected_rows
+      - id: labor-table
+        attr: data
+      - id: hourly-rate
+        attr: value
+    output:
+      - id: invoice
+        attr: children
   hourly_conf:
     input:
       - id: url
