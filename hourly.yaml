@@ -26,7 +26,7 @@ report:
 
 work_log:
   header_depth: 3
-  filename: worklogs/schrayer.md
+  filename: worklogs/pembroke.md
 
 commit:
   identity:
@@ -45,8 +45,7 @@ vis:
 #       filename: docs/hourly-work.html
 
 compensation:
-  - name: Margaret Schrayer
-    email: margaretschrayer@gmail.com
-    wage: 
-      usd: 100
+  - name: Asher Pembroke
+    email: apembroke@gmail.com
+    wage:
       pi: 1.0
