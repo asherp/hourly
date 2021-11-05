@@ -1,3 +1,6 @@
+
+### 2021-11-05 11:35:40.005987: clock-in: T-30m 
+
 ### 2021-11-04 22:56:04.342366: clock-out
 
 * tried to get docker container running on windows, but ran into mounting issues
