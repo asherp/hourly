@@ -1,3 +1,8 @@
+### 2021-11-04 22:56:04.342366: clock-out
+
+* tried to get docker container running on windows, but ran into mounting issues
+* got dashboard to run on windows
+* needed to set GIT_USER_NAME to match exactly with previous clock in commit
 
 ### 2021-11-05 01:38:32.783763: clock-in
 
