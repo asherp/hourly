@@ -1,4 +1,6 @@
-
+* added lightning grpc
+* running hourly in plebenet playground
+* generated test invoice
 
 ### 2021-11-05 11:35:40.005987: clock-in: T-30m 
 

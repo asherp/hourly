@@ -10,6 +10,16 @@ RUN pip install dash-bootstrap-components
 RUN pip install git+https://github.com/predsci/psidash.git
 RUN pip install dash_daq
 
+RUN pip install grpcio grpcio-tools googleapis-common-protos
+
+WORKDIR /grpc
+
+RUN git clone https://github.com/googleapis/googleapis.git
+RUN wget https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/lightning.proto
+RUN python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. lightning.proto
+
+WORKDIR /
+
 COPY . /dashboard
 
 RUN pip install -e dashboard
