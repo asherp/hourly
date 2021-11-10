@@ -1,3 +1,7 @@
+* moving worklog
+### 2021-11-10 13:37:16.749040: clock-in: T-28m 
+
+
 ### 2021-09-26 22:33:15.023326: clock-out
 
 * version push
