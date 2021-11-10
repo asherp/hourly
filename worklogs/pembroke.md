@@ -1,3 +1,5 @@
+### 2021-11-10 14:20:31.719466: clock-out
+
 * fixed bug in timezone filter
 * moving worklog
 * getting the following issue when changed timezones:
