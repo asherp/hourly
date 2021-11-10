@@ -1,4 +1,16 @@
+* fixed bug in timezone filter
 * moving worklog
+* getting the following issue when changed timezones:
+
+```sh
+hourly-report repo.start_date="Aug 1, 2021"
+
+...
+
+raise KeyError(orig_key) from err
+KeyError: Timestamp('2021-08-01 01:00:00-0400', tz='US/Eastern')
+```
+
 ### 2021-11-10 13:37:16.749040: clock-in: T-28m 
 
 
