@@ -1,3 +1,5 @@
+* merging bugfix from master
+
 
 ### 2021-11-12 10:13:36.666930: clock-in
 
@@ -954,6 +956,24 @@ Where I used the last clock-out commit hash from 2019-04-12 18:04:27.744011
 
 
 ### 2021-09-27 21:03:33.790613: clock-in
+=======
+### 2021-11-10 14:20:31.719466: clock-out
+
+* fixed bug in timezone filter
+* moving worklog
+* getting the following issue when changed timezones:
+
+```sh
+hourly-report repo.start_date="Aug 1, 2021"
+
+...
+
+raise KeyError(orig_key) from err
+KeyError: Timestamp('2021-08-01 01:00:00-0400', tz='US/Eastern')
+```
+
+### 2021-11-10 13:37:16.749040: clock-in: T-28m 
+
 
 ### 2021-09-26 22:33:15.023326: clock-out
 
