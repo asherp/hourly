@@ -1,3 +1,6 @@
+
+### 2021-11-12 16:07:15.650174: clock-in
+
 ### 2021-11-12 12:24:05.461855: clock-out: T-10m 
 
 * merging bugfix from master
