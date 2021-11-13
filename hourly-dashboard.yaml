@@ -8,98 +8,209 @@ app:
   jupyter_dash.JupyterDash:
     external_stylesheets:
       - https://codepen.io/chriddyp/pen/bWLwgP.css
+      - https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
     title: Hourly
 
-layout:
+clock_in_button:
+  html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
+    id: clock-in
+    children: Clock In
+    n_clicks: 0
+
+clock_out_button:
+  html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
+    id: clock-out
+    children: Clock Out
+    n_clicks: 0
+
+commit_message:
+  dcc.Input:
+    id: message
+    placeholder: commit message
+    value: ''
+
+user_name:
+  dcc.Input:
+    id: git-user-name
+    value: ${env:GIT_USER_NAME}
+
+user_email:
+  dcc.Input:
+    id: git-user-email
+    value: ${env:GIT_USER_EMAIL}
+    inputMode: email
+
+clock_status:
   html.Div:
+    id: clock-status
+    children: Clock status
+
+qr_slider:
+  dcc.Slider:
+    id: qr-slider
+    min: 4
+    max: 20
+    step: 1
+    value: 5
+    updatemode: drag
+
+  # margin-left: auto;
+  # margin-right: auto;
+
+invoice_qr:
+  align: center
+  width: 6
+  children:
+  - html.Img:
+      id: invoice
+      style:
+        margin: auto
+
+layout:
+  dbc.Container:
+    fluid: True
     children:
     - dcc.Location:
         id: url
         refresh: False
-    - html.H2: Hourly Dashboard
-    - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
-        id: clock-in
-        children: Clock In
-        n_clicks: 0
-    - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
-        id: clock-out
-        children: Clock Out
-        n_clicks: 0
-    - dcc.Input:
-        id: message
-        placeholder: commit message
-        value: ''
-    - dcc.Input:
-        id: git-user-name
-        value: ${env:GIT_USER_NAME}
-    - dcc.Input:
-        id: git-user-email
-        value: ${env:GIT_USER_EMAIL}
-        inputMode: email
-    - html.Div:
-        id: clock-status
-        children: Clock status
     - dcc.Interval:
         id: clock-interval
         n_intervals: 0
         interval: 10000
-    - dcc.Markdown:
-        id: hourly-conf
-    - html.Br:
-    - html.Div:
-        id: invoice
-    - dcc.Input:
-        id: hourly-rate
-        value: 100
-        inputMode: numeric
-        placeholder: hourly rate (sat/hr)
-    - dcc.Tabs:
+    - dbc.Row:
         children:
-        - dcc.Tab:
-            label: Files
+          - dbc.Col:
+              children:
+              - html.H1: Hourly Lightning
+    - dbc.Row:
+        justify: start
+        children:
+        - dbc.Col:
+            align: start
+            width: 3
+            children: ${user_name}
+        - dbc.Col:
+            align: start
+            width: 3
+            children: ${user_email}
+    - dbc.Row:
+        children:
+        - dbc.Col:
+            children: ${clock_in_button}
+        - dbc.Col:
+            children: ${clock_out_button}
+        - dbc.Col:
+            children: ${commit_message}
+    - dbc.Row:
+        children:
+        - dbc.Col:
+            children: ${clock_status}
+    # - dcc.Markdown:
+    #     id: hourly-conf
+    - html.Br:
+    - dbc.Row:
+        align: start
+        children:
+        - dbc.Col:
+            width: auto
             children:
-            - dash_table.DataTable:
-                id: file-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
-        - dcc.Tab:
-            label: Labor
+              - dbc.Input:
+                  id: hourly-rate
+                  min: 0
+                  value: 100
+                  type: number
+                  placeholder: hourly rate (sat/hr)
+        - dbc.Col:
+            width: auto
             children:
-            - dash_table.DataTable:
-                id: labor-table
-                row_selectable: multi
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
-        - dcc.Tab:
-            label: Work Commits
+            - dbc.Input:
+                id: invoice-amount
+                value: 0
+                type: number
+                placeholder: Invoice amount (sat)
+                disabled: True
+        - dbc.Col:
+            width: auto
             children:
-            - dash_table.DataTable:
-                id: commits-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
-        # - dcc.Tab:
-        #     label: Clock Commits
-        #     children:
-        #     - dash_table.DataTable:
-        #         id: clocks-table
-        #         style_data:
-        #           whiteSpace: normal
-        #           height: auto
-        #           lineHeight: 15px
-        #         style_cell:
-        #           textAlign: left
+            - dbc.Input:
+                id: payment-request
+                type: text
+                value: ''
+                placeholder: lightning payment request
+                disabled: True
+        - dbc.Col:
+            width: 1
+            children:
+            - dcc.Clipboard:
+                target_id: payment-request
+                title: copy invoice
+                style:
+                  # display: inline-block
+                  fontSize: 20
+                  # verticalAlign: top
+    - dbc.Row:
+        children:
+        - dbc.Col:
+            width: 12
+            children:
+            - ${qr_slider}
+    - dbc.Row:
+        justify: center
+        children:
+        - dbc.Col: ${invoice_qr}
+    - dbc.Row:
+        children:
+        - dbc.Col:
+            children:
+            - dcc.Tabs:
+                children:
+                - dcc.Tab:
+                    label: Files
+                    children:
+                    - dash_table.DataTable:
+                        id: file-table
+                        style_data:
+                          whiteSpace: normal
+                          height: auto
+                          lineHeight: 15px
+                        style_cell:
+                          textAlign: left
+                - dcc.Tab:
+                    label: Labor
+                    children:
+                    - dash_table.DataTable:
+                        id: labor-table
+                        row_selectable: multi
+                        style_data:
+                          whiteSpace: normal
+                          height: auto
+                          lineHeight: 15px
+                        style_cell:
+                          textAlign: left
+                - dcc.Tab:
+                    label: Work Commits
+                    children:
+                    - dash_table.DataTable:
+                        id: commits-table
+                        style_data:
+                          whiteSpace: normal
+                          height: auto
+                          lineHeight: 15px
+                        style_cell:
+                          textAlign: left
+                # - dcc.Tab:
+                #     label: Clock Commits
+                #     children:
+                #     - dash_table.DataTable:
+                #         id: clocks-table
+                #         style_data:
+                #           whiteSpace: normal
+                #           height: auto
+                #           lineHeight: 15px
+                #         style_cell:
+                #           textAlign: left
+
+
 
 
 callbacks:
@@ -112,8 +223,19 @@ callbacks:
       - id: hourly-rate
         attr: value
     output:
+      - id: invoice-amount
+        attr: value
+      - id: payment-request
+        attr: value
+  render_invoice:
+    input:
+      - id: payment-request
+        attr: value
+      - id: qr-slider
+        attr: value
+    output:
       - id: invoice
-        attr: children
+        attr: src
   hourly_conf:
     input:
       - id: url

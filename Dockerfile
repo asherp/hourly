@@ -22,9 +22,11 @@ WORKDIR /
 
 COPY . /dashboard
 
-RUN pip install -e dashboard
-
 WORKDIR /dashboard
+
+RUN pip install -e .
+
+
 
 # set up jupyter
 RUN jupyter notebook --generate-config

@@ -1,3 +1,4 @@
+* qr code generation
 
 ### 2021-11-13 16:17:39.066115: clock-in
 

@@ -115,6 +115,9 @@ from omegaconf import OmegaConf
 
 import math
 
+import qrcode
+from qrcode.image.styledpil import StyledPilImage
+
 # +
 conf = load_conf('hourly-dashboard.yaml')
 
@@ -146,12 +149,12 @@ def clock_switch(url):
     last_in = is_clocked_in(work)
     if last_in is not None:
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        return 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in)), False
+        return 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in)), False
 
     last_out = is_clocked_out(work)
     if last_out is not None:
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        return 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out)), False
+        return 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out)), False
 
 def get_triggered():
     ctx = dash.callback_context
@@ -173,13 +176,13 @@ def clock_button(url, clock_in_clicks, clock_out_clicks):
         clock_in_label = 'Clocked in'
         clock_out_label = 'Clock Out'
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+        clock_status += 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in))
 
     if last_out is not None:
         clock_in_label = 'Clock Out'
         clock_out_label = 'Clocked Out'
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+        clock_status += 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out))
     
     if button_id == 'clock-in':
         if last_in is not None:
@@ -200,11 +203,11 @@ def clock_status(url, n_intervals):
     last_in = is_clocked_in(work)
     if last_in is not None:
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        return 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+        return 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in))
     last_out = is_clocked_out(work)
     if last_out is not None:
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        return 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+        return 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out))
     
 # @callbacks.update_table
 def update_table(url):
@@ -240,6 +243,10 @@ def get_clock_status(work):
         raise PreventUpdate
         
     return clock_status, clock_in_label, clock_out_label
+
+import base64
+from io import BytesIO
+
 
 @callbacks.invoice
 def generate_invoice(selected_rows, data, rate):
@@ -285,8 +292,25 @@ def generate_invoice(selected_rows, data, rate):
     response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
     payment_request = response.payment_request
     
+    return result, payment_request
     
-    return "invoice amount: {} sat payment request: {}".format(result, payment_request)
+    
+#     return "invoice amount: {} sat payment request: {}".format(result, payment_request)
+
+@callbacks.render_invoice
+def render_invoice(payment_request, size):
+    if len(payment_request) == 0:
+        raise PreventUpdate
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=size)
+    qr.add_data(payment_request)
+    qr_img = qr.make_image(image_factory=StyledPilImage, embeded_image_path="humanaut_logo_H.png")
+
+    buffered = BytesIO()
+    qr_img.save(buffered)
+    encoded_image = base64.b64encode(buffered.getvalue())
+    return 'data:image/png;base64,{}'.format(encoded_image.decode('ascii'))
+    
+    
 
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
@@ -397,32 +421,34 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True)
+    app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['./hourly-dashboard.yaml'])
 # -
 
-work, repo = get_work_commits('.', ascending = True, tz = 'US/Eastern')
+# ls
 
-cfg = OmegaConf.load('hourly.yaml')
+# +
+import requests
+response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+data = response.json()
 
-cfg.repo.errant_clocks
-
-work.iloc[::-1].head()
-
-import math
+data
 
 
-math.floor(1.5)
+# -
 
-round(1.5)
+def get_btc_price(currency, time):
+    """return current price, symbol"""
+    response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+    data = response.json()
+    price = data[currency]['rate_float']
+    symbol = data[currency]['symbol']
+    return price, symbol
 
-repo.active_branch
 
-dir(repo)
+# USD, GBP, EUR
 
-repo.untracked_files
+# &euro;
 
-repo_index = (repo.index)
+100e6 # sats/btc
 
-x
-
-repo_index.i
+data['bpi']['USD']
