@@ -1,3 +1,7 @@
+### 2021-11-14 10:10:25.648694: clock-out
+
+* ssh keys with gitpython https://medium.com/@tzuni_eh/git-commit-with-gitpython-and-ssh-key-926cad91ca89
+* ssh key provisioning with gitpython https://stackoverflow.com/questions/28291909/gitpython-and-ssh-keys
 
 ### 2021-11-14 10:06:22.886468: clock-in: T-5m 
 
