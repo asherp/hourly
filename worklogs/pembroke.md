@@ -1,3 +1,6 @@
+
+### 2021-11-16 09:45:38.756935: clock-in
+
 ### 2021-11-14 10:10:25.648694: clock-out
 
 * ssh keys with gitpython https://medium.com/@tzuni_eh/git-commit-with-gitpython-and-ssh-key-926cad91ca89
