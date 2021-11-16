@@ -6,6 +6,7 @@ from hourly import get_hours_worked, get_earnings, get_labor_range
 from hourly import plot_labor, get_current_user, get_clocks
 from hourly import invoice
 from hourly import get_local_timezone
+from hourly import get_base_dir
 import plotly.graph_objs as go
 import plotly.offline as po
 from omegaconf import OmegaConf, DictConfig, ListConfig
@@ -679,12 +680,6 @@ def save_report(cfg, labor, user_id):
     print('writing to file {}'.format(output_file))
     labor.to_csv(output_file)
 
-def get_base_dir(directory = '.'):
-    """obtain the base directory of the git repo"""
-    user_dir = os.path.expanduser(directory)
-    repo = git.Repo(user_dir, search_parent_directories=True)
-    base_dir = repo.working_tree_dir
-    return base_dir
 
 def change_git_dir(directory, verbosity = 0):
     '''changes to base path of git directory'''

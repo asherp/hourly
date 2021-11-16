@@ -1,3 +1,10 @@
+### 2021-11-16 11:53:59.963286: clock-out
+
+Todo for demo:
+
+1. display price in dollars
+1. create, commit invoice from worker side
+1. execute invoice on payer side
 
 ### 2021-11-16 09:45:38.756935: clock-in
 

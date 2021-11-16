@@ -4,6 +4,7 @@ import warnings
 import plotly.graph_objs as go
 import plotly.offline as po
 import datetime
+import os
 
 warnings.simplefilter("ignore")
 pd.set_option('display.max_rows', None)
@@ -11,6 +12,12 @@ pd.set_option('display.max_columns', 5)
 pd.set_option('display.max_colwidth', 37)
 pd.set_option('display.width', 600)
 
+def get_base_dir(directory = '.'):
+    """obtain the base directory of the git repo"""
+    user_dir = os.path.expanduser(directory)
+    repo = git.Repo(user_dir, search_parent_directories=True)
+    base_dir = repo.working_tree_dir
+    return base_dir
 
 def adjust_time(work, dt_str = 'T-'):
     work = work.reset_index()

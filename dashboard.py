@@ -49,7 +49,7 @@ import flask
 
 from dash.exceptions import PreventUpdate
 
-from hourly import get_work_commits, is_clocked_in, is_clocked_out, get_labor
+from hourly import get_work_commits, is_clocked_in, is_clocked_out, get_labor, get_base_dir
 
 import logging
 
@@ -115,8 +115,12 @@ from omegaconf import OmegaConf
 
 import math
 
+# +
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
+
+import base64
+from io import BytesIO
 
 # +
 conf = load_conf('hourly-dashboard.yaml')
@@ -244,12 +248,63 @@ def get_clock_status(work):
         
     return clock_status, clock_in_label, clock_out_label
 
-import base64
-from io import BytesIO
+def get_btc_price(currency):
+    """return current price, symbol"""
+    response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+    data = response.json()
+    price = data['bpi'][currency]['rate_float']
+    symbol = data['bpi'][currency]['symbol']
+    return price
 
+@callbacks.set_wage
+def get_wage(currency, email):
+    if None in (currency, email):
+        raise PreventUpdate
+    else:
+        print('get_wage {}, {}'.format(currency, email))
+    wage = None
+    cfg = OmegaConf.load('hourly.yaml')
+    placeholder = 'hourly rate ({}/hr)'.format(currency)
+    currency_error = ''
+    email_error = ''
+    for _ in cfg.compensation:
+        print('compensation for {}'.format(_['name']))
+        if _['email'] == email:
+            if currency in _['wage']:
+                print('found currency in wage')
+                wage = _['wage'][currency]
+                print(wage)
+                break
+            else:
+                available_currencies = ', '.join([c for c in _['wage']])
+                currency_error = '{} not found in {}'.format(currency, available_currencies)   
+                print('currency_error: ' + currency_error)
+        else:
+            print('{} != {}'.format(_['email'], email))
+            available_users = ', '.join([u['email'] for u in cfg.compensation])
+            email_error = '{} not found in {}'.format(email, available_users)
+            print('email error: ' + email_error)
+    if wage is None:
+        return dash.no_update, \
+            'could not set wage for {} ({}). {} {}'.format(
+                email, currency, currency_error, email_error), \
+            placeholder
+    return wage, '', placeholder
 
+# dash.no_update, '{} is prime!'.format(num)
+
+@callbacks.select_repo
+def validate_repo(path):
+    try:
+        base_dir = get_base_dir(path)
+        return True, False
+    except:
+        return False, True
+
+    
 @callbacks.invoice
-def generate_invoice(selected_rows, data, rate):
+def generate_invoice(selected_rows, data, rate, currency):
+    # amount [sat] = rate [curr/hour] * 100e6 [sat/btc] * price [btc/curr]
     result = 0
     if selected_rows is None:
         raise PreventUpdate
@@ -257,14 +312,15 @@ def generate_invoice(selected_rows, data, rate):
         raise PreventUpdate
     for _ in selected_rows:
         result += float(data[_]['Hours'])
-    result *= float(rate)
-    result = math.floor(result)
+    amt_in_currency = result * float(rate) 
+    btc_price = get_btc_price(currency)
+    amt_in_sat = math.floor(amt_in_currency * 100e6/float(btc_price))
 
     request = lnrpc.Invoice(
             memo="test payment",
     #         r_preimage=<bytes>,
     #         r_hash=<bytes>,
-            value=result,
+            value=amt_in_sat,
     #         value_msat=<int64>,
     #         settled=<bool>,
     #         creation_date=<int64>,
@@ -292,7 +348,7 @@ def generate_invoice(selected_rows, data, rate):
     response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
     payment_request = response.payment_request
     
-    return result, payment_request
+    return "{:.2f}".format(amt_in_currency), payment_request
     
     
 #     return "invoice amount: {} sat payment request: {}".format(result, payment_request)
@@ -421,10 +477,7 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['./hourly-dashboard.yaml'])
-# -
-
-# ls
+    app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
 
 # +
 import requests
@@ -432,23 +485,19 @@ response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
 data = response.json()
 
 data
-
-
 # -
 
-def get_btc_price(currency, time):
-    """return current price, symbol"""
-    response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
-    data = response.json()
-    price = data[currency]['rate_float']
-    symbol = data[currency]['symbol']
-    return price, symbol
-
+btc_price, currency_symbol = get_btc_price('USD', 100)
+btc_price, currency_symbol
 
 # USD, GBP, EUR
 
 # &euro;
 
 100e6 # sats/btc
+
+cfg.compensation
+
+get_btc_price('USD')
 
 data['bpi']['USD']

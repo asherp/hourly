@@ -11,6 +11,14 @@ app:
       - https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
     title: Hourly
 
+repo:
+  dbc.Input:
+    id: repo-select
+    type: text
+    placeholder: /path/to/git/repo
+    value: ${env:HOURLY_WORKPATH}
+    valid: False
+
 clock_in_button:
   html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
     id: clock-in
@@ -45,6 +53,17 @@ clock_status:
     id: clock-status
     children: Clock status
 
+hourly_wage:
+  - dbc.Input:
+      id: hourly-wage
+      min: 0
+      value: 100
+      type: number
+  - html.Div:
+      id: hourly-wage-error
+      style:
+        color: red
+
 qr_slider:
   dcc.Slider:
     id: qr-slider
@@ -66,6 +85,21 @@ invoice_qr:
       style:
         margin: auto
 
+currency:
+  dcc.Dropdown:
+    id: currency-dropdown
+    clearable: False
+    options:
+      - label: SAT
+        value: SAT
+      - label: $
+        value: USD
+      - label: £
+        value: GBP
+      - label: €
+        value: EUR
+    value: USD
+
 layout:
   dbc.Container:
     fluid: True
@@ -82,6 +116,10 @@ layout:
           - dbc.Col:
               children:
               - html.H1: Hourly Lightning
+    - dbc.Row:
+        children:
+        - dbc.Col:
+            children: ${repo}
     - dbc.Row:
         justify: start
         children:
@@ -113,13 +151,10 @@ layout:
         children:
         - dbc.Col:
             width: auto
-            children:
-              - dbc.Input:
-                  id: hourly-rate
-                  min: 0
-                  value: 100
-                  type: number
-                  placeholder: hourly rate (sat/hr)
+            children: ${currency}
+        - dbc.Col:
+            width: auto
+            children: ${hourly_wage}
         - dbc.Col:
             width: auto
             children:
@@ -214,13 +249,37 @@ layout:
 
 
 callbacks:
+  select_repo:
+    input:
+      - id: repo-select
+        attr: value
+    output:
+      - id: repo-select
+        attr: valid
+      - id: repo-select
+        attr: invalid
+  set_wage:
+    input:
+      - id: currency-dropdown
+        attr: value
+      - id: git-user-email
+        attr: value
+    output:
+      - id: hourly-wage
+        attr: value
+      - id: hourly-wage-error
+        attr: children
+      - id: hourly-wage
+        attr: placeholder
   invoice:
     input:
       - id: labor-table
         attr: selected_rows
       - id: labor-table
         attr: data
-      - id: hourly-rate
+      - id: hourly-wage
+        attr: value
+      - id: currency-dropdown
         attr: value
     output:
       - id: invoice-amount
