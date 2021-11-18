@@ -1,3 +1,6 @@
+
+### 2021-11-18 19:22:18.461858: clock-in
+
 ### 2021-11-18 13:57:58.467129: clock-out
 
 * logo from url, qr popover, cosmetics
