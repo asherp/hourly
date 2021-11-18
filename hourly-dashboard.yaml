@@ -11,13 +11,20 @@ app:
       - https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
     title: Hourly
 
+qr_logo: ${env:HOURLY_QR_LOGO}
+
 repo:
-  dbc.Input:
-    id: repo-select
-    type: text
-    placeholder: /path/to/git/repo
-    value: ${env:HOURLY_WORKPATH}
-    valid: False
+  - dbc.Label:
+      children: Project
+      width: auto
+      html_for: repo-select
+  - dcc.Dropdown:
+      id: repo-select
+      clearable: False
+      options:
+        - label: ${env:HOURLY_WORKPATH}
+          value: ${env:HOURLY_WORKPATH}
+      value: ${env:HOURLY_WORKPATH}
 
 clock_in_button:
   html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
@@ -38,20 +45,32 @@ commit_message:
     value: ''
 
 user_name:
-  dcc.Input:
-    id: git-user-name
-    value: ${env:GIT_USER_NAME}
+  - dbc.Label:
+      children: Name
+      width: auto
+      # html_for: git-user-name
+  - dcc.Dropdown:
+      id: git-user-name
+      clearable: False
+      options:
+        - label: ${env:GIT_USER_NAME}
+          value: ${env:GIT_USER_EMAIL}
+      value: ${env:GIT_USER_EMAIL}
 
 user_email:
-  dcc.Input:
-    id: git-user-email
-    value: ${env:GIT_USER_EMAIL}
-    inputMode: email
+  - dbc.Label:
+      children: Email
+      width: auto
+  - dbc.Input:
+      id: git-user-email
+      value: ${env:GIT_USER_EMAIL}
+      inputmode: email
 
 clock_status:
-  html.Div:
+  dbc.Label:
     id: clock-status
     children: Clock status
+    color: secondary
 
 hourly_wage:
   - dbc.Input:
@@ -64,26 +83,68 @@ hourly_wage:
       style:
         color: red
 
+
+
+
 qr_slider:
   dcc.Slider:
     id: qr-slider
     min: 4
-    max: 20
+    max: 10
     step: 1
     value: 5
     updatemode: drag
 
-  # margin-left: auto;
-  # margin-right: auto;
+qr_open:
+  dbc.Button:
+    id: qr-open
+    n_clicks: 0
+    children: QR Code
+    color: primary
+    className: me-1
+
+qr_close:
+  dbc.Button:
+    id: qr-close
+    n_clicks: 0
+    children: QR Code
+    color: primary
+    className: me-1
 
 invoice_qr:
-  align: center
-  width: 6
-  children:
-  - html.Img:
-      id: invoice
-      style:
-        margin: auto
+  dbc.Modal:
+    id: qr-modal
+    size: auto
+    children:
+    - dbc.ModalHeader:
+        children:
+          dbc.ModalTitle: Scan for lightning payment
+    - dbc.ModalBody:
+        style:
+          text-align: center
+        children:
+        - ${qr_slider}
+        - html.Img:
+            id: invoice
+            style:
+              margin: auto
+              margin-left: auto
+              margin-right: auto
+        - dcc.Textarea:
+            id: qr-payment-text
+            style:
+              width: '100%'
+    - dbc.ModalFooter:
+        children:
+          - dbc.Button:
+              children: Close
+              id: qr-close
+              className: ms-auto
+              n_clicks: 0
+    is_open: False
+    autofocus: False
+    size: lg
+
 
 currency:
   dcc.Dropdown:
@@ -102,7 +163,7 @@ currency:
 
 layout:
   dbc.Container:
-    fluid: True
+    # fluid: True
     children:
     - dcc.Location:
         id: url
@@ -116,148 +177,140 @@ layout:
           - dbc.Col:
               children:
               - html.H1: Hourly Lightning
-    - dbc.Row:
+    - dbc.Form:
         children:
-        - dbc.Col:
-            children: ${repo}
-    - dbc.Row:
-        justify: start
-        children:
-        - dbc.Col:
-            align: start
-            width: 3
-            children: ${user_name}
-        - dbc.Col:
-            align: start
-            width: 3
-            children: ${user_email}
-    - dbc.Row:
-        children:
-        - dbc.Col:
-            children: ${clock_in_button}
-        - dbc.Col:
-            children: ${clock_out_button}
-        - dbc.Col:
-            children: ${commit_message}
-    - dbc.Row:
-        children:
-        - dbc.Col:
-            children: ${clock_status}
-    # - dcc.Markdown:
-    #     id: hourly-conf
-    - html.Br:
-    - dbc.Row:
-        align: start
-        children:
-        - dbc.Col:
-            width: auto
-            children: ${currency}
-        - dbc.Col:
-            width: auto
-            children: ${hourly_wage}
-        - dbc.Col:
-            width: auto
+        - dbc.Card:
+            body: True
             children:
-            - dbc.Input:
-                id: invoice-amount
-                value: 0
-                type: number
-                placeholder: Invoice amount (sat)
-                disabled: True
-        - dbc.Col:
-            width: auto
-            children:
-            - dbc.Input:
-                id: payment-request
-                type: text
-                value: ''
-                placeholder: lightning payment request
-                disabled: True
-        - dbc.Col:
-            width: 1
-            children:
-            - dcc.Clipboard:
-                target_id: payment-request
-                title: copy invoice
-                style:
-                  # display: inline-block
-                  fontSize: 20
-                  # verticalAlign: top
-    - dbc.Row:
-        children:
-        - dbc.Col:
-            width: 12
-            children:
-            - ${qr_slider}
-    - dbc.Row:
-        justify: center
-        children:
-        - dbc.Col: ${invoice_qr}
-    - dbc.Row:
-        children:
-        - dbc.Col:
-            children:
-            - dcc.Tabs:
+            - dbc.Row:
+                # justify: start
+                className: g-3
                 children:
-                - dcc.Tab:
-                    label: Files
+                - dbc.Col:
+                    width: 3
+                    children: ${repo}
+                - dbc.Col:
+                    width: 3
+                    children: ${user_name}
+                - dbc.Col:
+                    width: 3
+                    children: ${user_email}
+        - html.Br:
+        - dbc.Card:
+            body: True
+            children:
+            - dbc.Row:
+                children:
+                - dbc.Col:
+                    width: auto
+                    children: ${clock_in_button}
+                - dbc.Col:
+                    width: auto
+                    children: ${clock_out_button}
+                - dbc.Col:
+                    width: auto
+                    children: ${commit_message}
+            - html.Br:
+            - dbc.Row:
+                children:
+                - dbc.Col:
+                    children: ${clock_status}
+        - html.Br:
+        - dbc.Row:
+            align: start
+            children:
+            - dbc.Col:
+                width: auto
+                children: ${currency}
+            - dbc.Col:
+                width: auto
+                children: ${hourly_wage}
+            - dbc.Col:
+                width: auto
+                children:
+                - dbc.Input:
+                    id: invoice-amount
+                    value: 0
+                    type: number
+                    placeholder: Invoice amount (sat)
+                    disabled: True
+            - dbc.Col:
+                width: auto
+                children:
+                - dbc.Input:
+                    id: payment-request
+                    type: text
+                    value: ''
+                    placeholder: lightning payment request
+                    disabled: True
+            - dbc.Col:
+                width: auto
+                children:
+                - dcc.Clipboard:
+                    target_id: payment-request
+                    title: copy invoice
+                    style:
+                      # display: inline-block
+                      fontSize: 20
+                      # verticalAlign: top
+            - dbc.Col:
+                width: auto
+                children: ${qr_open}
+        - ${invoice_qr}
+        - html.Br:
+        - dbc.Row:
+            children:
+            - dbc.Col:
+                children:
+                - dcc.Tabs:
                     children:
-                    - dash_table.DataTable:
-                        id: file-table
-                        style_data:
-                          whiteSpace: normal
-                          height: auto
-                          lineHeight: 15px
-                        style_cell:
-                          textAlign: left
-                - dcc.Tab:
-                    label: Labor
-                    children:
-                    - dash_table.DataTable:
-                        id: labor-table
-                        row_selectable: multi
-                        style_data:
-                          whiteSpace: normal
-                          height: auto
-                          lineHeight: 15px
-                        style_cell:
-                          textAlign: left
-                - dcc.Tab:
-                    label: Work Commits
-                    children:
-                    - dash_table.DataTable:
-                        id: commits-table
-                        style_data:
-                          whiteSpace: normal
-                          height: auto
-                          lineHeight: 15px
-                        style_cell:
-                          textAlign: left
-                # - dcc.Tab:
-                #     label: Clock Commits
-                #     children:
-                #     - dash_table.DataTable:
-                #         id: clocks-table
-                #         style_data:
-                #           whiteSpace: normal
-                #           height: auto
-                #           lineHeight: 15px
-                #         style_cell:
-                #           textAlign: left
-
-
-
+                    - dcc.Tab:
+                        label: Labor
+                        children:
+                        - dash_table.DataTable:
+                            id: labor-table
+                            row_selectable: multi
+                            style_data:
+                              whiteSpace: normal
+                              height: auto
+                              lineHeight: 15px
+                            style_cell:
+                              textAlign: left
+                    - dcc.Tab:
+                        label: Work Commits
+                        children:
+                        - dash_table.DataTable:
+                            id: commits-table
+                            style_data:
+                              whiteSpace: normal
+                              height: auto
+                              lineHeight: 15px
+                            style_cell:
+                              textAlign: left
+                    - dcc.Tab:
+                        label: Files
+                        children:
+                        - dash_table.DataTable:
+                            id: file-table
+                            style_data:
+                              whiteSpace: normal
+                              height: auto
+                              lineHeight: 15px
+                            style_cell:
+                              textAlign: left
+                    # - dcc.Tab:
+                    #     label: Clock Commits
+                    #     children:
+                    #     - dash_table.DataTable:
+                    #         id: clocks-table
+                    #         style_data:
+                    #           whiteSpace: normal
+                    #           height: auto
+                    #           lineHeight: 15px
+                    #         style_cell:
+                    #           textAlign: left
 
 callbacks:
-  select_repo:
-    input:
-      - id: repo-select
-        attr: value
-    output:
-      - id: repo-select
-        attr: valid
-      - id: repo-select
-        attr: invalid
   set_wage:
     input:
       - id: currency-dropdown
@@ -329,6 +382,34 @@ callbacks:
         attr: columns
       - id: labor-table
         attr: data
+  open_qr:
+    output:
+    - id: qr-modal
+      attr: is_open
+    input:
+    - id: qr-open
+      attr: n_clicks
+    - id: qr-close
+      attr: n_clicks
+    state:
+    - id: qr-modal
+      attr: is_open
+  qr_size:
+    output:
+      - id: qr-modal
+        attr: size
+    input:
+      - id: qr-slider
+        attr: value
+  qr_payment_text:
+    output:
+      - id: qr-payment-text
+        attr: value
+    input:
+      - id: payment-request
+        attr: value
+
+
   # clock_button:
   #   input:
   #     - id: url

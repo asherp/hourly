@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.0
+#       jupytext_version: 1.13.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -66,6 +66,10 @@ sys.path.append('/grpc')
 import codecs, grpc
 # See https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/python.md for instructions.
 import lightning_pb2 as lnrpc, lightning_pb2_grpc as lightningstub
+# -
+
+import dash_bootstrap_components as dbc
+dbc.__version__
 
 # +
 macaroon = codecs.encode(open(LND_DIR+'/data/chain/bitcoin/signet/admin.macaroon', 'rb').read(), 'hex')
@@ -121,6 +125,10 @@ from qrcode.image.styledpil import StyledPilImage
 
 import base64
 from io import BytesIO
+# -
+
+import requests, shutil
+
 
 # +
 conf = load_conf('hourly-dashboard.yaml')
@@ -293,13 +301,13 @@ def get_wage(currency, email):
 
 # dash.no_update, '{} is prime!'.format(num)
 
-@callbacks.select_repo
-def validate_repo(path):
-    try:
-        base_dir = get_base_dir(path)
-        return True, False
-    except:
-        return False, True
+# @callbacks.select_repo
+# def validate_repo(path):
+#     try:
+#         base_dir = get_base_dir(path)
+#         return True, False
+#     except:
+#         return False, True
 
     
 @callbacks.invoice
@@ -353,20 +361,54 @@ def generate_invoice(selected_rows, data, rate, currency):
     
 #     return "invoice amount: {} sat payment request: {}".format(result, payment_request)
 
+def load_image(image_url):
+    filename = image_url.split('/')[-1]
+    if not os.path.exists(filename):
+        r = requests.get(image_url, stream = True)
+        r.raw.decode_content = True
+        # Open a local file with wb ( write binary ) permission.
+        with open(filename,'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+    return filename
+
+
 @callbacks.render_invoice
 def render_invoice(payment_request, size):
     if len(payment_request) == 0:
         raise PreventUpdate
+
+    qr_image_path = None
+    if len(conf['qr_logo']) > 0:
+        qr_image_path = load_image(conf['qr_logo'])
+    
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=size)
     qr.add_data(payment_request)
-    qr_img = qr.make_image(image_factory=StyledPilImage, embeded_image_path="humanaut_logo_H.png")
+    qr_img = qr.make_image(image_factory=StyledPilImage, embeded_image_path=qr_image_path)
 
     buffered = BytesIO()
     qr_img.save(buffered)
     encoded_image = base64.b64encode(buffered.getvalue())
     return 'data:image/png;base64,{}'.format(encoded_image.decode('ascii'))
     
-    
+
+@callbacks.open_qr
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
+@callbacks.qr_size
+def modal_size(scale):
+    if scale < 5:
+        return 'sm'
+    elif scale <= 7:
+        return 'md'
+    else:
+        return 'lg'
+
+@callbacks.qr_payment_text
+def pass_through(payment_code):
+    return payment_code
 
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
@@ -478,17 +520,110 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
-
-# +
-import requests
-response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
-data = response.json()
-
-data
 # -
 
-btc_price, currency_symbol = get_btc_price('USD', 100)
-btc_price, currency_symbol
+dash.dcc.Textarea
+
+from dash.dcc import TextArea
+
+
+def write_invoice(payment_request):
+    with open('invoice', 'w') as f:
+        f.write(payment_request)
+write_invoice(payment_request)
+
+payment_request
+
+import cryptography
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=4096,
+    backend=default_backend()
+)
+public_key = private_key.public_key()
+
+# +
+# store private key
+pem = private_key.private_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PrivateFormat.PKCS8,
+    encryption_algorithm=serialization.NoEncryption()
+)
+
+with open('hourly_private_key.pem', 'wb') as f:
+    f.write(pem)
+# -
+
+# load private key
+
+with open("hourly_private_key.pem", "rb") as key_file:
+    private_key = serialization.load_pem_private_key(
+        key_file.read(),
+        password=None,
+        backend=default_backend()
+    )
+private_key
+
+# +
+# write public key
+pem = public_key.public_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PublicFormat.SubjectPublicKeyInfo
+)
+
+with open('hourly_public_key.pem', 'wb') as f:
+    f.write(pem)
+# -
+
+# load public key
+
+with open("hourly_public_key.pem", "rb") as key_file:
+    public_key = serialization.load_pem_public_key(
+        key_file.read(),
+        backend=default_backend()
+    )
+public_key
+
+type(payment_request.encode())
+
+type(str.encode(payment_request))
+
+payment_request
+
+# +
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+
+message = payment_request.encode()
+
+encrypted = public_key.encrypt(
+    message,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+encrypted
+# -
+
+original_message = private_key.decrypt(
+    encrypted,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+assert payment_request == original_message.decode()
+print('finished invoice decryption!')
+
+btc_price = get_btc_price('USD')
+btc_price
 
 # USD, GBP, EUR
 
