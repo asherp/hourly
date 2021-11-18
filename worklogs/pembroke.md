@@ -1,3 +1,6 @@
+
+### 2021-11-18 14:55:40.352875: clock-in
+
 ### 2021-11-17 19:16:38.510411: clock-out
 
 * need to communicate invoice details as a message. can store as json with memo
