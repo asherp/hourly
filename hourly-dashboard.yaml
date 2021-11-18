@@ -27,16 +27,20 @@ repo:
       value: ${env:HOURLY_WORKPATH}
 
 clock_in_button:
-  html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
+  dbc.Button:
     id: clock-in
     children: Clock In
     n_clicks: 0
+    className: me-1
+    size: lg
 
 clock_out_button:
-  html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
+  dbc.Button:
     id: clock-out
     children: Clock Out
     n_clicks: 0
+    className: me-1
+    size: lg
 
 commit_message:
   dcc.Input:
@@ -54,8 +58,8 @@ user_name:
       clearable: False
       options:
         - label: ${env:GIT_USER_NAME}
-          value: ${env:GIT_USER_EMAIL}
-      value: ${env:GIT_USER_EMAIL}
+          value: ${env:GIT_USER_NAME}
+      value: ${env:GIT_USER_NAME}
 
 user_email:
   - dbc.Label:
@@ -202,13 +206,12 @@ layout:
             - dbc.Row:
                 children:
                 - dbc.Col:
-                    width: auto
+                    width: 2
                     children: ${clock_in_button}
                 - dbc.Col:
-                    width: auto
+                    width: 2
                     children: ${clock_out_button}
                 - dbc.Col:
-                    width: auto
                     children: ${commit_message}
             - html.Br:
             - dbc.Row:
@@ -216,46 +219,49 @@ layout:
                 - dbc.Col:
                     children: ${clock_status}
         - html.Br:
-        - dbc.Row:
-            align: start
+        - dbc.Card:
+            body: True
             children:
-            - dbc.Col:
-                width: auto
-                children: ${currency}
-            - dbc.Col:
-                width: auto
-                children: ${hourly_wage}
-            - dbc.Col:
-                width: auto
+            - dbc.Row:
+                align: start
                 children:
-                - dbc.Input:
-                    id: invoice-amount
-                    value: 0
-                    type: number
-                    placeholder: Invoice amount (sat)
-                    disabled: True
-            - dbc.Col:
-                width: auto
-                children:
-                - dbc.Input:
-                    id: payment-request
-                    type: text
-                    value: ''
-                    placeholder: lightning payment request
-                    disabled: True
-            - dbc.Col:
-                width: auto
-                children:
-                - dcc.Clipboard:
-                    target_id: payment-request
-                    title: copy invoice
-                    style:
-                      # display: inline-block
-                      fontSize: 20
-                      # verticalAlign: top
-            - dbc.Col:
-                width: auto
-                children: ${qr_open}
+                - dbc.Col:
+                    width: auto
+                    children: ${currency}
+                - dbc.Col:
+                    width: auto
+                    children: ${hourly_wage}
+                - dbc.Col:
+                    width: auto
+                    children:
+                    - dbc.Input:
+                        id: invoice-amount
+                        value: 0
+                        type: number
+                        placeholder: Invoice amount (sat)
+                        disabled: True
+                - dbc.Col:
+                    width: auto
+                    children:
+                    - dbc.Input:
+                        id: payment-request
+                        type: text
+                        value: ''
+                        placeholder: lightning payment request
+                        disabled: True
+                - dbc.Col:
+                    width: auto
+                    children:
+                    - dcc.Clipboard:
+                        target_id: payment-request
+                        title: copy invoice
+                        style:
+                          # display: inline-block
+                          fontSize: 20
+                          # verticalAlign: top
+                - dbc.Col:
+                    width: auto
+                    children: ${qr_open}
         - ${invoice_qr}
         - html.Br:
         - dbc.Row:
@@ -382,6 +388,14 @@ callbacks:
         attr: columns
       - id: labor-table
         attr: data
+      - id: clock-in
+        attr: color
+      - id: clock-out
+        attr: color
+      - id: clock-in
+        attr: disabled
+      - id: clock-out
+        attr: disabled
   open_qr:
     output:
     - id: qr-modal
@@ -408,41 +422,6 @@ callbacks:
     input:
       - id: payment-request
         attr: value
-
-
-  # clock_button:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #     - id: clock-in
-  #       attr: n_clicks
-  #     - id: clock-out
-  #       attr: n_clicks
-  #   output:
-  #     - id: clock-status
-  #       attr: children
-  #     - id: clock-in
-  #       attr: children
-  #     - id: clock-out
-  #       attr: children
-  # clock_status:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #     - id: clock-interval
-  #       attr: n_intervals
-  #   output:
-  #     - id: clock-status
-  #       attr: children
-  # update_table:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #   output:
-  #     - id: table
-  #       attr: columns
-  #     - id: table
-  #       attr: data
 
 
 
