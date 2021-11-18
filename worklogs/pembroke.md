@@ -1,3 +1,22 @@
+### 2021-11-17 19:16:38.510411: clock-out
+
+* need to communicate invoice details as a message. can store as json with memo
+
+Generate a private key for use with hourly
+
+```sh
+ssh-keygen -t ed25519 -C "your_email@example.com"
+# follow prompts and save as path/to/hourly_id_ed25519
+# this will automatically generate path/to/hourly_id_ed25519.pub
+```
+
+Interesting, `ed25519` isn't used for encryption, only signing https://blog.filippo.io/using-ed25519-keys-for-encryption/
+
+fernet actually has symmetric encryption https://cryptography.io/en/latest/fernet/#fernet-symmetric-encryption
+
+but we need asymmetric encryption https://nitratine.net/blog/post/asymmetric-encryption-and-decryption-in-python/
+
+> If you want to encrypt large blocks asymmetrically, the usual solution is a hybrid construction: randomly generate a symmetric key, encrypt and authenticate your data with that, and then encrypt that key with the RSA key. https://github.com/pyca/cryptography/issues/5685
 
 ### 2021-11-17 16:43:49.407959: clock-in
 
