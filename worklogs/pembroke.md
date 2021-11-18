@@ -1,3 +1,6 @@
+
+### 2021-11-18 11:43:38.414271: clock-in
+
 ### 2021-11-18 11:24:39.671634: clock-out: T-5m 
 
 * need to rebuild container to grab dash-boostrap-components==1.0.0
