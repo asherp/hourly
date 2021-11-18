@@ -1,3 +1,4 @@
+* disabled status
 
 ### 2021-11-18 22:12:44.331662: clock-in
 
