@@ -87,9 +87,6 @@ hourly_wage:
       style:
         color: red
 
-
-
-
 qr_slider:
   dcc.Slider:
     id: qr-slider
@@ -287,37 +284,55 @@ layout:
                                 - dbc.Col:
                                     width: auto
                                     children: ${qr_open}       
-                        - dash_table.DataTable:
-                            id: labor-table
-                            row_selectable: multi
-                            style_data:
-                              whiteSpace: normal
-                              height: auto
-                              lineHeight: 15px
-                            style_cell:
-                              textAlign: left
+                            - html.Br:
+                            - dash_table.DataTable:
+                                id: labor-table
+                                row_selectable: multi
+                                style_data:
+                                  whiteSpace: normal
+                                  height: auto
+                                  lineHeight: 15px
+                                style_cell:
+                                  textAlign: left
                     - dcc.Tab:
                         label: History
                         children:
-                        - dash_table.DataTable:
-                            id: commits-table
-                            style_data:
-                              whiteSpace: normal
-                              height: auto
-                              lineHeight: 15px
-                            style_cell:
-                              textAlign: left
+                          dbc.Card:
+                            body: True
+                            children:
+                              dash_table.DataTable:
+                                id: commits-table
+                                style_data:
+                                  whiteSpace: normal
+                                  height: auto
+                                  lineHeight: 15px
+                                style_cell:
+                                  textAlign: left
                     - dcc.Tab:
                         label: Files
                         children:
-                        - dash_table.DataTable:
-                            id: file-table
-                            style_data:
-                              whiteSpace: normal
-                              height: auto
-                              lineHeight: 15px
-                            style_cell:
-                              textAlign: left
+                          dbc.Card:
+                            body: True
+                            children:
+                              - dash_table.DataTable:
+                                  id: staged-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
+                              - html.Br:
+                              - dash_table.DataTable:
+                                  id: modified-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
                     # - dcc.Tab:
                     #     label: Clock Commits
                     #     children:
@@ -406,6 +421,23 @@ callbacks:
         attr: disabled
       - id: clock-out
         attr: disabled
+  files_table:
+    output:
+      - id: modified-table
+        attr: columns
+      - id: modified-table
+        attr: data
+      - id: staged-table
+        attr: columns
+      - id: staged-table
+        attr: data
+    input:
+      - id: url
+        attr: pathname
+      - id: repo-select
+        attr: value
+      - id: clock-interval
+        attr: n_intervals
   display_led:
     output:
       - id: display-time

@@ -341,11 +341,57 @@ def update_display(label, n_interval):
     if 'in' in label:
         time_last = pd.Timestamp(label.split('at')[-1].strip())
         time_since = pd.datetime.now(time_last.tzinfo) - time_last
-        return dt_format(time_since), '#40900E'
+        return dt_format(time_since), '#40900E' # green
     else:
-        return '00:00:00', '#9B9B9B'
+        return '00:00:00', '#9B9B9B' # gray
     
 
+def get_modified(repo):
+    modified = []
+    for _ in repo.index.diff(None):
+        modified.append(_.a_path)
+    return modified
+
+
+def get_staged(repo):
+    staged = []
+    for _ in repo.index.diff('HEAD'):
+        staged.append(_.a_path)
+    return staged
+
+def get_commit_date(repo, fname):
+    commit = next(repo.iter_commits(paths=fname, max_count=1))
+    return pd.datetime.fromtimestamp(commit.committed_date)
+
+@callbacks.files_table
+def render_files(url, gitdir, n_interval):
+    repo = git.Repo(gitdir, search_parent_directories=True)
+
+    modified_files = get_modified(repo)
+    modified_age = []
+    modified_time = []
+    for _ in modified_files:
+        mod_time = get_commit_date(repo, _)
+        modified_time.append(mod_time)
+        modified_age.append(dt_format(pd.datetime.now() - mod_time))
+
+    modified = pd.DataFrame(dict(
+        modified=modified_files,
+        time=modified_time,
+        age=modified_age))
+    
+    modified_columns = [{"name": i, "id": i} for i in modified.columns]
+    modified_records = modified.to_dict('records')
+    
+    staged_files = get_staged(repo)
+    staged = pd.DataFrame(dict(
+        staged = staged_files))
+    staged_columns = [{"name": i, "id": i} for i in staged.columns]
+    staged_records = staged.to_dict('records')
+
+    return modified_columns, modified_records, \
+            staged_columns, staged_records
+    
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
@@ -470,6 +516,37 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
+
+# +
+
+os.path.getmtime('dashboard.py')
+# -
+
+for _ in repo.index.diff(None):
+    modified.append(_.a_path)
+
+
+
+commit = next(repo.iter_commits(paths='dashboard.py', max_count=1))
+
+commit.committed_date
+
+
+
+# +
+import datetime
+now = datetime.datetime.now()
+
+current_time = now.strftime("%H:%M:%S")
+print("Current Time =", current_time)
+# -
+
+time.clock()
+
+# +
+
+print(get_modified('.'))
+print(get_staged('.'))
 
 
 # -
