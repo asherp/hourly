@@ -26,6 +26,22 @@ repo:
           value: ${env:HOURLY_WORKPATH}
       value: ${env:HOURLY_WORKPATH}
 
+stage_button:
+  dbc.Button:
+    id: stage-button
+    children: Stage
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+commit_button:
+  dbc.Button:
+    id: commit-button
+    children: Commit
+    n_clicks: 0
+    className: me-1
+    size: lg
+
 clock_in_button:
   dbc.Button:
     id: clock-in
@@ -233,9 +249,58 @@ layout:
             - dbc.Col:
                 children:
                 - dcc.Tabs:
+                    value: Files
                     children:
                     - dcc.Tab:
+                        label: Files
+                        value: Files
+                        children:
+                          dbc.Card:
+                            body: True
+                            children:
+                              - dbc.ButtonGroup:
+                                  children:
+                                  - ${stage_button}
+                                  - ${commit_button}
+                              - html.Br:
+                              - html.Br:
+                              - dash_table.DataTable:
+                                  id: staged-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
+                              - html.Br:
+                              - dash_table.DataTable:
+                                  id: modified-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
+                    - dcc.Tab:
+                        label: History
+                        value: History
+                        children:
+                          dbc.Card:
+                            body: True
+                            children:
+                              dash_table.DataTable:
+                                id: commits-table
+                                style_data:
+                                  whiteSpace: normal
+                                  height: auto
+                                  lineHeight: 15px
+                                style_cell:
+                                  textAlign: left
+                    - dcc.Tab:
                         label: Labor
+                        value: Labor
                         children:
                         - dbc.Card:
                             body: True
@@ -294,56 +359,6 @@ layout:
                                   lineHeight: 15px
                                 style_cell:
                                   textAlign: left
-                    - dcc.Tab:
-                        label: History
-                        children:
-                          dbc.Card:
-                            body: True
-                            children:
-                              dash_table.DataTable:
-                                id: commits-table
-                                style_data:
-                                  whiteSpace: normal
-                                  height: auto
-                                  lineHeight: 15px
-                                style_cell:
-                                  textAlign: left
-                    - dcc.Tab:
-                        label: Files
-                        children:
-                          dbc.Card:
-                            body: True
-                            children:
-                              - dash_table.DataTable:
-                                  id: staged-table
-                                  row_selectable: multi
-                                  style_data:
-                                    whiteSpace: normal
-                                    height: auto
-                                    lineHeight: 15px
-                                  style_cell:
-                                    textAlign: left
-                              - html.Br:
-                              - dash_table.DataTable:
-                                  id: modified-table
-                                  row_selectable: multi
-                                  style_data:
-                                    whiteSpace: normal
-                                    height: auto
-                                    lineHeight: 15px
-                                  style_cell:
-                                    textAlign: left
-                    # - dcc.Tab:
-                    #     label: Clock Commits
-                    #     children:
-                    #     - dash_table.DataTable:
-                    #         id: clocks-table
-                    #         style_data:
-                    #           whiteSpace: normal
-                    #           height: auto
-                    #           lineHeight: 15px
-                    #         style_cell:
-                    #           textAlign: left
 
 callbacks:
   set_wage:
@@ -438,6 +453,34 @@ callbacks:
         attr: value
       - id: clock-interval
         attr: n_intervals
+
+  stage_style:
+    input:
+      - id: modified-table
+        attr: selected_rows
+      - id: modified-table
+        attr: data
+    output:
+      - id: stage-button
+        attr: disabled
+      - id: stage-button
+        attr: color
+
+  stage_files:
+    input:
+      - id: stage-button
+        attr: n_clicks
+    state:
+      - id: modified-table
+        attr: selected_rows
+      - id: modified-table
+        attr: data
+      - id: repo-select
+        attr: value
+    output:
+      - id: modified-table
+        attr: selected_rows
+
   display_led:
     output:
       - id: display-time

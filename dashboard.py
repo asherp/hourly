@@ -391,7 +391,27 @@ def render_files(url, gitdir, n_interval):
 
     return modified_columns, modified_records, \
             staged_columns, staged_records
-    
+
+@callbacks.stage_style
+def stage_style(selected_rows, data):
+    if selected_rows is None:
+        return True, 'secondary'
+
+    if len(selected_rows) > 0:
+        return False, 'primary'
+    else:
+        return True, 'secondary'
+
+@callbacks.stage_files
+def stage_files(n_clicks, selected_rows, data, gitdir):
+    repo = git.Repo(gitdir, search_parent_directories=True)
+    button_id = get_triggered()
+    if button_id == 'stage-button':
+        for _ in selected_rows:
+            fname = data[_]['modified']
+            repo.index.add([fname])
+    return []
+
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
@@ -520,33 +540,6 @@ if __name__ == '__main__':
 # +
 
 os.path.getmtime('dashboard.py')
-# -
-
-for _ in repo.index.diff(None):
-    modified.append(_.a_path)
-
-
-
-commit = next(repo.iter_commits(paths='dashboard.py', max_count=1))
-
-commit.committed_date
-
-
-
-# +
-import datetime
-now = datetime.datetime.now()
-
-current_time = now.strftime("%H:%M:%S")
-print("Current Time =", current_time)
-# -
-
-time.clock()
-
-# +
-
-print(get_modified('.'))
-print(get_staged('.'))
 
 
 # -
