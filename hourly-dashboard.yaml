@@ -70,11 +70,11 @@ user_email:
       value: ${env:GIT_USER_EMAIL}
       inputmode: email
 
-clock_status:
-  dbc.Label:
-    id: clock-status
-    children: Clock status
-    color: secondary
+# clock_status:
+#   dbc.Label:
+#     id: clock-status
+#     children: Clock status
+#     color: secondary
 
 hourly_wage:
   - dbc.Input:
@@ -149,6 +149,12 @@ invoice_qr:
     autofocus: False
     size: lg
 
+display_time:
+  daq.LEDDisplay:
+    id: display-time
+    value: ''
+    label: ''
+    size: 32
 
 currency:
   dcc.Dropdown:
@@ -175,7 +181,7 @@ layout:
     - dcc.Interval:
         id: clock-interval
         n_intervals: 0
-        interval: 10000
+        interval: 1000
     - dbc.Row:
         children:
           - dbc.Col:
@@ -197,71 +203,32 @@ layout:
                     width: 3
                     children: ${user_name}
                 - dbc.Col:
-                    width: 3
+                    width: 2
                     children: ${user_email}
+                - dbc.Col:
+                    width: 4
+                    children: ${display_time}
         - html.Br:
-        - dbc.Card:
-            body: True
+        - dbc.Row:
             children:
-            - dbc.Row:
+            - dbc.Col:
+                width: 3
                 children:
-                - dbc.Col:
-                    width: 2
-                    children: ${clock_in_button}
-                - dbc.Col:
-                    width: 2
-                    children: ${clock_out_button}
-                - dbc.Col:
-                    children: ${commit_message}
-            - html.Br:
-            - dbc.Row:
-                children:
-                - dbc.Col:
-                    children: ${clock_status}
+                  dbc.ButtonGroup:
+                    children:
+                    - ${clock_in_button}
+                    - ${clock_out_button}
+
+            - dbc.Col:
+                width: 3
+                children: ${commit_message}
+            # - dbc.Col:
+            #     width: 6
+            #     children:
+            #       dbc.Card:
+            #         body: True
+            #         children: ${display_time}
         - html.Br:
-        - dbc.Card:
-            body: True
-            children:
-            - dbc.Row:
-                align: start
-                children:
-                - dbc.Col:
-                    width: auto
-                    children: ${currency}
-                - dbc.Col:
-                    width: auto
-                    children: ${hourly_wage}
-                - dbc.Col:
-                    width: auto
-                    children:
-                    - dbc.Input:
-                        id: invoice-amount
-                        value: 0
-                        type: number
-                        placeholder: Invoice amount (sat)
-                        disabled: True
-                - dbc.Col:
-                    width: auto
-                    children:
-                    - dbc.Input:
-                        id: payment-request
-                        type: text
-                        value: ''
-                        placeholder: lightning payment request
-                        disabled: True
-                - dbc.Col:
-                    width: auto
-                    children:
-                    - dcc.Clipboard:
-                        target_id: payment-request
-                        title: copy invoice
-                        style:
-                          # display: inline-block
-                          fontSize: 20
-                          # verticalAlign: top
-                - dbc.Col:
-                    width: auto
-                    children: ${qr_open}
         - ${invoice_qr}
         - html.Br:
         - dbc.Row:
@@ -273,6 +240,53 @@ layout:
                     - dcc.Tab:
                         label: Labor
                         children:
+                        - dbc.Card:
+                            body: True
+                            children:
+                            - dbc.Row:
+                                align: start
+                                children:
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                      dbc.Label: Generate Invoice
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${currency}
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${hourly_wage}
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dbc.Input:
+                                        id: invoice-amount
+                                        value: 0
+                                        type: number
+                                        placeholder: Invoice amount (sat)
+                                        disabled: True
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dbc.Input:
+                                        id: payment-request
+                                        type: text
+                                        value: ''
+                                        placeholder: lightning payment request
+                                        disabled: True
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dcc.Clipboard:
+                                        target_id: payment-request
+                                        title: copy invoice
+                                        style:
+                                          # display: inline-block
+                                          fontSize: 20
+                                          # verticalAlign: top
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${qr_open}       
                         - dash_table.DataTable:
                             id: labor-table
                             row_selectable: multi
@@ -283,7 +297,7 @@ layout:
                             style_cell:
                               textAlign: left
                     - dcc.Tab:
-                        label: Work Commits
+                        label: History
                         children:
                         - dash_table.DataTable:
                             id: commits-table
@@ -370,8 +384,8 @@ callbacks:
       - id: git-user-email
         attr: value
     output:
-      - id: clock-status
-        attr: children
+      - id: display-time
+        attr: label
       - id: clock-in
         attr: children
       - id: clock-out
@@ -380,10 +394,6 @@ callbacks:
         attr: columns
       - id: commits-table
         attr: data
-      # - id: clocks-table
-      #   attr: columns
-      # - id: clocks-table
-      #   attr: data
       - id: labor-table
         attr: columns
       - id: labor-table
@@ -396,6 +406,18 @@ callbacks:
         attr: disabled
       - id: clock-out
         attr: disabled
+  display_led:
+    output:
+      - id: display-time
+        attr: value
+      - id: display-time
+        attr: color
+    input:
+      - id: display-time
+        attr: label
+      - id: clock-interval
+        attr: n_intervals
+
   open_qr:
     output:
     - id: qr-modal

@@ -54,6 +54,12 @@ from hourly import get_work_commits, is_clocked_in, is_clocked_out, get_labor, g
 import logging
 
 # +
+
+import git
+from hourly.cli.main import get_base_dir, get_work_commits, get_current_user, identify_user, get_clocks, get_user_work, process_commit
+
+
+# +
 import os, sys
 LND_DIR = os.environ.get('LND_DATADIR', '/root/.lnd')
 
@@ -151,22 +157,7 @@ if 'callbacks' in conf:
 def dt_format(dt):
     hours, remainder = divmod(dt.total_seconds(), 3600)
     minutes, seconds = divmod(remainder, 60)
-    # Formatted only for hours and minutes as requested
-    return '{}h {}m {}s'.format(int(hours), math.floor(minutes), round(seconds))
-
-# # @callbacks.clock_switch
-# def clock_switch(url):
-#     work, repo = get_work_commits('.')
-    
-#     last_in = is_clocked_in(work)
-#     if last_in is not None:
-#         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-#         return 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in)), False
-
-#     last_out = is_clocked_out(work)
-#     if last_out is not None:
-#         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-#         return 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out)), False
+    return '{:02d}:{:02d}:{:02d}'.format(int(hours), math.floor(minutes), round(seconds))
 
 def get_triggered():
     ctx = dash.callback_context
@@ -176,54 +167,6 @@ def get_triggered():
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     return button_id
 
-# # @callbacks.clock_button
-# def clock_button(url, clock_in_clicks, clock_out_clicks):
-#     button_id = get_triggered()
-#     work, repo = get_work_commits('.')
-#     last_in = is_clocked_in(work)
-#     last_out = is_clocked_out(work)
-#     clock_status = ''
-
-#     if last_in is not None:
-#         clock_in_label = 'Clocked in'
-#         clock_out_label = 'Clock Out'
-#         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-#         clock_status += 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in))
-
-#     if last_out is not None:
-#         clock_in_label = 'Clock Out'
-#         clock_out_label = 'Clocked Out'
-#         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-#         clock_status += 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out))
-    
-#     if button_id == 'clock-in':
-#         if last_in is not None:
-#             clock_status += ': no need to clock in'
-#         else:
-#             clock_status += ': need to clock in'
-#     if button_id == 'clock-out':
-#         if last_out is not None:
-#             clock_status += ': no need to clock out'
-#         else:
-#             clock_status += ': need to clock out'
-    
-#     return clock_status, clock_in_label, clock_out_label
-
-# # @callbacks.clock_status
-# def clock_status(url, n_intervals):
-#     work, repo = get_work_commits('.')
-#     last_in = is_clocked_in(work)
-#     if last_in is not None:
-#         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-#         return 'Clocked in at {} ({} ago)'.format(last_in, dt_format(time_since_in))
-#     last_out = is_clocked_out(work)
-#     if last_out is not None:
-#         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-#         return 'Clocked out at {} ({} ago)'.format(last_out, dt_format(time_since_out))
-    
-
-import git
-from hourly.cli.main import get_base_dir, get_work_commits, get_current_user, identify_user, get_clocks, get_user_work, process_commit
 
 
 def get_clock_status(work):
@@ -237,12 +180,12 @@ def get_clock_status(work):
         clock_in_label = 'Clocked in'
         clock_out_label = 'Clock Out'
         time_since_in = pd.datetime.now(last_in.tzinfo) - last_in
-        clock_status += 'Clocked in at {} ({})'.format(last_in, dt_format(time_since_in))
+        clock_status += 'Clocked in at {}'.format(last_in) # dt_format(time_since_out)
     elif last_out is not None:
         clock_in_label = 'Clock in'
         clock_out_label = 'Clocked Out'
         time_since_out = pd.datetime.now(last_out.tzinfo) - last_out
-        clock_status += 'Clocked out at {} ({})'.format(last_out, dt_format(time_since_out))
+        clock_status += 'Clocked out at {}'.format(last_out) # dt_format(time_since_out)
     else:
         print('not clocked in or out')
         raise PreventUpdate
@@ -393,6 +336,15 @@ def modal_size(scale):
 def pass_through(payment_code):
     return payment_code
 
+@callbacks.display_led
+def update_display(label, n_interval):
+    if 'in' in label:
+        time_last = pd.Timestamp(label.split('at')[-1].strip())
+        time_since = pd.datetime.now(time_last.tzinfo) - time_last
+        return dt_format(time_since), '#40900E'
+    else:
+        return '00:00:00', '#9B9B9B'
+    
 
 @callbacks.hourly_conf
 def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
@@ -471,31 +423,26 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     
     clock_status, clock_in_label, clock_out_label = get_clock_status(clocks)
     
-    labor = pd.DataFrame()
     
     for user_id, user_work in clocks.groupby(identifier):
-        if cfg.report.work:
-            print("\nWork for {}".format(user_id))
-            print(user_work.drop(['name', 'email'], axis = 1))
-
-        user_labor = get_labor(
-            user_work,
-            ignore = cfg.ignore, 
-            match_logs = cfg.match_logs,
-            case_sensitive = cfg.case_sensitive)
-
-        labor = pd.concat((labor, user_labor))
+        if user_id == current_user_id:
+            user_labor = get_labor(
+                user_work,
+                ignore = cfg.ignore, 
+                match_logs = cfg.match_logs,
+                case_sensitive = cfg.case_sensitive)
+            break
     
-    work_ = work.reset_index().iloc[::-1]
+    work_ = user_work.reset_index().iloc[::-1]
     work_columns = [{"name": i, "id": i} for i in work_.columns]
     work_records = work_.to_dict('records')
     
 #     session_columns = [{"name": i, "id": i} for i in clocks.columns]
 #     session_records = clocks.iloc[::-1].to_dict('records')
 
-    labor.sort_values(by=['TimeIn'], inplace=True)
-    labor_columns = [{"name": i, "id": i} for i in labor.columns]
-    labor_records = labor.iloc[::-1].to_dict('records')
+    user_labor.sort_values(by=['TimeIn'], inplace=True)
+    labor_columns = [{"name": i, "id": i} for i in user_labor.columns]
+    labor_records = user_labor.iloc[::-1].to_dict('records')
     
     if clock_in_label.lower() == 'clocked in':
         clock_in_color = 'secondary'
@@ -523,8 +470,6 @@ if __name__ == '__main__':
 
 
 # -
-
-# tommy@humanaut.as
 
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
