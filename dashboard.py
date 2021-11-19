@@ -426,8 +426,11 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     
     for user_id, user_work in work.groupby(identifier):
         if user_id == current_user_id:
+            break
+    for user_id, user_clocks in clocks.groupby(identifier):
+        if user_id == current_user_id:
             user_labor = get_labor(
-                user_work,
+                user_clocks,
                 ignore = cfg.ignore, 
                 match_logs = cfg.match_logs,
                 case_sensitive = cfg.case_sensitive)
