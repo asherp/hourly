@@ -1,3 +1,4 @@
+* cleaned up staging labels and interactivity, commit button
 
 ### 2021-11-26 18:56:54.334539: clock-in
 

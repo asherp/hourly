@@ -8,8 +8,9 @@ app:
   jupyter_dash.JupyterDash:
     external_stylesheets:
       - https://codepen.io/chriddyp/pen/bWLwgP.css
-      - https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
+      - https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css
     title: Hourly
+    update_title: null
 
 qr_logo: ${env:HOURLY_QR_LOGO}
 
@@ -29,6 +30,8 @@ repo:
 stage_button:
   dbc.Button:
     id: stage-button
+    disabled: True
+    color: secondary
     children: Stage
     n_clicks: 0
     className: me-1
@@ -37,6 +40,8 @@ stage_button:
 commit_button:
   dbc.Button:
     id: commit-button
+    disabled: True
+    color: secondary
     children: Commit
     n_clicks: 0
     className: me-1
@@ -58,11 +63,30 @@ clock_out_button:
     className: me-1
     size: lg
 
+
+# form = dbc.FormFloating(
+#     [
+#         dbc.Input(type="email", placeholder="example@internet.com"),
+#         dbc.Label("Email address"),
+#     ]
+# )
+
 commit_message:
-  dcc.Input:
-    id: message
-    placeholder: commit message
-    value: ''
+  html.Div:
+    children:
+      dbc.FormFloating:
+        children:
+          - dbc.Input:
+              id: commit-message
+              value: ''
+              type: text
+              placeholder: my commit message
+              required: False
+          - dbc.Label:
+              id: message-label
+              children: commit message
+
+
 
 user_name:
   - dbc.Label:
@@ -231,10 +255,6 @@ layout:
                     children:
                     - ${clock_in_button}
                     - ${clock_out_button}
-
-            - dbc.Col:
-                width: 3
-                children: ${commit_message}
             # - dbc.Col:
             #     width: 6
             #     children:
@@ -258,11 +278,20 @@ layout:
                           dbc.Card:
                             body: True
                             children:
-                              - dbc.ButtonGroup:
-                                  children:
-                                  - ${stage_button}
-                                  - ${commit_button}
                               - html.Br:
+                              - dbc.Row:
+                                  children:
+                                  - dbc.Col:
+                                      width: 3
+                                      children:
+                                      - dbc.ButtonGroup:
+                                          children:
+                                          - ${stage_button}
+                                          - ${commit_button}
+                                  - dbc.Col:
+                                      width: 3
+                                      children:
+                                      - ${commit_message}
                               - html.Br:
                               - dash_table.DataTable:
                                   id: staged-table
@@ -407,8 +436,8 @@ callbacks:
       - id: clock-out
         attr: n_clicks
     state:
-      - id: message
-        attr: value
+      # - id: commit-message
+      #   attr: value
       - id: git-user-name
         attr: value
       - id: git-user-email
@@ -480,6 +509,40 @@ callbacks:
     output:
       - id: modified-table
         attr: selected_rows
+
+  commit_style:
+    input:
+      - id: staged-table
+        attr: selected_rows
+      - id: staged-table
+        attr: data
+      - id: commit-message
+        attr: value
+    output:
+      - id: commit-button
+        attr: color
+      - id: commit-message
+        attr: required
+      - id: commit-button
+        attr: disabled
+      - id: message-label
+        attr: children
+
+  commit_files:
+    input:
+      - id: commit-button
+        attr: n_clicks
+    state:
+      - id: commit-message
+        attr: value
+      - id: repo-select
+        attr: value
+    output:
+      - id: staged-table
+        attr: selected_rows
+      - id: commit-message
+        attr: value
+
 
   display_led:
     output:

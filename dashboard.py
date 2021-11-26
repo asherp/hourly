@@ -124,6 +124,7 @@ response.payment_request
 from omegaconf import OmegaConf
 
 import math
+import time
 
 # +
 import qrcode
@@ -360,25 +361,43 @@ def get_staged(repo):
     return staged
 
 def get_commit_date(repo, fname):
+    """last commit time"""
     commit = next(repo.iter_commits(paths=fname, max_count=1))
     return pd.datetime.fromtimestamp(commit.committed_date)
+
+def get_modified_time(fname):
+    """last save time"""
+    modTimesinceEpoc = os.path.getmtime(fname)
+    modified = pd.datetime.fromtimestamp(modTimesinceEpoc)
+    return modified
 
 @callbacks.files_table
 def render_files(url, gitdir, n_interval):
     repo = git.Repo(gitdir, search_parent_directories=True)
 
     modified_files = get_modified(repo)
+    commit_age = []
+    commit_time = []
     modified_age = []
     modified_time = []
-    for _ in modified_files:
-        mod_time = get_commit_date(repo, _)
+    for fname in modified_files:
+        now = pd.datetime.now()
+        
+        com_time = get_commit_date(repo, fname)
+        commit_time.append(com_time)
+        commit_age.append(dt_format(now - com_time))
+        
+        mod_time = get_modified_time(fname)
         modified_time.append(mod_time)
-        modified_age.append(dt_format(pd.datetime.now() - mod_time))
+        modified_age.append(dt_format(now - mod_time))
 
-    modified = pd.DataFrame(dict(
-        modified=modified_files,
-        time=modified_time,
-        age=modified_age))
+    modified = pd.DataFrame({
+        "modified": modified_files,
+        "last commit": commit_time,
+        "commit age": commit_age,
+        "modified time": modified_time,
+        "modified age": modified_age,
+    })
     
     modified_columns = [{"name": i, "id": i} for i in modified.columns]
     modified_records = modified.to_dict('records')
@@ -402,6 +421,7 @@ def stage_style(selected_rows, data):
     else:
         return True, 'secondary'
 
+
 @callbacks.stage_files
 def stage_files(n_clicks, selected_rows, data, gitdir):
     repo = git.Repo(gitdir, search_parent_directories=True)
@@ -412,8 +432,54 @@ def stage_files(n_clicks, selected_rows, data, gitdir):
             repo.index.add([fname])
     return []
 
+@callbacks.commit_style
+def commit_style(selected_rows, data, message):
+    if len(message) > 0:
+        message_ready = True
+    else:
+        message_ready = False
+    
+    if selected_rows is None:
+        rows_ready = False
+    else:
+        if len(selected_rows) > 0:
+            rows_ready = True
+        else:
+            rows_ready = False
+    
+    enable_commit = rows_ready and message_ready
+    
+    message_label = 'commit message'
+    if rows_ready:
+        commit_color = 'primary'
+        if message_ready:
+            message_required = False
+        else:
+            message_required = True
+            message_label = 'commit message required'
+    else:
+        commit_color = 'secondary'
+        message_required = False    
+    
+    if enable_commit:
+        disable_commit = False
+    else:
+        disable_commit = True
+    
+    return commit_color, message_required, disable_commit, message_label
+    
+
+@callbacks.commit_files
+def commit_files(n_clicks, message, gitdir):
+    repo = git.Repo(gitdir, search_parent_directories=True)
+    button_id = get_triggered()
+    if button_id == 'commit-button':
+        # update worklog and commit
+        pass
+    return [], ''
+
 @callbacks.hourly_conf
-def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user_name, git_user_email):
+def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, git_user_name, git_user_email):
     cfg = OmegaConf.load('hourly.yaml')
 
     gitdir = os.path.abspath(cfg.repo.gitdir)
@@ -459,7 +525,7 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
     if button_id == 'clock-out':
         cfg.commit.clock = 'out'
 
-    cfg.commit.message = message
+#     cfg.commit.message = message 
     if ('clock' in cfg.commit) | (len(cfg.commit.get('message', '')) > 0):
         user_work = get_user_work(clocks, current_user_id, identifier)
         print(user_work.head())
@@ -536,10 +602,6 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, message, git_user
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
-
-# +
-
-os.path.getmtime('dashboard.py')
 
 
 # -
