@@ -1,3 +1,6 @@
+
+### 2021-11-26 18:56:54.334539: clock-in
+
 ### 2021-11-20 22:33:26.829012: clock-out
 
 * reading up on ricardian contracts
