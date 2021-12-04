@@ -169,7 +169,6 @@ def get_triggered():
     return button_id
 
 
-
 def get_clock_status(work):
     last_in = is_clocked_in(work)
     last_out = is_clocked_out(work)
@@ -353,7 +352,6 @@ def get_modified(repo):
         modified.append(_.a_path)
     return modified
 
-
 def get_staged(repo):
     staged = []
     for _ in repo.index.diff('HEAD'):
@@ -432,6 +430,16 @@ def stage_files(n_clicks, selected_rows, data, gitdir):
             repo.index.add([fname])
     return []
 
+@callbacks.unstage_style
+def unstage_style(selected_rows, data):
+    if selected_rows is None:
+        return True, 'secondary'
+    if len(selected_rows) > 0:
+        return False, 'primary'
+    else:
+        return True, 'secondary'
+    
+
 @callbacks.commit_style
 def commit_style(selected_rows, data, message):
     if len(message) > 0:
@@ -466,25 +474,48 @@ def commit_style(selected_rows, data, message):
     else:
         disable_commit = True
     
-    return commit_color, message_required, disable_commit, message_label
+    if disable_commit:
+        hover_title = 'Commit message required'
+    else:
+        hover_title = 'Commit to history'
+    
+    return commit_color, message_required, disable_commit, message_label, hover_title
     
 
-@callbacks.commit_files
-def commit_files(n_clicks, message, gitdir):
+    
+@callbacks.commit_unstage_files
+def commit_unstage_files(commit_clicks, unstage_clicks, message, gitdir, selected_rows, data, git_user_name, git_user_email):
+    """commit or unstage files
+    
+    both actions should deselect all files in staged area,
+    so they need to be gathered in one callback
+    """
     repo = git.Repo(gitdir, search_parent_directories=True)
     button_id = get_triggered()
+    
+    
     if button_id == 'commit-button':
+        cfg = OmegaConf.load('hourly.yaml') # should be chosen
         # update worklog and commit
-        pass
+        cfg.commit.message = message
+        current_user = git.Actor(git_user_name, git_user_email)
+        process_commit(cfg, pd.DataFrame(), repo, current_user)
+    elif button_id == 'unstage-button':
+        fnames = []
+        for _ in selected_rows:
+            fname = data[_]['staged']
+            fnames.append(fname)
+        repo.index.reset(paths=fnames)
     return [], ''
 
 @callbacks.hourly_conf
-def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, git_user_name, git_user_email):
-    cfg = OmegaConf.load('hourly.yaml')
+def update_hourly_conf(url, gitdir, clock_in_clicks, clock_out_clicks, git_user_name, git_user_email):
+    cfg = OmegaConf.load('{}/{}'.join(gitdir, 'hourly.yaml')
 
-    gitdir = os.path.abspath(cfg.repo.gitdir)
-    gitdir = get_base_dir(gitdir)
-    os.chdir(gitdir)
+#     gitdir = os.path.abspath(cfg.repo.gitdir)
+#     gitdir = get_base_dir(gitdir)
+#     print('changing directory to {}'.format(gitdir))
+#     os.chdir(gitdir)
     
     if None in [git_user_name, git_user_email]:
         raise PreventUpdate
@@ -602,9 +633,20 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, git_user_name, gi
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
-
-
 # -
+
+# ls /Users/asherp/git/hourly
+
+cfg = OmegaConf.load('hourly.yaml')
+
+os.path.abspath(cfg.repo.gitdir)
+
+cfg.work_log
+
+cfg.work_log.button
+
+os.path.abspath(cfg.work_log.filename)
+
 
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
@@ -713,31 +755,3 @@ cfg.compensation
 get_btc_price('USD')
 
 data['bpi']['USD']
-
-
-def get_commit_date(repo, fname):
-    """last commit time"""
-    commit = next(repo.iter_commits(paths=fname, max_count=1))
-    return pd.datetime.fromtimestamp(commit.committed_date)
-
-
-repo = git.Repo('/Users/asherp/git/hourly', search_parent_directories=True)
-get_commit_date(repo, 'dashboard.py')
-
-# +
-# repo.iter_commits?
-# -
-
-tree = repo.tree()
-for blob in tree:
-    commit = next(repo.iter_commits(paths=blob.path, max_count=1))
-    print(blob.path, commit.committed_date)
-
-next(repo.iter_commits(paths='dashboard.py', max_count=1)).committed_date
-
-tree['dashboard.py'].
-
-for blob in tree:
-    print(blob.path)
-
-
