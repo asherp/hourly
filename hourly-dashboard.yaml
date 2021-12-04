@@ -50,7 +50,7 @@ unstage_button:
 commit_button:
   dbc.Button:
     id: commit-button
-    disabled: True
+    disabled: False
     title: commit to history
     color: secondary
     children: Commit
@@ -447,9 +447,13 @@ callbacks:
         attr: n_clicks
       - id: clock-out
         attr: n_clicks
+      - id: commit-button
+        attr: n_clicks
     state:
-      # - id: commit-message
-      #   attr: value
+      - id: repo-select
+        attr: value
+      - id: commit-message
+        attr: value
       - id: git-user-name
         attr: value
       - id: git-user-email
@@ -538,8 +542,6 @@ callbacks:
   commit_style:
     input:
       - id: staged-table
-        attr: selected_rows
-      - id: staged-table
         attr: data
       - id: commit-message
         attr: value
@@ -548,32 +550,23 @@ callbacks:
         attr: color
       - id: commit-message
         attr: required
-      - id: commit-button
-        attr: disabled
       - id: message-label
         attr: children
       - id: commit-button
-        attr: title
+        attr: disabled
 
-  commit_unstage_files:
+
+  unstage_files:
     input:
-      - id: commit-button
-        attr: n_clicks
       - id: unstage-button
         attr: n_clicks
     state:
-      - id: commit-message
-        attr: value
       - id: repo-select
         attr: value
       - id: staged-table
         attr: selected_rows
       - id: staged-table
         attr: data
-      - id: git-user-name
-        attr: value
-      - id: git-user-email
-        attr: value
     output:
       - id: staged-table
         attr: selected_rows

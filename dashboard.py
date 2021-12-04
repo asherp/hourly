@@ -441,50 +441,25 @@ def unstage_style(selected_rows, data):
     
 
 @callbacks.commit_style
-def commit_style(selected_rows, data, message):
-    if len(message) > 0:
-        message_ready = True
-    else:
-        message_ready = False
+def commit_style(data, message):
+    message_required = False
+    message_label = 'Commit message'
     
-    if selected_rows is None:
-        rows_ready = False
-    else:
-        if len(selected_rows) > 0:
-            rows_ready = True
-        else:
-            rows_ready = False
-    
-    enable_commit = rows_ready and message_ready
-    
-    message_label = 'commit message'
-    if rows_ready:
+    if len(data) > 0:
         commit_color = 'primary'
-        if message_ready:
-            message_required = False
-        else:
-            message_required = True
-            message_label = 'commit message required'
+        if len(message) == 0:
+            message_required = True     
+            message_label = 'Commit message required'
     else:
         commit_color = 'secondary'
-        message_required = False    
-    
-    if enable_commit:
-        disable_commit = False
-    else:
-        disable_commit = True
-    
-    if disable_commit:
-        hover_title = 'Commit message required'
-    else:
-        hover_title = 'Commit to history'
-    
-    return commit_color, message_required, disable_commit, message_label, hover_title
+
+
+    return commit_color, message_required, message_label
     
 
     
-@callbacks.commit_unstage_files
-def commit_unstage_files(commit_clicks, unstage_clicks, message, gitdir, selected_rows, data, git_user_name, git_user_email):
+@callbacks.unstage_files
+def unstage_files(unstage_clicks, gitdir, selected_rows, data):
     """commit or unstage files
     
     both actions should deselect all files in staged area,
@@ -494,13 +469,7 @@ def commit_unstage_files(commit_clicks, unstage_clicks, message, gitdir, selecte
     button_id = get_triggered()
     
     
-    if button_id == 'commit-button':
-        cfg = OmegaConf.load('hourly.yaml') # should be chosen
-        # update worklog and commit
-        cfg.commit.message = message
-        current_user = git.Actor(git_user_name, git_user_email)
-        process_commit(cfg, pd.DataFrame(), repo, current_user)
-    elif button_id == 'unstage-button':
+    if button_id == 'unstage-button':
         fnames = []
         for _ in selected_rows:
             fname = data[_]['staged']
@@ -509,17 +478,15 @@ def commit_unstage_files(commit_clicks, unstage_clicks, message, gitdir, selecte
     return [], ''
 
 @callbacks.hourly_conf
-def update_hourly_conf(url, gitdir, clock_in_clicks, clock_out_clicks, git_user_name, git_user_email):
-    cfg = OmegaConf.load('{}/{}'.join(gitdir, 'hourly.yaml')
-
-#     gitdir = os.path.abspath(cfg.repo.gitdir)
-#     gitdir = get_base_dir(gitdir)
-#     print('changing directory to {}'.format(gitdir))
-#     os.chdir(gitdir)
+def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, commit_clicks,
+                       gitdir, message, git_user_name, git_user_email):
     
     if None in [git_user_name, git_user_email]:
         raise PreventUpdate
-    
+        
+    cfg = OmegaConf.load('{}/{}'.format(gitdir, 'hourly.yaml'))
+    cfg.work_log.bullet = '*'
+
     work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
 
     current_user = git.Actor(git_user_name, git_user_email)
@@ -555,8 +522,9 @@ def update_hourly_conf(url, gitdir, clock_in_clicks, clock_out_clicks, git_user_
         cfg.commit.clock = 'in'
     if button_id == 'clock-out':
         cfg.commit.clock = 'out'
-
-#     cfg.commit.message = message 
+    if button_id == 'commit-button':
+        cfg.commit.message = message
+    
     if ('clock' in cfg.commit) | (len(cfg.commit.get('message', '')) > 0):
         user_work = get_user_work(clocks, current_user_id, identifier)
         print(user_work.head())
@@ -635,17 +603,8 @@ if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
 # -
 
-# ls /Users/asherp/git/hourly
-
-cfg = OmegaConf.load('hourly.yaml')
-
-os.path.abspath(cfg.repo.gitdir)
-
-cfg.work_log
-
-cfg.work_log.button
-
-os.path.abspath(cfg.work_log.filename)
+cfg = OmegaConf.load('{}/{}'.format('/Users/asherp/git/hourly/', 'hourly.yaml'))
+cfg
 
 
 def write_invoice(payment_request):
