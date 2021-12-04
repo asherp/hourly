@@ -1,3 +1,4 @@
+* ready to commit
 * clearing commit message
 * commit button working
 

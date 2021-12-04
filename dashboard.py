@@ -460,9 +460,14 @@ def commit_style(data, message):
     return commit_color, message_required, message_label, commit_disabled
     
 @callbacks.clear_message
-def clear_message(data):
+def clear_message(data, message):
+    if data is None:
+        raise PreventUpdate
+
     if len(data) == 0:
         return ''
+    else:
+        return message
     
 @callbacks.unstage_files
 def unstage_files(unstage_clicks, gitdir, selected_rows, data):

@@ -575,6 +575,9 @@ callbacks:
     input:
       - id: staged-table
         attr: data
+    state:
+      - id: commit-message
+        attr: value
     output:
       - id: commit-message
         attr: value
