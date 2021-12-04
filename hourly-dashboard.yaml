@@ -37,6 +37,16 @@ stage_button:
     className: me-1
     size: lg
 
+unstage_button:
+  dbc.Button:
+    id: unstage-button
+    disabled: True
+    color: secondary
+    children: Unstage
+    n_clicks: 0
+    className: me-1
+    size: lg
+
 commit_button:
   dbc.Button:
     id: commit-button
@@ -287,6 +297,7 @@ layout:
                                       - dbc.ButtonGroup:
                                           children:
                                           - ${stage_button}
+                                          - ${unstage_button}
                                           - ${commit_button}
                                   - dbc.Col:
                                       width: 3
@@ -542,7 +553,6 @@ callbacks:
         attr: selected_rows
       - id: commit-message
         attr: value
-
 
   display_led:
     output:

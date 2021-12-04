@@ -606,8 +606,6 @@ if __name__ == '__main__':
 
 # -
 
-# something new
-
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
         f.write(payment_request)
@@ -715,3 +713,31 @@ cfg.compensation
 get_btc_price('USD')
 
 data['bpi']['USD']
+
+
+def get_commit_date(repo, fname):
+    """last commit time"""
+    commit = next(repo.iter_commits(paths=fname, max_count=1))
+    return pd.datetime.fromtimestamp(commit.committed_date)
+
+
+repo = git.Repo('/Users/asherp/git/hourly', search_parent_directories=True)
+get_commit_date(repo, 'dashboard.py')
+
+# +
+# repo.iter_commits?
+# -
+
+tree = repo.tree()
+for blob in tree:
+    commit = next(repo.iter_commits(paths=blob.path, max_count=1))
+    print(blob.path, commit.committed_date)
+
+next(repo.iter_commits(paths='dashboard.py', max_count=1)).committed_date
+
+tree['dashboard.py'].
+
+for blob in tree:
+    print(blob.path)
+
+
