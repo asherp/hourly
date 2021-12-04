@@ -439,7 +439,7 @@ callbacks:
     output:
       - id: invoice
         attr: src
-  hourly_conf:
+  commit:
     input:
       - id: url
         attr: pathname
@@ -570,8 +570,16 @@ callbacks:
     output:
       - id: staged-table
         attr: selected_rows
+
+  clear_message:
+    input:
+      - id: staged-table
+        attr: data
+    output:
       - id: commit-message
         attr: value
+
+
 
   display_led:
     output:

@@ -444,19 +444,25 @@ def unstage_style(selected_rows, data):
 def commit_style(data, message):
     message_required = False
     message_label = 'Commit message'
+    commit_disabled = True
     
     if len(data) > 0:
         commit_color = 'primary'
         if len(message) == 0:
             message_required = True     
             message_label = 'Commit message required'
+        else:
+            commit_disabled = False
     else:
         commit_color = 'secondary'
 
-
-    return commit_color, message_required, message_label
     
-
+    return commit_color, message_required, message_label, commit_disabled
+    
+@callbacks.clear_message
+def clear_message(data):
+    if len(data) == 0:
+        return ''
     
 @callbacks.unstage_files
 def unstage_files(unstage_clicks, gitdir, selected_rows, data):
@@ -468,21 +474,23 @@ def unstage_files(unstage_clicks, gitdir, selected_rows, data):
     repo = git.Repo(gitdir, search_parent_directories=True)
     button_id = get_triggered()
     
-    
     if button_id == 'unstage-button':
         fnames = []
         for _ in selected_rows:
             fname = data[_]['staged']
             fnames.append(fname)
         repo.index.reset(paths=fnames)
-    return [], ''
+    return []
 
-@callbacks.hourly_conf
-def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, commit_clicks,
+@callbacks.commit
+def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,
                        gitdir, message, git_user_name, git_user_email):
     
     if None in [git_user_name, git_user_email]:
         raise PreventUpdate
+        
+    gitdir = get_base_dir(gitdir)
+    os.chdir(gitdir)
         
     cfg = OmegaConf.load('{}/{}'.format(gitdir, 'hourly.yaml'))
     cfg.work_log.bullet = '*'
@@ -530,17 +538,12 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, commit_clicks,
         print(user_work.head())
         try:
             process_commit(cfg, user_work, repo, current_user)
-            pass
         except IOError as error_msg:
             print("Could not process commit for {}:\n{}".format(current_user_id, error_msg))
             raise PreventUpdate
         except:
-            print(get_current_user(repo))
-            print(current_user_id)
-            print(user_work)
-            print(clocks)
-            print(identifier)
-            raise PreventUpdate
+            print('!!something wrong with Commit!!')
+            raise
 
     
     # reloads work
@@ -601,11 +604,9 @@ def update_hourly_conf(url, clock_in_clicks, clock_out_clicks, commit_clicks,
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
+
+
 # -
-
-cfg = OmegaConf.load('{}/{}'.format('/Users/asherp/git/hourly/', 'hourly.yaml'))
-cfg
-
 
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
