@@ -460,14 +460,14 @@ def commit_style(data, message):
     return commit_color, message_required, message_label, commit_disabled
     
 @callbacks.clear_message
-def clear_message(data, message):
+def clear_message(data, message, current_rows):
     if data is None:
         raise PreventUpdate
 
     if len(data) == 0:
-        return ''
+        return '', []
     else:
-        return message
+        return message, current_rows
     
 @callbacks.unstage_files
 def unstage_files(unstage_clicks, gitdir, selected_rows, data):
@@ -485,7 +485,7 @@ def unstage_files(unstage_clicks, gitdir, selected_rows, data):
             fname = data[_]['staged']
             fnames.append(fname)
         repo.index.reset(paths=fnames)
-    return []
+    return ''
 
 @callbacks.commit
 def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,

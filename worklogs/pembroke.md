@@ -1,4 +1,5 @@
-* ready to commit
+* fixed message clear
+* testing
 * clearing commit message
 * commit button working
 

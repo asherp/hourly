@@ -305,6 +305,9 @@ layout:
                                       children:
                                       - ${commit_message}
                               - html.Br:
+                              - html.Div:
+                                  children: ''
+                                  id: status-message
                               - dash_table.DataTable:
                                   id: staged-table
                                   row_selectable: multi
@@ -568,8 +571,8 @@ callbacks:
       - id: staged-table
         attr: data
     output:
-      - id: staged-table
-        attr: selected_rows
+      - id: status-message
+        attr: children
 
   clear_message:
     input:
@@ -578,9 +581,13 @@ callbacks:
     state:
       - id: commit-message
         attr: value
+      - id: staged-table
+        attr: selected_rows
     output:
       - id: commit-message
         attr: value
+      - id: staged-table
+        attr: selected_rows
 
 
 
