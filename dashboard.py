@@ -491,6 +491,15 @@ def unstage_files(unstage_clicks, gitdir, selected_rows, data):
 def clear_stage_selection(unstage_clicks, commit_clicks):
     return []
 
+@callbacks.reset_soft
+def reset_soft(soft_clicks, gitdir):
+    if soft_clicks is not None:
+        if soft_clicks > 0:
+            repo = git.Repo(gitdir, search_parent_directories=True)
+            repo.git.reset('HEAD~1', '--soft')
+            return ''
+    raise PreventUpdate
+
 @callbacks.commit
 def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,
                        gitdir, message, git_user_name, git_user_email):
@@ -614,7 +623,6 @@ def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
 # -
-
 
 
 def write_invoice(payment_request):

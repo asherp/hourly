@@ -58,6 +58,22 @@ commit_button:
     className: me-1
     size: lg
 
+reset_soft_button:
+  dbc.Button:
+    id: reset-soft
+    disabled: False
+    title: Soft reset
+    color: warning
+    children: Soft Reset
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+reset_status:
+  html.Div:
+    id: reset-status
+    children: ''
+
 clock_in_button:
   dbc.Button:
     id: clock-in
@@ -286,18 +302,20 @@ layout:
                               - dbc.Row:
                                   children:
                                   - dbc.Col:
-                                      width: 3
+                                      width: 4
                                       children:
                                       - dbc.ButtonGroup:
                                           children:
                                           - ${stage_button}
                                           - ${unstage_button}
                                           - ${commit_button}
+                                          - ${reset_soft_button}
                                   - dbc.Col:
                                       width: 3
                                       children:
                                       - ${commit_message}
                               - html.Br:
+                              - ${reset_status}
                               - html.Div:
                                   children: ''
                                   id: status-message
@@ -589,6 +607,18 @@ callbacks:
     output:
       - id: staged-table
         attr: selected_rows
+
+  reset_soft:
+    input:
+      - id: reset-soft
+        attr: n_clicks
+    state:
+      - id: repo-select
+        attr: value
+    output:
+      - id: reset-status
+        attr: children
+
 
   display_led:
     output:

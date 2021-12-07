@@ -1,3 +1,4 @@
+* soft reset redo
 * unselect on unstage, soft reset
 
 ### 2021-12-07 00:35:29.214592: clock-in
