@@ -75,13 +75,6 @@ clock_out_button:
     size: lg
 
 
-# form = dbc.FormFloating(
-#     [
-#         dbc.Input(type="email", placeholder="example@internet.com"),
-#         dbc.Label("Email address"),
-#     ]
-# )
-
 commit_message:
   html.Div:
     children:
@@ -586,10 +579,16 @@ callbacks:
     output:
       - id: commit-message
         attr: value
+
+  clear_stage_selection:
+    input:
+      - id: unstage-button
+        attr: n_clicks
+      - id: commit-button
+        attr: n_clicks
+    output:
       - id: staged-table
         attr: selected_rows
-
-
 
   display_led:
     output:

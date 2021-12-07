@@ -465,9 +465,9 @@ def clear_message(data, message, current_rows):
         raise PreventUpdate
 
     if len(data) == 0:
-        return '', []
+        return ''
     else:
-        return message, current_rows
+        return message
     
 @callbacks.unstage_files
 def unstage_files(unstage_clicks, gitdir, selected_rows, data):
@@ -486,6 +486,10 @@ def unstage_files(unstage_clicks, gitdir, selected_rows, data):
             fnames.append(fname)
         repo.index.reset(paths=fnames)
     return ''
+
+@callbacks.clear_stage_selection
+def clear_stage_selection(unstage_clicks, commit_clicks):
+    return []
 
 @callbacks.commit
 def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,
@@ -609,9 +613,9 @@ def commit(url, clock_in_clicks, clock_out_clicks, commit_clicks,
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8050, mode='external', debug=True, extra_files=['hourly-dashboard.yaml'])
-
-
 # -
+
+
 
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
