@@ -625,6 +625,8 @@ if __name__ == '__main__':
 # -
 
 
+
+
 def write_invoice(payment_request):
     with open('invoice', 'w') as f:
         f.write(payment_request)
