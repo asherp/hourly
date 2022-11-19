@@ -1,3 +1,5 @@
+* demoing hourly to Niko
+* looked at robosats project
 
 ### 2022-11-19 17:38:10.711481: clock-in: T-10m 
 
