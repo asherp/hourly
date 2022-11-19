@@ -8,81 +8,452 @@ app:
   jupyter_dash.JupyterDash:
     external_stylesheets:
       - https://codepen.io/chriddyp/pen/bWLwgP.css
+      - https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css
     title: Hourly
+    update_title: null
+
+qr_logo: ${env:HOURLY_QR_LOGO}
+
+repo:
+  - dbc.Label:
+      children: Project
+      width: auto
+      html_for: repo-select
+  - dcc.Dropdown:
+      id: repo-select
+      clearable: False
+      options:
+        - label: ${env:HOURLY_WORKPATH}
+          value: ${env:HOURLY_WORKPATH}
+      value: ${env:HOURLY_WORKPATH}
+
+stage_button:
+  dbc.Button:
+    id: stage-button
+    disabled: True
+    color: secondary
+    children: Stage
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+unstage_button:
+  dbc.Button:
+    id: unstage-button
+    disabled: True
+    color: secondary
+    children: Unstage
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+commit_button:
+  dbc.Button:
+    id: commit-button
+    disabled: False
+    title: commit to history
+    color: secondary
+    children: Commit
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+reset_soft_button:
+  dbc.Button:
+    id: reset-soft
+    disabled: False
+    title: Soft reset
+    color: warning
+    children: Soft Reset
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+reset_status:
+  html.Div:
+    id: reset-status
+    children: ''
+
+clock_in_button:
+  dbc.Button:
+    id: clock-in
+    children: Clock In
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+clock_out_button:
+  dbc.Button:
+    id: clock-out
+    children: Clock Out
+    n_clicks: 0
+    className: me-1
+    size: lg
+
+
+commit_message:
+  html.Div:
+    children:
+      dbc.FormFloating:
+        children:
+          - dbc.Input:
+              id: commit-message
+              value: ''
+              type: text
+              placeholder: my commit message
+              required: False
+          - dbc.Label:
+              id: message-label
+              children: commit message
+
+
+
+user_name:
+  - dbc.Label:
+      children: Name
+      width: auto
+      # html_for: git-user-name
+  - dcc.Dropdown:
+      id: git-user-name
+      clearable: False
+      options:
+        - label: ${env:GIT_USER_NAME}
+          value: ${env:GIT_USER_NAME}
+      value: ${env:GIT_USER_NAME}
+
+user_email:
+  - dbc.Label:
+      children: Email
+      width: auto
+  - dbc.Input:
+      id: git-user-email
+      value: ${env:GIT_USER_EMAIL}
+      inputmode: email
+
+# clock_status:
+#   dbc.Label:
+#     id: clock-status
+#     children: Clock status
+#     color: secondary
+
+hourly_wage:
+  - dbc.Input:
+      id: hourly-wage
+      min: 0
+      value: 100
+      type: number
+  - html.Div:
+      id: hourly-wage-error
+      style:
+        color: red
+
+qr_slider:
+  dcc.Slider:
+    id: qr-slider
+    min: 4
+    max: 10
+    step: 1
+    value: 5
+    updatemode: drag
+
+qr_open:
+  dbc.Button:
+    id: qr-open
+    n_clicks: 0
+    children: QR Code
+    color: primary
+    className: me-1
+
+qr_close:
+  dbc.Button:
+    id: qr-close
+    n_clicks: 0
+    children: QR Code
+    color: primary
+    className: me-1
+
+invoice_qr:
+  dbc.Modal:
+    id: qr-modal
+    size: auto
+    children:
+    - dbc.ModalHeader:
+        children:
+          dbc.ModalTitle: Scan for lightning payment
+    - dbc.ModalBody:
+        style:
+          text-align: center
+        children:
+        - ${qr_slider}
+        - html.Img:
+            id: invoice
+            style:
+              margin: auto
+              margin-left: auto
+              margin-right: auto
+        - dcc.Textarea:
+            id: qr-payment-text
+            style:
+              width: '100%'
+    - dbc.ModalFooter:
+        children:
+          - dbc.Button:
+              children: Close
+              id: qr-close
+              className: ms-auto
+              n_clicks: 0
+    is_open: False
+    autofocus: False
+    size: lg
+
+display_time:
+  daq.LEDDisplay:
+    id: display-time
+    value: ''
+    label: ''
+    size: 32
+
+currency:
+  dcc.Dropdown:
+    id: currency-dropdown
+    clearable: False
+    options:
+      - label: SAT
+        value: SAT
+      - label: $
+        value: USD
+      - label: £
+        value: GBP
+      - label: €
+        value: EUR
+    value: USD
 
 layout:
-  html.Div:
+  dbc.Container:
+    # fluid: True
     children:
     - dcc.Location:
         id: url
         refresh: False
-    - html.H2: Hourly Dashboard
-    - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
-        id: clock-in
-        children: Clock In
-        n_clicks: 0
-    - html.Button: # html.Button('Submit', id='submit-val', n_clicks=0),
-        id: clock-out
-        children: Clock Out
-        n_clicks: 0
-    - dcc.Input:
-        id: message
-        value: ''
-    - dcc.Input:
-        id: git-user-name
-        value: ${env:GIT_USER_NAME}
-    - dcc.Input:
-        id: git-user-email
-        value: ${env:GIT_USER_EMAIL}
-        inputMode: email
-    - html.Div:
-        id: clock-status
-        children: Clock status
     - dcc.Interval:
         id: clock-interval
         n_intervals: 0
-        interval: 10000
-    - dcc.Markdown:
-        id: hourly-conf
-    - html.Br:
-    - dcc.Tabs:
+        interval: 1000
+    - dbc.Row:
         children:
-        - dcc.Tab:
-            label: Labor
+          - dbc.Col:
+              children:
+              - html.H1: Hourly Lightning
+    - dbc.Form:
+        children:
+        - dbc.Card:
+            body: True
             children:
-            - dash_table.DataTable:
-                id: labor-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
-        - dcc.Tab:
-            label: Work Commits
+            - dbc.Row:
+                # justify: start
+                className: g-3
+                children:
+                - dbc.Col:
+                    width: 3
+                    children: ${repo}
+                - dbc.Col:
+                    width: 3
+                    children: ${user_name}
+                - dbc.Col:
+                    width: 2
+                    children: ${user_email}
+                - dbc.Col:
+                    width: 4
+                    children: ${display_time}
+        - html.Br:
+        - dbc.Row:
             children:
-            - dash_table.DataTable:
-                id: commits-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
-        - dcc.Tab:
-            label: Clock Commits
+            - dbc.Col:
+                width: 3
+                children:
+                  dbc.ButtonGroup:
+                    children:
+                    - ${clock_in_button}
+                    - ${clock_out_button}
+            # - dbc.Col:
+            #     width: 6
+            #     children:
+            #       dbc.Card:
+            #         body: True
+            #         children: ${display_time}
+        - html.Br:
+        - ${invoice_qr}
+        - html.Br:
+        - dbc.Row:
             children:
-            - dash_table.DataTable:
-                id: clocks-table
-                style_data:
-                  whiteSpace: normal
-                  height: auto
-                  lineHeight: 15px
-                style_cell:
-                  textAlign: left
+            - dbc.Col:
+                children:
+                - dcc.Tabs:
+                    value: Files
+                    children:
+                    - dcc.Tab:
+                        label: Files
+                        value: Files
+                        children:
+                          dbc.Card:
+                            body: True
+                            children:
+                              - html.Br:
+                              - dbc.Row:
+                                  children:
+                                  - dbc.Col:
+                                      width: 4
+                                      children:
+                                      - dbc.ButtonGroup:
+                                          children:
+                                          - ${stage_button}
+                                          - ${unstage_button}
+                                          - ${commit_button}
+                                          - ${reset_soft_button}
+                                  - dbc.Col:
+                                      width: 3
+                                      children:
+                                      - ${commit_message}
+                              - html.Br:
+                              - ${reset_status}
+                              - html.Div:
+                                  children: ''
+                                  id: status-message
+                              - dash_table.DataTable:
+                                  id: staged-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
+                              - html.Br:
+                              - dash_table.DataTable:
+                                  id: modified-table
+                                  row_selectable: multi
+                                  style_data:
+                                    whiteSpace: normal
+                                    height: auto
+                                    lineHeight: 15px
+                                  style_cell:
+                                    textAlign: left
+                    - dcc.Tab:
+                        label: History
+                        value: History
+                        children:
+                          dbc.Card:
+                            body: True
+                            children:
+                              dash_table.DataTable:
+                                id: commits-table
+                                style_data:
+                                  whiteSpace: normal
+                                  height: auto
+                                  lineHeight: 15px
+                                style_cell:
+                                  textAlign: left
+                    - dcc.Tab:
+                        label: Labor
+                        value: Labor
+                        children:
+                        - dbc.Card:
+                            body: True
+                            children:
+                            - dbc.Row:
+                                align: start
+                                children:
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                      dbc.Label: Generate Invoice
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${currency}
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${hourly_wage}
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dbc.Input:
+                                        id: invoice-amount
+                                        value: 0
+                                        type: number
+                                        placeholder: Invoice amount (sat)
+                                        disabled: True
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dbc.Input:
+                                        id: payment-request
+                                        type: text
+                                        value: ''
+                                        placeholder: lightning payment request
+                                        disabled: True
+                                - dbc.Col:
+                                    width: auto
+                                    children:
+                                    - dcc.Clipboard:
+                                        target_id: payment-request
+                                        title: copy invoice
+                                        style:
+                                          # display: inline-block
+                                          fontSize: 20
+                                          # verticalAlign: top
+                                - dbc.Col:
+                                    width: auto
+                                    children: ${qr_open}       
+                            - html.Br:
+                            - dash_table.DataTable:
+                                id: labor-table
+                                row_selectable: multi
+                                style_data:
+                                  whiteSpace: normal
+                                  height: auto
+                                  lineHeight: 15px
+                                style_cell:
+                                  textAlign: left
 
 callbacks:
-  hourly_conf:
+  set_wage:
+    input:
+      - id: currency-dropdown
+        attr: value
+      - id: git-user-email
+        attr: value
+    output:
+      - id: hourly-wage
+        attr: value
+      - id: hourly-wage-error
+        attr: children
+      - id: hourly-wage
+        attr: placeholder
+  invoice:
+    input:
+      - id: labor-table
+        attr: selected_rows
+      - id: labor-table
+        attr: data
+      - id: hourly-wage
+        attr: value
+      - id: currency-dropdown
+        attr: value
+    output:
+      - id: invoice-amount
+        attr: value
+      - id: payment-request
+        attr: value
+  render_invoice:
+    input:
+      - id: payment-request
+        attr: value
+      - id: qr-slider
+        attr: value
+    output:
+      - id: invoice
+        attr: src
+  commit:
     input:
       - id: url
         attr: pathname
@@ -90,16 +461,20 @@ callbacks:
         attr: n_clicks
       - id: clock-out
         attr: n_clicks
+      - id: commit-button
+        attr: n_clicks
     state:
-      - id: message
+      - id: repo-select
+        attr: value
+      - id: commit-message
         attr: value
       - id: git-user-name
         attr: value
       - id: git-user-email
         attr: value
     output:
-      - id: clock-status
-        attr: children
+      - id: display-time
+        attr: label
       - id: clock-in
         attr: children
       - id: clock-out
@@ -108,47 +483,181 @@ callbacks:
         attr: columns
       - id: commits-table
         attr: data
-      - id: clocks-table
-        attr: columns
-      - id: clocks-table
-        attr: data
       - id: labor-table
         attr: columns
       - id: labor-table
         attr: data
-  # clock_button:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #     - id: clock-in
-  #       attr: n_clicks
-  #     - id: clock-out
-  #       attr: n_clicks
-  #   output:
-  #     - id: clock-status
-  #       attr: children
-  #     - id: clock-in
-  #       attr: children
-  #     - id: clock-out
-  #       attr: children
-  # clock_status:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #     - id: clock-interval
-  #       attr: n_intervals
-  #   output:
-  #     - id: clock-status
-  #       attr: children
-  # update_table:
-  #   input:
-  #     - id: url
-  #       attr: pathname
-  #   output:
-  #     - id: table
-  #       attr: columns
-  #     - id: table
-  #       attr: data
+      - id: clock-in
+        attr: color
+      - id: clock-out
+        attr: color
+      - id: clock-in
+        attr: disabled
+      - id: clock-out
+        attr: disabled
+  files_table:
+    output:
+      - id: modified-table
+        attr: columns
+      - id: modified-table
+        attr: data
+      - id: staged-table
+        attr: columns
+      - id: staged-table
+        attr: data
+    input:
+      - id: url
+        attr: pathname
+      - id: repo-select
+        attr: value
+      - id: clock-interval
+        attr: n_intervals
+
+  stage_style:
+    input:
+      - id: modified-table
+        attr: selected_rows
+      - id: modified-table
+        attr: data
+    output:
+      - id: stage-button
+        attr: disabled
+      - id: stage-button
+        attr: color
+
+  stage_files:
+    input:
+      - id: stage-button
+        attr: n_clicks
+    state:
+      - id: modified-table
+        attr: selected_rows
+      - id: modified-table
+        attr: data
+      - id: repo-select
+        attr: value
+    output:
+      - id: modified-table
+        attr: selected_rows
+
+  unstage_style:
+    input:
+      - id: staged-table
+        attr: selected_rows
+      - id: staged-table
+        attr: data
+    output:
+      - id: unstage-button
+        attr: disabled
+      - id: unstage-button
+        attr: color
+
+
+  commit_style:
+    input:
+      - id: staged-table
+        attr: data
+      - id: commit-message
+        attr: value
+    output:
+      - id: commit-button
+        attr: color
+      - id: commit-message
+        attr: required
+      - id: message-label
+        attr: children
+      - id: commit-button
+        attr: disabled
+
+
+  unstage_files:
+    input:
+      - id: unstage-button
+        attr: n_clicks
+    state:
+      - id: repo-select
+        attr: value
+      - id: staged-table
+        attr: selected_rows
+      - id: staged-table
+        attr: data
+    output:
+      - id: status-message
+        attr: children
+
+  clear_message:
+    input:
+      - id: staged-table
+        attr: data
+    state:
+      - id: commit-message
+        attr: value
+      - id: staged-table
+        attr: selected_rows
+    output:
+      - id: commit-message
+        attr: value
+
+  clear_stage_selection:
+    input:
+      - id: unstage-button
+        attr: n_clicks
+      - id: commit-button
+        attr: n_clicks
+    output:
+      - id: staged-table
+        attr: selected_rows
+
+  reset_soft:
+    input:
+      - id: reset-soft
+        attr: n_clicks
+    state:
+      - id: repo-select
+        attr: value
+    output:
+      - id: reset-status
+        attr: children
+
+
+  display_led:
+    output:
+      - id: display-time
+        attr: value
+      - id: display-time
+        attr: color
+    input:
+      - id: display-time
+        attr: label
+      - id: clock-interval
+        attr: n_intervals
+
+  open_qr:
+    output:
+    - id: qr-modal
+      attr: is_open
+    input:
+    - id: qr-open
+      attr: n_clicks
+    - id: qr-close
+      attr: n_clicks
+    state:
+    - id: qr-modal
+      attr: is_open
+  qr_size:
+    output:
+      - id: qr-modal
+        attr: size
+    input:
+      - id: qr-slider
+        attr: value
+  qr_payment_text:
+    output:
+      - id: qr-payment-text
+        attr: value
+    input:
+      - id: payment-request
+        attr: value
 
 
 

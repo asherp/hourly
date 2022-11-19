@@ -5,6 +5,8 @@ from hourly import get_work_commits, is_clocked_in, is_clocked_out, update_log, 
 from hourly import get_hours_worked, get_earnings, get_labor_range
 from hourly import plot_labor, get_current_user, get_clocks
 from hourly import invoice
+from hourly import get_local_timezone
+from hourly import get_base_dir
 import plotly.graph_objs as go
 import plotly.offline as po
 from omegaconf import OmegaConf, DictConfig, ListConfig
@@ -168,7 +170,7 @@ def localize(t):
     if t is None:
         return t
     if t.tzinfo is None:
-        LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone(datetime.timedelta(0))).astimezone().tzinfo
+        LOCAL_TIMEZONE = get_local_timezone()
         return t.tz_localize(LOCAL_TIMEZONE)
     else:
         return t
@@ -270,7 +272,7 @@ def run_report(cfg):
             if cfg.verbosity > 0:
                 print("getting commits for repo:branch {}:{}".format(gitdir, branch))
 
-            branch_work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern', branch = branch)
+            branch_work, repo = get_work_commits(gitdir, ascending = True, branch = branch)
             if branch is None:
                 branch_name = ''
             else:
@@ -482,7 +484,7 @@ def run(cfg):
     gitdir = get_base_dir(gitdir)
     os.chdir(gitdir)
 
-    work, repo = get_work_commits(gitdir, ascending = True, tz = 'US/Eastern')
+    work, repo = get_work_commits(gitdir, ascending = True)
 
     current_user = get_current_user(repo)
     current_user_id = identify_user(current_user, cfg)
@@ -678,12 +680,6 @@ def save_report(cfg, labor, user_id):
     print('writing to file {}'.format(output_file))
     labor.to_csv(output_file)
 
-def get_base_dir(directory = '.'):
-    """obtain the base directory of the git repo"""
-    user_dir = os.path.expanduser(directory)
-    repo = git.Repo(user_dir, search_parent_directories=True)
-    base_dir = repo.working_tree_dir
-    return base_dir
 
 def change_git_dir(directory, verbosity = 0):
     '''changes to base path of git directory'''

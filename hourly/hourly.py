@@ -3,6 +3,8 @@ import pandas as pd
 import warnings
 import plotly.graph_objs as go
 import plotly.offline as po
+import datetime
+import os
 
 warnings.simplefilter("ignore")
 pd.set_option('display.max_rows', None)
@@ -10,6 +12,12 @@ pd.set_option('display.max_columns', 5)
 pd.set_option('display.max_colwidth', 37)
 pd.set_option('display.width', 600)
 
+def get_base_dir(directory = '.'):
+    """obtain the base directory of the git repo"""
+    user_dir = os.path.expanduser(directory)
+    repo = git.Repo(user_dir, search_parent_directories=True)
+    base_dir = repo.working_tree_dir
+    return base_dir
 
 def adjust_time(work, dt_str = 'T-'):
     work = work.reset_index()
@@ -28,8 +36,14 @@ def adjust_time(work, dt_str = 'T-'):
             raise NotImplementedError("{} not yet handled".format(dt_str))
     return work.set_index('time')
 
-def get_work_commits(repo_addr, ascending = True, tz = 'US/Eastern', branch = None):
+def get_local_timezone():
+    """get the system timezone"""
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(0))).astimezone().tzinfo
+
+def get_work_commits(repo_addr, ascending=True, tz=None, branch=None):
     """Retrives work commits from repo"""
+    if tz is None:
+        tz = get_local_timezone()
     repo = git.Repo(repo_addr)
 
     logs = [(c.authored_datetime, c.message.strip('\n'), str(c), c.author.name, c.author.email) for c in repo.iter_commits(branch)]
@@ -77,8 +91,10 @@ def get_clocks(work,
     clocks = commit_filter(work, 'clock', case_sensitive = case_sensitive)
 
     # handle case where start and dates have different utc offsets
-    clocks = clocks.loc[start_date:]
-    clocks = clocks.loc[:end_date]
+    if start_date is not None:
+        clocks = clocks[clocks.index >= start_date]
+    if end_date is not None:
+        clocks = clocks[clocks.index <= end_date]
 
     if adjust_clocks:
         clocks = adjust_time(clocks)

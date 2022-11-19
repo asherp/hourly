@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-    - "8888:8888"
-    - "8050:8050"
+    - "8881:8888"
+    - "8051:8050"
     image: apembroke/hourly
     volumes:
     - type: bind
