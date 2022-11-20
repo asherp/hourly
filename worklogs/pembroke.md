@@ -1,3 +1,6 @@
+
+### 2022-11-20 15:50:37.978917: clock-in
+
 ### 2022-11-19 17:40:43.749749: clock-out
 
 * demoing hourly to Niko
