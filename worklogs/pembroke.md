@@ -1,3 +1,4 @@
+* debugging secret sharing
 * generated shared secret
 * storing ashers pubkey
 * save/load pub keys

@@ -73,10 +73,6 @@ import os
 ```
 
 ```python
-secp256k1.PrivateKey.deserialize()
-```
-
-```python
 def get_priv_key(priv_key_hex):
     """gets a private key object from a hex string"""
     priv_key_raw = secp256k1.PrivateKey().deserialize(priv_key_hex)
@@ -84,7 +80,19 @@ def get_priv_key(priv_key_hex):
 ```
 
 ```python
-priv_key = get_priv_key(os.environ['HOURLY_PRIVATE_KEY'])
+priv_key_asher = get_priv_key(os.environ['HOURLY_PRIVATE_KEY'])
+```
+
+```python
+priv_key_daniel = get_priv_key(os.environ['HOURLY_PRIVATE_KEY_DANIEL'])
+```
+
+```python
+get_shared_secret(priv_key_asher, priv_key_daniel.pubkey)
+```
+
+```python
+get_shared_secret(priv_key_daniel, priv_key_daniel.pubkey)
 ```
 
 ## Generate pub key
@@ -122,7 +130,24 @@ asher_pub_key_str
 ```
 
 ```python
+daniel_pub_key_str = conf.compensation[-1]['pub_key']
+daniel_pub_key_str
+```
+
+```python
 asher_pub_key = secp256k1.PublicKey(pubkey=b64decode(asher_pub_key_str), raw=True)
+```
+
+```python
+asher_pub_key
+```
+
+```python
+assert priv_key_asher.pubkey == asher_pub_key
+```
+
+```python
+assert priv_key_daniel.pubkey == daniel_pub_key
 ```
 
 ```python
@@ -136,53 +161,133 @@ daniel_pub_key
 ## Generate shared secret
 
 ```python
-priv_key.keypair?
+priv_key_asher
 ```
 
 ```python
-priv_key.deserialize(priv_key.serialize())
+len(priv_key.deserialize(priv_key.serialize()))
 ```
 
 ```python
-shared_secret = daniel_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
-b64encode(shared_secret.serialize())
+def get_shared_secret(priv_key, pub_key):
+    shared_secret =  pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+    return b64encode(shared_secret.serialize())[:32].decode('ascii')
 ```
 
 ```python
-assert pub_key.serialize() == pub_key_bytes
+shared_secret = get_shared_secret(priv_key, daniel_pub_key)
+shared_secret
+```
+
+## Encrypt with shared secret
+
+```python
+from cryptography.fernet import Fernet
 ```
 
 ```python
-import base64
+def get_fernet(key_str):
+    fernet_key = base64.urlsafe_b64encode(bytes(key_str.ljust(32).encode()))
+    return Fernet(fernet_key)
+
+
+def encrypt(key, message):
+    # Fernet(base64.urlsafe_b64encode(b'(3,4)'.ljust(32)))
+
+    key_str = str(key)
+
+    f = get_fernet(key_str)
+    token = f.encrypt(message.encode())
+
+    encrypted_msg = token.decode('ascii')
+
+    return encrypted_msg
+
+
+def decrypt(key, message):
+    f = get_fernet(str(key))
+    decrypted_msg = f.decrypt(message.encode()).decode('ascii')
+
+    return decrypted_msg
 ```
 
 ```python
-base64.decode?
+shared_secret
 ```
 
 ```python
-bytes(pub_key_raw.encode('utf-8'))
+encrypted = encrypt(shared_secret, 'howdy 234')
 ```
 
 ```python
-pub_key_bytes = pub_key.serialize()
-pub_key_bytes
+decrypt(shared_secret, encrypted)
 ```
 
 ```python
-from base64 import b64encode, b64decode
+labor
 ```
 
 ```python
-b64encode(pub_key_bytes)
+wage = conf.compensation[0]['wage']
+wage
 ```
 
 ```python
-b64decode(asher_pub_key)
+unit_price = int(labor.iloc[0].Hours*wage['sats'])
 ```
 
 ```python
-!git log
+unit_price # sats earned
+```
+
+## Prototyping
+
+```python
+from secp256k1 import PrivateKey, PublicKey
+
+privkey = PrivateKey()
+privkey_der = privkey.serialize()
+assert privkey.deserialize(privkey_der) == privkey.private_key
+
+sig = privkey.ecdsa_sign(b'hello')
+verified = privkey.pubkey.ecdsa_verify(b'hello', sig)
+assert verified
+
+sig_der = privkey.ecdsa_serialize(sig)
+sig2 = privkey.ecdsa_deserialize(sig_der)
+vrf2 = privkey.pubkey.ecdsa_verify(b'hello', sig2)
+assert vrf2
+
+pubkey = privkey.pubkey
+pub = pubkey.serialize()
+
+pubkey2 = PublicKey(pub, raw=True)
+assert pubkey2.serialize() == pub
+assert pubkey2.ecdsa_verify(b'hello', sig)
+```
+
+```python
+priv_key1 = PrivateKey()
+priv_key1.serialize()
+```
+
+```python
+priv_key2 = PrivateKey()
+priv_key2.serialize()
+```
+
+```python
+shared_1 = priv_key1.pubkey.tweak_mul(priv_key2.deserialize(priv_key2.serialize()))
+print(priv_key1.serialize())
+```
+
+```python
+shared_2 = priv_key2.pubkey.tweak_mul(priv_key1.deserialize(priv_key1.serialize()))
+priv_key2.serialize()
+```
+
+```python
+shared_1 == shared_2
 ```
 
 ```python
