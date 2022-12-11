@@ -1,3 +1,4 @@
+* storing ashers pubkey
 * save/load pub keys
 * wip
 * setting up hourly environment

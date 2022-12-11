@@ -14,6 +14,7 @@ repo:
     - dashboard
     - multi-repo-conf
     - tabconf_hackathon
+    - btc_plus_plus
 
 
 report:
@@ -50,3 +51,11 @@ compensation:
     email: apembroke@gmail.com
     wage:
       pi: 1.0
+    pub_key: AidV/LsMABNni7iutd3+E648PgMKM2B8bhe77U7D7GkQ
+  - name: asherp
+    email: apembroke+asherp@gmail.com
+    wage: # per hour
+      sats: 10000
+    pub_key: 
+
+
