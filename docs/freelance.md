@@ -122,6 +122,11 @@ asher_pub_key_str
 ```
 
 ```python
+daniel_pub_key_str = conf.compensation[2]['pub_key']
+daniel_pub_key_str
+```
+
+```python
 asher_pub_key = secp256k1.PublicKey(pubkey=b64decode(asher_pub_key_str), raw=True)
 ```
 
@@ -144,8 +149,15 @@ priv_key.deserialize(priv_key.serialize())
 ```
 
 ```python
-shared_secret = daniel_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+# shared_secret = daniel_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+# b64encode(shared_secret.serialize())
+
+shared_secret = asher_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
 b64encode(shared_secret.serialize())
+```
+
+```python
+
 ```
 
 ```python
@@ -185,6 +197,29 @@ b64decode(asher_pub_key)
 !git log
 ```
 
-```python
+## Asherp generating an invoice
 
+```python
+import subprocess
+import json
+```
+
+```python
+result = subprocess.run(["docker exec playground-lnd lncli --macaroonpath '/root/.lnd/data/chain/bitcoin/signet/admin.macaroon' addinvoice --amt=10000"],  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+result.stdout
+```
+
+```python
+invoice = json.loads(result.stdout)["payment_request"]
+invoice
+```
+
+## Daniel paying the invoice
+
+```python
+result = subprocess.run([f"docker exec playground-lnd lncli --macaroonpath '/root/.lnd/data/chain/bitcoin/signet/admin.macaroon' sendpayment --pay_req={invoice} -f"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+```
+
+```python
+assert result.returncode == 0
 ```
