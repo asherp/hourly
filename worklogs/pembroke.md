@@ -1,3 +1,6 @@
+
+### 2022-12-11 12:41:10.306371: clock-in: T-30m 
+
 ### 2022-12-11 11:51:18.834412: clock-out
 
 * setting up command line interface
