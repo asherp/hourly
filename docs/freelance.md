@@ -117,20 +117,35 @@ conf
 ```
 
 ```python
-asher_pub_key = conf.compensation[0]['pub_key']
-asher_pub_key
+asher_pub_key_str = conf.compensation[0]['pub_key']
+asher_pub_key_str
 ```
 
 ```python
-
+asher_pub_key = secp256k1.PublicKey(pubkey=b64decode(asher_pub_key_str), raw=True)
 ```
 
 ```python
-pub_key = secp256k1.PublicKey(pubkey=b64decode(asher_pub_key), raw=True)
+daniel_pub_key = secp256k1.PublicKey(pubkey=b64decode(daniel_pub_key_str), raw=True)
 ```
 
 ```python
-pub_key.serialize()
+daniel_pub_key
+```
+
+## Generate shared secret
+
+```python
+priv_key.keypair?
+```
+
+```python
+priv_key.deserialize(priv_key.serialize())
+```
+
+```python
+shared_secret = daniel_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+b64encode(shared_secret.serialize())
 ```
 
 ```python

@@ -1,3 +1,4 @@
+* generated shared secret
 * storing ashers pubkey
 * save/load pub keys
 * wip
