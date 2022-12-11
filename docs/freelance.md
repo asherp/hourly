@@ -87,9 +87,46 @@ def get_priv_key(priv_key_hex):
 priv_key = get_priv_key(os.environ['HOURLY_PRIVATE_KEY'])
 ```
 
+## Generate pub key
+
+```python
+from base64 import b64encode, b64decode
+```
+
 ```python
 pub_key = priv_key.pubkey
 pub_key
+```
+
+```python
+b64encode(pub_key.serialize())
+```
+
+Save the above key to your config (in compensation)
+
+
+## Load pub keys
+
+```python
+from omegaconf import OmegaConf
+```
+
+```python
+conf = OmegaConf.load('../hourly.yaml')
+conf
+```
+
+```python
+asher_pub_key = conf.compensation[0]['pub_key']
+asher_pub_key
+```
+
+```python
+
+```
+
+```python
+pub_key = secp256k1.PublicKey(pubkey=b64decode(asher_pub_key), raw=True)
 ```
 
 ```python
@@ -97,7 +134,36 @@ pub_key.serialize()
 ```
 
 ```python
+assert pub_key.serialize() == pub_key_bytes
+```
 
+```python
+import base64
+```
+
+```python
+base64.decode?
+```
+
+```python
+bytes(pub_key_raw.encode('utf-8'))
+```
+
+```python
+pub_key_bytes = pub_key.serialize()
+pub_key_bytes
+```
+
+```python
+from base64 import b64encode, b64decode
+```
+
+```python
+b64encode(pub_key_bytes)
+```
+
+```python
+b64decode(asher_pub_key)
 ```
 
 ```python

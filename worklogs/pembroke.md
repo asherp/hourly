@@ -1,3 +1,4 @@
+* save/load pub keys
 * wip
 * setting up hourly environment
 * switching to python 3.6
