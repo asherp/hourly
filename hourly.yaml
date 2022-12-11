@@ -57,5 +57,8 @@ compensation:
     wage: # per hour
       sats: 10000
     pub_key: 
+  - name: Daniel Vergara
+    email: daniel.omar.vergara@gmail.com
+    pub_key: A0BWHlQU7+03unHCoIHCEVUy7CeP6PkibMgeaICXp/Av
 
 
