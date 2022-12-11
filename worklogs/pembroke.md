@@ -1,3 +1,6 @@
+
+### 2022-12-11 11:35:27.742766: clock-in: T-1h 
+
 ### 2022-11-20 16:12:17.274193: clock-out
 
 * connecting to plebnet-playground
