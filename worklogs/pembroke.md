@@ -1,3 +1,16 @@
+* setting up hourly environment
+* switching to python 3.6
+* setting up [secp256k1 from rustyrussell](https://github.com/rustyrussell/secp256k1-py)
+
+requires pkg-config
+
+```sh
+conda install -c conda-forge pkg-config
+pip install secp256k1 
+```
+
+* synced with signet through plebnetplayground
+* ran ./getcoins.py -> 1.0sigbtc!
 
 ### 2022-12-11 12:41:10.306371: clock-in: T-30m 
 
