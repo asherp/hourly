@@ -1,3 +1,4 @@
+* wip
 * setting up hourly environment
 * switching to python 3.6
 * setting up [secp256k1 from rustyrussell](https://github.com/rustyrussell/secp256k1-py)
