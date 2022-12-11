@@ -1,8 +1,10 @@
+* setting up command line interface
 
 ### 2022-12-11 11:37:29.020349: clock-in
 
 ### 2022-12-11 11:35:31.441389: clock-out
 
+* set up plebnet-playground-docker
 
 ### 2022-12-11 11:35:27.742766: clock-in: T-1h 
 
