@@ -1,3 +1,4 @@
+* adding encrypted invoice
 * debugging secret sharing
 * generated shared secret
 * storing ashers pubkey

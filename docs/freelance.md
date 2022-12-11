@@ -130,8 +130,8 @@ asher_pub_key_str
 ```
 
 ```python
-daniel_pub_key_str = conf.compensation[-1]['pub_key']
-daniel_pub_key_str
+
+daniel_pub_key_str = conf.compensation[2]['pub_key']
 ```
 
 ```python
@@ -212,11 +212,15 @@ def decrypt(key, message):
 ```
 
 ```python
-shared_secret
+# shared_secret = daniel_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+# b64encode(shared_secret.serialize())
+
+shared_secret = asher_pub_key.tweak_mul(priv_key.deserialize(priv_key.serialize()))
+b64encode(shared_secret.serialize())
 ```
 
 ```python
-encrypted = encrypt(shared_secret, 'howdy 234')
+assert pub_key.serialize() == pub_key_bytes
 ```
 
 ```python
@@ -288,6 +292,71 @@ priv_key2.serialize()
 
 ```python
 shared_1 == shared_2
+```
+
+## Asherp generating an invoice
+
+```python
+work_session0 = labor.iloc[0]
+```
+
+```python
+import subprocess
+import json
+```
+
+```python
+work_session0.hash
+```
+
+```python
+result = subprocess.run(["docker exec playground-lnd lncli --macaroonpath '/root/.lnd/data/chain/bitcoin/signet/admin.macaroon' addinvoice --amt={unit_price}"],  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+result.stdout
+```
+
+```python
+payment_invoice = json.loads(result.stdout)["payment_request"]
+payment_invoice
+```
+
+```python
+invoice_json = json.dumps(dict(invoice=payment_invoice, clock_in=work_session0.hash, clock_out=work_session0.hash))
+```
+
+```python
+invoice_json
+```
+
+```python
+shared_secret
+```
+
+```python
+invoice_encrypted = encrypt(shared_secret, invoice)
+```
+
+Commit the above invoice to the repo!
+
+```python
+with open('invoices/invoice1.txt')
+```
+
+## Daniel paying the invoice
+
+```python
+invoice = decrypt(shared_secret, invoice_encrypted)
+```
+
+```python
+result = subprocess.run([f"docker exec playground-lnd lncli --macaroonpath '/root/.lnd/data/chain/bitcoin/signet/admin.macaroon' sendpayment --pay_req={invoice} -f"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+```
+
+```python
+result
+```
+
+```python
+assert result.returncode == 0
 ```
 
 ```python
