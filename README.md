@@ -126,6 +126,27 @@ For hourly's docs:
 pip install mkdocs mkdocs-material markdown-include mknotebooks
 ```
 
+### Installing on Apple M4
+
+Use these `python 3.8.20` dependencies
+
+```sh
+gitdb==4.0.12
+GitPython==3.1.18
+hourly==0.3.19
+hydra-core==0.11.3
+numpy==1.24.4
+omegaconf==1.4.1
+pandas==1.2.5
+plotly==5.2.1
+python-dateutil==2.9.0.post0
+pytz==2025.2
+PyYAML==6.0.2
+six==1.17.0
+smmap==5.0.2
+tenacity==9.0.0
+```
+
 ### Tests
 
 For integration tests, hourly may be tested against the hourly repo.
